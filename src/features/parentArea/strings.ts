@@ -1,0 +1,156 @@
+import { defineStrings } from '@/i18n';
+
+export const PRIVACY_POLICY_URL = 'https://raman0925.github.io/akhorkhel-privacy/';
+
+export const strings = defineStrings({
+  as: {
+    title: 'অভিভাৱকৰ অংশ',
+    settings: 'ছেটিংছ',
+    uiLanguage: 'এপৰ ভাষা',
+    learningLanguage: 'শিকা ভাষা',
+    leftHanded: 'বাওঁহতীয়া',
+    leftHandedHint: 'বাওঁহাতেৰে লিখা শিশুৰ বাবে বুটামবোৰ সোঁফালে যায়।',
+    sound: 'শব্দ',
+    on: 'অন',
+    off: 'অফ',
+    children: 'শিশুসকল',
+    addChild: 'নতুন শিশু',
+    more: 'অধিক',
+    rewards: 'পুৰস্কাৰ',
+    teacher: 'শিক্ষকৰ অংশ',
+    adsNotice: 'বিজ্ঞাপন আৰু গোপনীয়তা',
+    privacyPolicy: 'গোপনীয়তা নীতি',
+    rateTitle: 'আখৰ খেল ভাল লাগিছেনে?',
+    rateBody: 'প্লে ষ্ট’ৰত এটা ৰেটিং দিলে আন অভিভাৱকেও এপটো বিচাৰি পাব।',
+    rateButton: 'ৰেটিং দিয়ক',
+    dangerZone: 'সকলো তথ্য',
+    deleteAll: 'সকলো তথ্য মচি পেলাওক',
+    deleteAllConfirm1:
+      'সকলো শিশুৰ চিনাকি, তৰা আৰু ছেটিংছ এই ফোনৰ পৰা মচি পেলোৱা হ’ব। এইটো ঘূৰাই আনিব নোৱাৰি।',
+    deleteAllConfirm2: 'আপুনি সঁচাকৈয়ে নিশ্চিতনে? শেষবাৰৰ বাবে সুধিছোঁ।',
+    deleteAllContinue: 'হয়, আগবাঢ়ক',
+    deleteAllFinal: 'হয়, সকলো মচক',
+    cancel: 'বাতিল কৰক',
+
+    noticeTitle: 'বিজ্ঞাপন আৰু গোপনীয়তা',
+    noticeAccept: 'বুজি পালোঁ',
+    notice1: 'আখৰ খেল বিনামূলীয়া। ইয়াৰ খৰচ শিশুৰ বাবে সুৰক্ষিত Google AdMob বিজ্ঞাপনে বহন কৰে।',
+    notice2:
+      'বিজ্ঞাপনবোৰ ব্যক্তিগত নহয়: শিশুৰ বিষয়ে একো জানি বিজ্ঞাপন দেখুওৱা নহয়, আৰু কেৱল শিশুৰ বাবে উপযুক্ত (G) বিজ্ঞাপন দেখুওৱা হয়।',
+    notice3:
+      'আখৰ লিখা আৰু খেলৰ স্ক্ৰীণত কোনো বিজ্ঞাপন নাথাকে। মেনুৰ তলত সৰু বেনাৰ থাকে, আৰু কেইটামান আখৰ শেষ কৰাৰ পিছত কেতিয়াবা এটা বিজ্ঞাপন আহে।',
+    notice4:
+      'এপটোৱে কোনো ব্যক্তিগত তথ্য সংগ্ৰহ নকৰে। শিশুৰ আদৰৰ নাম আৰু তৰাবোৰ এই ফোনতে থাকে, ক’তো পঠিওৱা নহয়।',
+    notice5: 'পুৰস্কাৰৰ বিজ্ঞাপন কেৱল অভিভাৱকৰ অংশত, আপুনি নিজে বাছিলেহে চলে।',
+    noticePolicyLink: 'সম্পূৰ্ণ গোপনীয়তা নীতি পঢ়ক',
+
+    policyTitle: 'গোপনীয়তা নীতি',
+    policyIntro: 'এয়া চমু সাৰাংশ। সম্পূৰ্ণ নীতি এই ঠিকনাত আছে:',
+    policyAppHeading: 'এপটোৱে কি সংগ্ৰহ কৰে',
+    policyApp:
+      'একো নাই। এপটোৰ কোনো ছাৰ্ভাৰ, লগইন বা এনালিটিক্স নাই। শিশুৰ আদৰৰ নাম, ছবি বাছনি, তৰা আৰু ছেটিংছ কেৱল এই ফোনতে থাকে।',
+    policyAdsHeading: 'বিজ্ঞাপন (Google AdMob)',
+    policyAds:
+      'বিজ্ঞাপন দেখুৱাবলৈ Google AdMob SDK-য়ে IP ঠিকনা, এপৰ ভিতৰৰ কাম-কাজ (যেনে বিজ্ঞাপন দেখা বা টিপা) আৰু ক্ৰেচ/ডায়েগনষ্টিক তথ্য সংগ্ৰহ কৰিব পাৰে। বিজ্ঞাপন শিশুৰ বাবে নিৰ্দেশিত আৰু ব্যক্তিগত নহয়।',
+    policyAdIdHeading: 'বিজ্ঞাপন আইডি',
+    policyAdId: 'এপটোৱে Android বিজ্ঞাপন আইডি (AD_ID) ব্যৱহাৰ নকৰে আৰু নপঠিয়ায়।',
+    policyDeleteHeading: 'তথ্য মচা',
+    policyDelete:
+      'অভিভাৱকৰ অংশৰ “সকলো তথ্য মচি পেলাওক” বুটামে ফোনত থকা সকলো তথ্য মচি পেলায়। এপটো আনইনষ্টল কৰিলেও সকলো মচ যায়।',
+
+    rewardsTitle: 'পুৰস্কাৰ',
+    rewardsIntro:
+      'এটা বিজ্ঞাপন চাই ২৪ ঘণ্টাৰ বাবে নতুন ষ্টিকাৰ বা অতিৰিক্ত শব্দ খুলিব পাৰে। এইটো সম্পূৰ্ণ আপোনাৰ ইচ্ছা; শিশুক কেতিয়াও বিজ্ঞাপন চাবলৈ কোৱা নহয়।',
+    stickerThemes: 'ষ্টিকাৰ',
+    bonusWords: 'অতিৰিক্ত শব্দ',
+    bonusWordsBody: 'শব্দ অংশত আৰু কিছু নতুন ছবি-শব্দ।',
+    watchAd: 'এটা বিজ্ঞাপন চাই ২৪ ঘণ্টাৰ বাবে খোলক',
+    adNotReady: 'এতিয়া কোনো বিজ্ঞাপন নাই। ইণ্টাৰনেট লাগে; পিছত চেষ্টা কৰক।',
+    adNoReward: 'বিজ্ঞাপনটো শেষ নহ’ল, সেয়ে একো খোলা নহ’ল।',
+    free: 'বিনামূলীয়া',
+    unlockedFor: 'খোলা আছে: আৰু {time}',
+    hoursMinutes: '{h} ঘণ্টা {m} মিনিট',
+    minutes: '{m} মিনিট',
+    use: 'এইটো ব্যৱহাৰ কৰক',
+    inUse: 'ব্যৱহাৰ হৈ আছে',
+    theme_stars: 'তৰা',
+    theme_animals: 'জীৱ-জন্তু',
+    theme_fruits: 'ফল-মূল',
+    theme_festival: 'উৎসৱ',
+  },
+  en: {
+    title: 'Parent area',
+    settings: 'Settings',
+    uiLanguage: 'App language',
+    learningLanguage: 'Learning language',
+    leftHanded: 'Left-hand mode',
+    leftHandedHint: 'Moves buttons to the right side for children who write with the left hand.',
+    sound: 'Sound',
+    on: 'On',
+    off: 'Off',
+    children: 'Children',
+    addChild: 'New child',
+    more: 'More',
+    rewards: 'Rewards',
+    teacher: 'Teacher mode',
+    adsNotice: 'Ads & privacy',
+    privacyPolicy: 'Privacy policy',
+    rateTitle: 'Enjoying Akhor Khel?',
+    rateBody: 'A rating on Google Play helps other parents find the app.',
+    rateButton: 'Rate the app',
+    dangerZone: 'All data',
+    deleteAll: 'Delete all data',
+    deleteAllConfirm1:
+      'All child profiles, stars and settings will be deleted from this phone. This cannot be undone.',
+    deleteAllConfirm2: 'Are you really sure? This is the last check.',
+    deleteAllContinue: 'Yes, continue',
+    deleteAllFinal: 'Yes, delete everything',
+    cancel: 'Cancel',
+
+    noticeTitle: 'Ads & privacy',
+    noticeAccept: 'I understand',
+    notice1: 'Akhor Khel is free. It is paid for by child-safe Google AdMob ads.',
+    notice2:
+      'Ads are non-personalised: they are never based on what the child does, and only family-friendly (G-rated) ads are shown.',
+    notice3:
+      'There are no ads on tracing or game screens. Menus have a small banner at the bottom, and an ad may sometimes appear after the child finishes a set of letters.',
+    notice4:
+      'The app collects no personal data. Nicknames and stars stay on this phone and are never sent anywhere.',
+    notice5: 'Reward ads are only in the parent area and only play if you choose them.',
+    noticePolicyLink: 'Read the full privacy policy',
+
+    policyTitle: 'Privacy policy',
+    policyIntro: 'This is a short summary. The full policy is at:',
+    policyAppHeading: 'What the app collects',
+    policyApp:
+      'Nothing. The app has no server, no login and no analytics. Nicknames, avatar choices, stars and settings are stored only on this phone.',
+    policyAdsHeading: 'Ads (Google AdMob)',
+    policyAds:
+      'To show ads, the Google AdMob SDK may collect the IP address, app interactions (such as ad views and taps) and crash/diagnostic data. Ads are child-directed and non-personalised.',
+    policyAdIdHeading: 'Advertising ID',
+    policyAdId: 'The app does not use or send the Android Advertising ID (AD_ID).',
+    policyDeleteHeading: 'Deleting data',
+    policyDelete:
+      '“Delete all data” in the parent area removes everything stored on the phone. Uninstalling the app also removes it.',
+
+    rewardsTitle: 'Rewards',
+    rewardsIntro:
+      'You can watch one ad to unlock new stickers or bonus words for 24 hours. This is entirely your choice; the child is never asked to watch ads.',
+    stickerThemes: 'Sticker themes',
+    bonusWords: 'Bonus words',
+    bonusWordsBody: 'Extra picture words in the Words section.',
+    watchAd: 'Watch one ad to unlock for 24 h',
+    adNotReady: 'No ad is available right now. It needs internet; please try again later.',
+    adNoReward: 'The ad did not finish, so nothing was unlocked.',
+    free: 'Free',
+    unlockedFor: 'Unlocked: {time} left',
+    hoursMinutes: '{h} h {m} min',
+    minutes: '{m} min',
+    use: 'Use this',
+    inUse: 'In use',
+    theme_stars: 'Stars',
+    theme_animals: 'Animals',
+    theme_fruits: 'Fruits',
+    theme_festival: 'Festival',
+  },
+});
