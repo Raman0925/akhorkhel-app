@@ -4,6 +4,12 @@ import { jest } from '@jest/globals';
 import 'react-native-gesture-handler/jestSetup';
 
 jest.mock('react-native-worklets', () => require('react-native-worklets/lib/module/mock'));
+// Reanimated 4.8's initializer calls setCSSEventHandler, which its JS (Jest) module throws on.
+// Stub only that call; everything else is the official mock.
+jest.mock('react-native-reanimated/src/css/native/proxy', () => ({
+  ...jest.requireActual<object>('react-native-reanimated/src/css/native/proxy'),
+  setCSSEventHandler: () => undefined,
+}));
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
 jest.mock(
