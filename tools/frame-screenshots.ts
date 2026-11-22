@@ -84,7 +84,7 @@ export async function frameSvg(
   const asLine = asCap.size * 1.45;
   const enLine = enCap ? enCap.size * 1.45 : 0;
   const block = asCap.lines.length * asLine + (enCap ? enCap.lines.length * enLine + W * 0.01 : 0);
-  let y = (band - block) / 2 + W * 0.02;
+  let y = Math.max(W * 0.02, (band - block) / 2 + W * 0.02);
   for (const l of asCap.lines) {
     y += asLine;
     parts.push((await textPath(l, W / 2, y - asLine * 0.28, { ...asStyle, size: asCap.size })).svg);
@@ -101,7 +101,8 @@ export async function frameSvg(
 
   // Screenshot, scaled to fit under the band, centred, rounded corners, soft shadow.
   const { width: rw, height: rh } = pngSize(raw);
-  const top = band + Math.round(H * 0.01);
+  // A long caption (four lines) pushes the screenshot down instead of touching it.
+  const top = Math.max(band + Math.round(H * 0.01), Math.round(y + H * 0.025));
   const availW = W - margin * 2;
   const availH = H - top - Math.round(H * 0.035);
   const scale = Math.min(availW / rw, availH / rh);
