@@ -76,7 +76,8 @@ export const WordContentSchema = z.object({
 export const NumberContentSchema = z.object({
   value: z.number().int().min(0).max(100),
   numeral: z.string().min(1),
-  word: z.string().min(1),
+  /** Number word (e.g. এক). Optional until a native speaker supplies it; required for release. */
+  word: z.string().min(1).optional(),
   audio: audioPath,
 });
 

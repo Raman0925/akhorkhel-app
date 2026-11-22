@@ -37,4 +37,18 @@ export function useUnlocks(): UnlocksApi {
   };
 }
 
+/** Celebration sticker sets. `stars` is always free; the others unlock for 24 h via a rewarded ad. */
+export type StickerTheme = { id: string; emoji: readonly string[]; free: boolean };
+export const STICKER_THEMES: readonly StickerTheme[] = [
+  { id: 'stars', emoji: ['⭐', '🌟', '✨'], free: true },
+  { id: 'animals', emoji: ['🦏', '🐘', '🦌', '🐒', '🐟'], free: false },
+  { id: 'fruits', emoji: ['🥭', '🍌', '🍍', '🍊', '🍈'], free: false },
+  { id: 'festival', emoji: ['🥁', '🪔', '🎉', '🌸', '🎈'], free: false },
+];
+
+/** Emoji for celebrations: the selected theme if it is free or currently unlocked, else stars. */
+export function useActiveStickers(): readonly string[] {
+  return (STICKER_THEMES[0] as StickerTheme).emoji;
+}
+
 const styles = StyleSheet.create({ slot: { height: BANNER_HEIGHT } });

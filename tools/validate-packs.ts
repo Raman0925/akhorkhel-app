@@ -112,8 +112,17 @@ export function validatePack(
     ]),
     ...pack.words.map(w => [`word ${w.id}`, w.text] as [string, string]),
     ...pack.numbers.map(n => [`number ${n.value}`, n.numeral] as [string, string]),
-    ...pack.numbers.map(n => [`number ${n.value} word`, n.word] as [string, string]),
+    ...pack.numbers.flatMap(n =>
+      n.word ? [[`number ${n.value} word`, n.word] as [string, string]] : [],
+    ),
   ];
+  if (opts.release) {
+    for (const n of pack.numbers) {
+      if (!n.word) {
+        errors.push(`number ${n.value}: number word is missing`);
+      }
+    }
+  }
   for (const [label, text] of texts) {
     if (!isNfc(text)) {
       errors.push(`${label}: text is not NFC-normalised`);
