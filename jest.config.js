@@ -5,6 +5,7 @@ module.exports = {
   testTimeout: 30000,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^react-native-google-mobile-ads$': '<rootDir>/jest/mocks/react-native-google-mobile-ads.tsx',
     '\.(m4a|aac|mp3|wav|png|webp|jpg|ttf)$': '<rootDir>/jest/mocks/fileMock.js',
   },
   transformIgnorePatterns: [
