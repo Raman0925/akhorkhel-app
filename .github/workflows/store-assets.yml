@@ -1,10 +1,15 @@
 name: Store assets
 
-# One click: builds the app, takes the Play screenshots on a phone and two tablet emulators in
+# One click: builds the app, takes the Play screenshots on a phone emulator (tablets optional) in
 # Assamese and English, frames them with captions, renders the icon and feature graphic, and
 # uploads everything as one artifact: play-store-assets. See docs/store/graphics-spec.md.
 on:
   workflow_dispatch:
+    inputs:
+      tablets:
+        description: 'Also take 7" and 10" tablet screenshots (the app is phone-first; tablet shots are optional in Play)'
+        type: boolean
+        default: false
 
 concurrency:
   group: store-assets-${{ github.ref }}
@@ -53,6 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        device: ${{ fromJSON(inputs.tablets && '["phone","tablet7","tablet10"]' || '["phone"]') }}
         include:
           - device: phone
             profile: pixel_7

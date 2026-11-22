@@ -128,7 +128,7 @@ name: store-screenshots
       id: 'screen-Home'
     timeout: 10000
 
-# Numbers: count five objects, three counted.
+# Numbers: the ১–২০ grid says "numbers 1 to 20" at a glance.
 - scrollUntilVisible:
     element:
       id: 'home-numbers'
@@ -139,31 +139,9 @@ name: store-screenshots
     visible:
       id: 'screen-NumberList'
     timeout: 10000
-- tapOn:
-    id: 'number-tile-5'
-- extendedWaitUntil:
-    visible:
-      id: 'number-count'
-    timeout: 10000
-- tapOn:
-    id: 'number-count'
-- extendedWaitUntil:
-    visible:
-      id: 'count-object-0'
-    timeout: 10000
-- tapOn:
-    id: 'count-object-0'
-- tapOn:
-    id: 'count-object-1'
-- tapOn:
-    id: 'count-object-2'
 - waitForAnimationToEnd:
     timeout: 3000
 - takeScreenshot: ${APP_LANG}-06-numbers
-- tapOn:
-    id: 'header-back'
-- tapOn:
-    id: 'header-back'
 - tapOn:
     id: 'header-back'
 - extendedWaitUntil:
