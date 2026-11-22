@@ -7,7 +7,13 @@
  *   2. build the outline as an SVG path, flipped to y-down and fitted into the unit box with a 10%
  *      margin (aspect ratio kept),
  *   3. derive PLACEHOLDER strokes: rasterise the outline, thin it (Zhang–Suen), trace the skeleton
- *      into polylines, clean them up, simplify (RDP) and order them,
+ *      into polylines and clean them up: for Bengali/Devanagari letters and signs the headline
+ *      (mātrā / śirorekhā) is cut out and redrawn as one straight left-to-right bar; pieces that
+ *      continue each other smoothly (e.g. a stem split at the headline) are joined; short spurs
+ *      touching other ink are dropped while isolated dots stay. Then simplify (RDP) and order:
+ *      body and curves, then vertical stems left to right, then the headline, then marks above
+ *      it and dots (numerals: digit by digit, left to right). `npm run render:geometry` draws
+ *      contact sheets to check the result by eye,
  *   4. write src/content/packs/<id>/geometry.json (sorted keys, 3 decimals, prettier-formatted).
  *
  * Entries whose strokeSource is `recorded` or `reviewed` are never overwritten, unless the item's
@@ -569,14 +575,14 @@ function joinAt(e1: Branch, e2: Branch, c: number): Branch {
   return { pts: joined, a, b };
 }
 
-/** Merges branches through nodes of degree exactly two. */
-export function mergeDegreeTwo(input: Branch[]): Branch[] {
+/** Merges branches through nodes of degree exactly two (except the nodes in `skip`). */
+export function mergeDegreeTwo(input: Branch[], skip?: ReadonlySet<number>): Branch[] {
   let branches = [...input];
   for (;;) {
     const d = degrees(branches);
     let done = true;
     for (const [c, n] of [...d.entries()].sort((p, q) => p[0] - q[0])) {
-      if (n !== 2) {
+      if (n !== 2 || skip?.has(c)) {
         continue;
       }
       const at = branches.filter(b => b.a === c || b.b === c);
@@ -658,6 +664,33 @@ export function contractShortLinks(input: Branch[], minLength: number): Branch[]
   }
 }
 
+/**
+ * Small holes between two junctions show up as two parallel branches joining the same two nodes:
+ * drops the shorter one when it is shorter than `maxLength`, then re-merges.
+ */
+export function dropParallel(input: Branch[], maxLength: number): Branch[] {
+  const byPair = new Map<string, Branch[]>();
+  for (const b of input) {
+    if (b.a !== b.b) {
+      const key = `${Math.min(b.a, b.b)}:${Math.max(b.a, b.b)}`;
+      byPair.set(key, [...(byPair.get(key) ?? []), b]);
+    }
+  }
+  const drop = new Set<Branch>();
+  for (const list of byPair.values()) {
+    if (list.length < 2) {
+      continue;
+    }
+    const sorted = [...list].sort((p, q) => polylineLength(p.pts) - polylineLength(q.pts));
+    for (const b of sorted.slice(0, -1)) {
+      if (polylineLength(b.pts) < maxLength) {
+        drop.add(b);
+      }
+    }
+  }
+  return drop.size ? mergeDegreeTwo(input.filter(b => !drop.has(b))) : input;
+}
+
 /** Unit direction leaving node c along branch b, measured `reach` pixels into the branch. */
 function leavingDirection(b: Branch, c: number, reach: number): Pt {
   const pts = b.a === c ? b.pts : [...b.pts].reverse();
@@ -678,18 +711,23 @@ function leavingDirection(b: Branch, c: number, reach: number): Pt {
 }
 
 /**
- * At junctions of degree >= 3, joins the pair of branches that continue each other most
+ * At junctions of degree >= `minDegree` (default 3), joins the pair of branches that continue each other most
  * smoothly (angle between them close to 180°), so e.g. a headline crossed by stems stays one
  * stroke. Repeats while a pair is within `maxBendDeg`.
  */
-export function mergeContinuations(input: Branch[], maxBendDeg = 45, reach = 10): Branch[] {
+export function mergeContinuations(
+  input: Branch[],
+  maxBendDeg = 45,
+  reach = 10,
+  minDegree = 3,
+): Branch[] {
   let branches = [...input];
   const limit = -Math.cos((maxBendDeg * Math.PI) / 180);
   for (;;) {
     const d = degrees(branches);
     let merged = false;
     for (const [c, n] of [...d.entries()].sort((p, q) => p[0] - q[0])) {
-      if (n < 3) {
+      if (n < minDegree) {
         continue;
       }
       const at = branches.filter(b => (b.a === c) !== (b.b === c)); // exclude loops at c
@@ -719,9 +757,64 @@ export function mergeContinuations(input: Branch[], maxBendDeg = 45, reach = 10)
   }
 }
 
-/** Joins free ends (degree-1 nodes) of different branches that are closer than `maxGap`. */
-export function joinGaps(input: Branch[], maxGap: number): Branch[] {
+/**
+ * Where open branches meet one loop (e.g. the stem of ব entering its triangle, or the stem of ক
+ * entering its bowl), joins one of them with the loop into one stroke: along the branch, then
+ * round the loop the way that continues it most smoothly. With a single branch it is always
+ * joined; with several, the smoothest one is joined if it bends less than 60°.
+ */
+export function joinLoops(input: Branch[], reach = 10): Branch[] {
   let branches = [...input];
+  for (;;) {
+    const d = degrees(branches);
+    let joined = false;
+    for (const [c, n] of [...d.entries()].sort((p, q) => p[0] - q[0])) {
+      const loops = branches.filter(b => b.a === c && b.b === c);
+      const open = branches.filter(b => (b.a === c) !== (b.b === c));
+      if (n < 3 || loops.length !== 1 || open.length === 0) {
+        continue;
+      }
+      const loop = loops[0] as Branch;
+      const fwd = leavingDirection(loop, c, reach);
+      const back = leavingDirection({ ...loop, pts: [...loop.pts].reverse() }, c, reach);
+      let best: { stem: Branch; forward: boolean; score: number } | null = null;
+      for (const stem of open) {
+        const away = leavingDirection(stem, c, reach); // from c along the stem
+        // arriving along the stem means moving in -away; a smooth way round keeps that heading
+        for (const [dir, forward] of [
+          [fwd, true],
+          [back, false],
+        ] as const) {
+          const score = -(dir[0] * away[0] + dir[1] * away[1]);
+          if (!best || score > best.score) {
+            best = { stem, forward, score };
+          }
+        }
+      }
+      if (!best || (open.length > 1 && best.score < 0.5)) {
+        continue;
+      }
+      const { stem, forward } = best;
+      const ring = forward ? loop.pts : [...loop.pts].reverse();
+      const p1 = stem.b === c ? stem.pts : [...stem.pts].reverse();
+      branches = branches.filter(b => b !== loop && b !== stem);
+      branches.push({ pts: [...p1, ...ring.slice(1)], a: stem.b === c ? stem.a : stem.b, b: c });
+      joined = true;
+      break;
+    }
+    if (!joined) {
+      return branches;
+    }
+  }
+}
+
+/**
+ * Joins free ends (degree-1 nodes) of different branches that are closer than `maxGap`. With
+ * `maxBendDeg` < 180, only ends whose branches continue each other within that bend are joined.
+ */
+export function joinGaps(input: Branch[], maxGap: number, maxBendDeg = 180, reach = 10): Branch[] {
+  let branches = [...input];
+  const limit = -Math.cos((maxBendDeg * Math.PI) / 180);
   for (;;) {
     const d = degrees(branches);
     let best: { e1: Branch; e2: Branch; end1: 'a' | 'b'; end2: 'a' | 'b'; gap: number } | null =
@@ -738,9 +831,17 @@ export function joinGaps(input: Branch[], maxGap: number): Branch[] {
             const p = end1 === 'a' ? first(e1.pts) : last(e1.pts);
             const q = end2 === 'a' ? first(e2.pts) : last(e2.pts);
             const gap = dist(p, q);
-            if (gap < maxGap && (!best || gap < best.gap)) {
-              best = { e1, e2, end1, end2, gap };
+            if (gap >= maxGap || (best && gap >= best.gap)) {
+              continue;
             }
+            if (maxBendDeg < 180) {
+              const di = leavingDirection(e1, e1[end1], reach);
+              const dj = leavingDirection(e2, e2[end2], reach);
+              if (di[0] * dj[0] + di[1] * dj[1] > limit) {
+                continue;
+              }
+            }
+            best = { e1, e2, end1, end2, gap };
           }
         }
       }
@@ -834,12 +935,364 @@ export function rdp(pts: Pt[], eps: number): Pt[] {
 }
 
 // ---------------------------------------------------------------------------------------------
+// Headline (Bengali mātrā / Devanagari śirorekhā) and spurs
+// ---------------------------------------------------------------------------------------------
+
+/** Rows y0..y1 (inclusive, pixels) of a headline bar found in a raster. */
+export type Band = { y0: number; y1: number };
+
+/** Labels the 8-connected parts of a 0/1 grid (0 = background, parts numbered from 1). */
+export function labelComponents(grid: Uint8Array, w: number, h: number): Int32Array {
+  const labels = new Int32Array(w * h);
+  let next = 0;
+  for (let start = 0; start < w * h; start++) {
+    if (!grid[start] || labels[start]) {
+      continue;
+    }
+    next++;
+    labels[start] = next;
+    const stack = [start];
+    while (stack.length) {
+      const i = stack.pop() as number;
+      const x = i % w;
+      const y = (i - x) / w;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const xx = x + dx;
+          const yy = y + dy;
+          const j = yy * w + xx;
+          if (xx >= 0 && yy >= 0 && xx < w && yy < h && grid[j] && !labels[j]) {
+            labels[j] = next;
+            stack.push(j);
+          }
+        }
+      }
+    }
+  }
+  return labels;
+}
+
+/** Runs of set pixels in row y, as [start, end] (inclusive). */
+function rowRuns(grid: Uint8Array, w: number, y: number): [number, number][] {
+  const runs: [number, number][] = [];
+  let s = -1;
+  for (let x = 0; x <= w; x++) {
+    const on = x < w && grid[y * w + x] === 1;
+    if (on && s < 0) {
+      s = x;
+    } else if (!on && s >= 0) {
+      runs.push([s, x - 1]);
+      s = -1;
+    }
+  }
+  return runs;
+}
+
+/**
+ * Typical pen width of a glyph in pixels: the median, over skeleton pixels, of the shorter of the
+ * horizontal and vertical ink runs through that pixel.
+ */
+export function strokeWidth(grid: Uint8Array, skeleton: Uint8Array, w: number, h: number): number {
+  const widths: number[] = [];
+  const on = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && grid[y * w + x] === 1;
+  for (let i = 0; i < w * h; i++) {
+    if (!skeleton[i]) {
+      continue;
+    }
+    const x = i % w;
+    const y = (i - x) / w;
+    let l = x;
+    let r = x;
+    let t = y;
+    let b = y;
+    while (on(l - 1, y)) {
+      l--;
+    }
+    while (on(r + 1, y)) {
+      r++;
+    }
+    while (on(x, t - 1)) {
+      t--;
+    }
+    while (on(x, b + 1)) {
+      b++;
+    }
+    widths.push(Math.min(r - l + 1, b - t + 1));
+  }
+  widths.sort((p, q) => p - q);
+  return widths[Math.floor(widths.length / 2)] ?? 0;
+}
+
+/**
+ * Finds the headline bar in a raster: in the upper part of the glyph, a straight horizontal bar of
+ * ink (at least `minRows` (and 3) rows that start and end at nearly the same x, unlike the top of
+ * a curve) that is at least `minWidth` of the glyph wide. Of several, the one with the largest
+ * area wins. Null when there is none.
+ */
+export function findHeadlineBand(
+  grid: Uint8Array,
+  w: number,
+  h: number,
+  minWidth = 0.3,
+  minRows = 3,
+): Band | null {
+  let minX = w;
+  let maxX = -1;
+  let minY = h;
+  let maxY = -1;
+  for (let i = 0; i < w * h; i++) {
+    if (grid[i]) {
+      const x = i % w;
+      const y = (i - x) / w;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+  }
+  if (maxX < 0) {
+    return null;
+  }
+  const gw = maxX - minX + 1;
+  const gh = maxY - minY + 1;
+  const yLimit = minY + Math.floor(0.45 * gh);
+  const runs = new Map<number, [number, number][]>();
+  for (let y = minY; y <= yLimit + 1; y++) {
+    runs.set(y, rowRuns(grid, w, y));
+  }
+  let best: (Band & { area: number }) | null = null;
+  for (let y = minY; y <= yLimit; y++) {
+    for (const [s, e] of runs.get(y) ?? []) {
+      const width = e - s + 1;
+      if (width < minWidth * gw) {
+        continue;
+      }
+      const slack = Math.max(3, 0.06 * width);
+      const matches = (yy: number) =>
+        (runs.get(yy) ?? []).some(r => Math.abs(r[0] - s) <= slack && Math.abs(r[1] - e) <= slack);
+      if (matches(y - 1)) {
+        continue; // not the top row of this bar
+      }
+      let y1 = y;
+      while (y1 + 1 <= yLimit + 1 && matches(y1 + 1)) {
+        y1++;
+      }
+      const rows = y1 - y + 1;
+      const area = rows * width;
+      if (rows >= Math.max(3, minRows) && rows <= 0.15 * gh && (!best || area > best.area)) {
+        best = { y0: y, y1, area };
+      }
+    }
+  }
+  return best ? { y0: best.y0, y1: best.y1 } : null;
+}
+
+/**
+ * Cuts the headline out of the skeleton: every run of branch points inside the band that is
+ * horizontal, at least `minRun` pixels wide, lies on solid ink of the bar and (if given) is centred
+ * within one of the x ranges `within`, is a headline piece. What is left of each branch
+ * stays a branch; nodes where something touched the headline are returned in `attached`.
+ */
+export function extractHeadline(
+  input: Branch[],
+  band: Band,
+  minRun: number,
+  grid: Uint8Array,
+  w: number,
+  within?: [number, number][],
+): { rest: Branch[]; pieces: Pt[][]; attached: Set<number> } {
+  // the skeleton of the bar runs along its middle row
+  const mid = (band.y0 + band.y1 + 1) / 2;
+  const tol = Math.max(2, 0.25 * (band.y1 - band.y0 + 1));
+  const inBand = (p: Pt) => Math.abs(p[1] - mid) <= tol;
+  // the bar's full thickness is ink above and below this point, and there is no ink just above
+  // the bar (not the thick top of a curve)
+  const solid = (p: Pt) => {
+    const x = Math.floor(p[0]);
+    if (band.y0 >= 2 && grid[(band.y0 - 2) * w + x] === 1) {
+      return false;
+    }
+    for (let y = band.y0 + 1; y < band.y1; y++) {
+      if (grid[y * w + x] !== 1) {
+        return false;
+      }
+    }
+    return true;
+  };
+  const rest: Branch[] = [];
+  const pieces: Pt[][] = [];
+  const attached = new Set<number>();
+  let cutId = Math.min(0, ...input.flatMap(b => [b.a, b.b])) - 1;
+  for (const b of input) {
+    const runs: [number, number][] = [];
+    let s = -1;
+    for (let k = 0; k <= b.pts.length; k++) {
+      const on = k < b.pts.length && inBand(b.pts[k] as Pt);
+      if (on && s < 0) {
+        s = k;
+      } else if (!on && s >= 0) {
+        const run = b.pts.slice(s, k);
+        const bb = bbox(run);
+        const dx = bb.maxX - bb.minX;
+        const cx = (bb.minX + bb.maxX) / 2;
+        if (
+          dx >= minRun &&
+          run.filter(solid).length >= 0.7 * run.length &&
+          (!within || within.some(([x0, x1]) => cx >= x0 - 2 && cx <= x1 + 2))
+        ) {
+          runs.push([s, k - 1]);
+        }
+        s = -1;
+      }
+    }
+    if (runs.length === 0) {
+      rest.push(b);
+      continue;
+    }
+    let from = 0;
+    let fromNode = b.a;
+    runs.forEach(([r0, r1], idx) => {
+      pieces.push(b.pts.slice(r0, r1 + 1));
+      if (r0 === 0) {
+        attached.add(b.a);
+      }
+      if (r1 === b.pts.length - 1) {
+        attached.add(b.b);
+      }
+      if (r0 > from) {
+        const node = cutId--;
+        attached.add(node);
+        rest.push({ pts: b.pts.slice(from, r0 + 1), a: fromNode, b: node });
+      }
+      from = r1;
+      fromNode = cutId--;
+      attached.add(fromNode);
+      if (idx === runs.length - 1 && r1 < b.pts.length - 1) {
+        rest.push({ pts: b.pts.slice(r1), a: fromNode, b: b.b });
+      }
+    });
+  }
+  return { rest, pieces, attached };
+}
+
+/**
+ * Turns headline pieces into whole bars: pieces whose gap is bridged by ink in the raster become
+ * one straight left-to-right bar from the left to the right end of the ink (minus half the bar
+ * thickness). Bars shorter than `minLength` pixels are dropped.
+ */
+export function mergeHeadPieces(
+  pieces: Pt[][],
+  grid: Uint8Array,
+  w: number,
+  band: Band,
+  minLength: number,
+): Pt[][] {
+  const row = Math.round((band.y0 + band.y1) / 2);
+  const ink = (x: number) => x >= 0 && x < w && grid[row * w + x] === 1;
+  const sorted = pieces
+    .map(p => ({ pts: p, b: bbox(p) }))
+    .sort((p, q) => p.b.minX - q.b.minX || p.b.minY - q.b.minY);
+  const clusters: Pt[][][] = [];
+  let right = -Infinity;
+  for (const { pts, b } of sorted) {
+    let bridged = false;
+    if (clusters.length) {
+      bridged = b.minX <= right + 1;
+      if (!bridged) {
+        let on = 0;
+        const xs = Math.floor(right);
+        const xe = Math.ceil(b.minX);
+        for (let x = xs; x <= xe; x++) {
+          on += ink(x) ? 1 : 0;
+        }
+        bridged = on >= 0.9 * (xe - xs + 1);
+      }
+    }
+    if (bridged) {
+      (clusters[clusters.length - 1] as Pt[][]).push(pts);
+    } else {
+      clusters.push([pts]);
+    }
+    right = Math.max(bridged ? right : -Infinity, b.maxX);
+  }
+  const half = (band.y1 - band.y0 + 1) / 2;
+  const out: Pt[][] = [];
+  for (const c of clusters) {
+    const all = c.flat();
+    const b = bbox(all);
+    let l = Math.floor(b.minX);
+    while (ink(l - 1)) {
+      l--;
+    }
+    let r = Math.floor(b.maxX);
+    while (ink(r + 1)) {
+      r++;
+    }
+    const x0 = Math.min(b.minX, l + half);
+    const x1 = Math.max(b.maxX, r + 1 - half);
+    const ys = all.map(p => p[1]).sort((p, q) => p - q);
+    const y = ys[Math.floor(ys.length / 2)] as number;
+    if (x1 - x0 >= minLength) {
+      out.push([
+        [x0, y],
+        [x1, y],
+      ]);
+    }
+  }
+  return out;
+}
+
+/**
+ * Drops short branches (< `minLength`, measured on the smoothed line) that touch other strokes: their part of the raster also
+ * holds another branch or one of `others` (e.g. the headline). Shortest first, one at a time, so
+ * an isolated dot made of two crumbs keeps one of them.
+ */
+export function dropSpurs(
+  input: Branch[],
+  others: Pt[][],
+  labels: Int32Array,
+  w: number,
+  minLength: number,
+): Branch[] {
+  const labelOf = (pts: Pt[]) => {
+    for (const [x, y] of pts) {
+      const l = labels[Math.floor(y) * w + Math.floor(x)] ?? 0;
+      if (l) {
+        return l;
+      }
+    }
+    return 0;
+  };
+  const otherLabels = others.map(labelOf);
+  let branches = [...input];
+  for (;;) {
+    const lab = branches.map(b => labelOf(b.pts));
+    const spur = branches
+      .map((b, i) => ({ b, i, len: polylineLength(rdp(b.pts, 1)) }))
+      .filter(({ len }) => len < minLength)
+      .filter(
+        ({ i }) =>
+          lab[i] !== 0 &&
+          (otherLabels.includes(lab[i] as number) || lab.some((l, j) => j !== i && l === lab[i])),
+      )
+      .sort((p, q) => p.len - q.len || p.i - q.i)[0];
+    if (!spur) {
+      return branches;
+    }
+    branches = branches.filter(b => b !== spur.b);
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
 // Ordering
 // ---------------------------------------------------------------------------------------------
 
 const isClosed = (pts: Pt[]) => pts.length > 3 && dist(first(pts), last(pts)) < 0.02;
 
-/** Starts an open stroke at its upper end (or left end when nearly level); loops at their top. */
+/**
+ * Starts loops at their top point; near-horizontal open strokes at their left end; other open
+ * strokes at their upper end.
+ */
 export function orientStroke(pts: Pt[]): Pt[] {
   if (isClosed(pts)) {
     const ring = pts.slice(0, -1);
@@ -855,54 +1308,175 @@ export function orientStroke(pts: Pt[]): Pt[] {
   }
   const a = first(pts);
   const b = last(pts);
-  const flip = Math.abs(a[1] - b[1]) > 0.05 ? b[1] < a[1] : b[0] < a[0];
+  const dx = Math.abs(a[0] - b[0]);
+  const dy = Math.abs(a[1] - b[1]);
+  const flip = dy > 0.05 && dx < 3 * dy ? b[1] < a[1] : b[0] < a[0];
   return flip ? [...pts].reverse() : [...pts];
 }
 
 /**
  * True for a Bengali/Devanagari headline (mātrā): a long, flat, horizontal stroke near the top
- * of the glyph.
+ * of the glyph, or a shorter but perfectly flat one at the very top (e.g. the bit of mātrā right
+ * of the stem in প or গ).
  */
 export function isHeadline(pts: Pt[], glyph: BBox): boolean {
   const b = bbox(pts);
   const gw = glyph.maxX - glyph.minX;
   const gh = glyph.maxY - glyph.minY;
   const meanY = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  const width = b.maxX - b.minX;
+  const height = b.maxY - b.minY;
   return (
-    b.maxY - b.minY <= 0.08 &&
-    b.maxX - b.minX >= 0.35 * gw &&
-    meanY <= glyph.minY + 0.25 * gh &&
-    gw > 0
+    gw > 0 &&
+    ((height <= 0.08 && width >= 0.35 * gw && meanY <= glyph.minY + 0.25 * gh) ||
+      (height <= 0.02 && width >= 0.08 && meanY <= glyph.minY + 0.15 * gh))
+  );
+}
+
+function segmentDistance(p: Pt, a: Pt, b: Pt): number {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const len2 = dx * dx + dy * dy;
+  const t =
+    len2 === 0 ? 0 : Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / len2));
+  return dist(p, [a[0] + t * dx, a[1] + t * dy]);
+}
+
+/** Smallest distance between two polylines (vertex to segment, both ways). */
+export function polylineDistance(p: Pt[], q: Pt[]): number {
+  const one = (u: Pt[], v: Pt[]) => {
+    let best = Infinity;
+    for (const pt of u) {
+      if (v.length === 1) {
+        best = Math.min(best, dist(pt, v[0] as Pt));
+      }
+      for (let k = 1; k < v.length; k++) {
+        best = Math.min(best, segmentDistance(pt, v[k - 1] as Pt, v[k] as Pt));
+      }
+    }
+    return best;
+  };
+  return Math.min(one(p, q), one(q, p));
+}
+
+/** True for a vertical stem: a long, straight, near-vertical stroke. */
+export function isStem(pts: Pt[], glyph: BBox): boolean {
+  const a = first(pts);
+  const b = last(pts);
+  const dx = Math.abs(b[0] - a[0]);
+  const dy = Math.abs(b[1] - a[1]);
+  const gh = glyph.maxY - glyph.minY;
+  return (
+    !isClosed(pts) &&
+    dy >= 0.3 * gh &&
+    dx <= 0.2 * dy &&
+    pts.every(p => segmentDistance(p, a, b) <= 0.04)
+  );
+}
+
+/** A dot (nukta, anusvāra, the dot of a candrabindu): tiny and apart from every other stroke. */
+function isDot(s: Pt[], all: Pt[][]): boolean {
+  const b = bbox(s);
+  return (
+    Math.hypot(b.maxX - b.minX, b.maxY - b.minY) < 0.06 &&
+    all.every(o => o === s || polylineDistance(s, o) > 0.03)
   );
 }
 
 /**
- * Placeholder stroke order: body strokes top-to-bottom then left-to-right by start point; for
- * Bengali/Devanagari the headline comes last, drawn left to right.
+ * Placeholder stroke order. Latin: top-to-bottom, then left-to-right by start point.
+ * Bengali/Devanagari: body strokes and curves first (top-to-bottom, then left-to-right by start),
+ * then the vertical stems (left to right), then the headline (left to right), then marks floating
+ * above the headline, then dots. Without a headline (e.g. numerals), strokes that touch form a
+ * group and groups go left to right, so multi-digit numbers are written digit by digit.
+ * `headlines` are strokes known to be headlines.
  */
-export function orderStrokes(strokes: Pt[][], script: Script): Pt[][] {
+export function orderStrokes(strokes: Pt[][], script: Script, headlines: Pt[][] = []): Pt[][] {
   const oriented = strokes.map(orientStroke);
-  const glyph = bbox(oriented.flat());
-  const head: Pt[][] = [];
-  const body: Pt[][] = [];
-  for (const s of oriented) {
-    (script !== 'Latn' && isHeadline(s, glyph) ? head : body).push(s);
-  }
   const byStart = (p: Pt[], q: Pt[]) => {
     const a = first(p);
     const b = first(q);
     return Math.round(a[1] * 10) - Math.round(b[1] * 10) || a[0] - b[0] || a[1] - b[1];
   };
-  const headLtr = head.map(s => (first(s)[0] > last(s)[0] ? [...s].reverse() : s));
-  return [...body.sort(byStart), ...headLtr.sort(byStart)];
+  if (script === 'Latn') {
+    return [...oriented, ...headlines.map(orientStroke)].sort(byStart);
+  }
+  const ltr = (s: Pt[]) => (first(s)[0] > last(s)[0] ? [...s].reverse() : s);
+  const glyph = bbox([...oriented, ...headlines].flat());
+  const head = new Set<Pt[]>();
+  const all: Pt[][] = [];
+  for (const s of [...oriented, ...headlines]) {
+    if (headlines.includes(s) || isHeadline(s, glyph)) {
+      const h = ltr(s);
+      head.add(h);
+      all.push(h);
+    } else {
+      all.push(s);
+    }
+  }
+  const dots = all.length > 1 ? all.filter(s => !head.has(s) && isDot(s, all)) : [];
+  const rest = all.filter(s => !dots.includes(s));
+  // strokes that touch form a group
+  const parent = rest.map((_, i) => i);
+  const find = (i: number): number => {
+    while (parent[i] !== i) {
+      i = parent[i] as number;
+    }
+    return i;
+  };
+  for (let i = 0; i < rest.length; i++) {
+    for (let j = i + 1; j < rest.length; j++) {
+      const ri = find(i);
+      const rj = find(j);
+      if (ri !== rj && polylineDistance(rest[i] as Pt[], rest[j] as Pt[]) <= 0.04) {
+        parent[Math.max(ri, rj)] = Math.min(ri, rj);
+      }
+    }
+  }
+  const groupMap = new Map<number, Pt[][]>();
+  rest.forEach((s, i) => groupMap.set(find(i), [...(groupMap.get(find(i)) ?? []), s]));
+  let groups = [...groupMap.values()];
+  // With a headline the letter is one unit, except marks floating above it (e.g. the arc of a
+  // candrabindu), which are written after the headline.
+  let marks: Pt[][] = [];
+  if (head.size > 0) {
+    const headTop = Math.min(...[...head].map(h => bbox(h).minY));
+    const above = (g: Pt[][]) => !g.some(x => head.has(x)) && bbox(g.flat()).maxY < headTop;
+    marks = groups.filter(above).flat();
+    groups = [groups.filter(g => !above(g)).flat()];
+  }
+  const ordered = groups.sort((p, q) => {
+    const a = bbox(p.flat());
+    const b = bbox(q.flat());
+    return a.minX - b.minX || a.minY - b.minY;
+  });
+  const byX = (p: Pt[], q: Pt[]) => first(p)[0] - first(q)[0] || first(p)[1] - first(q)[1];
+  const out: Pt[][] = [];
+  for (const g of ordered) {
+    const heads = g.filter(s => head.has(s));
+    const stems = g.filter(s => !head.has(s) && isStem(s, glyph));
+    const body = g.filter(s => !head.has(s) && !stems.includes(s));
+    out.push(...body.sort(byStart), ...stems.sort(byX), ...heads.sort(byX));
+  }
+  return [...out, ...marks.sort(byStart), ...dots.sort(byStart)];
 }
 
 // ---------------------------------------------------------------------------------------------
 // Outline -> placeholder strokes
 // ---------------------------------------------------------------------------------------------
 
+export type StrokeOptions = {
+  /** Look for a headline (Bengali/Devanagari letters and signs; not numerals). Default true. */
+  headline?: boolean;
+};
+
 /** Placeholder strokes (unit box, 3 decimals) for an outline already in the unit box. */
-export function strokesFromOutline(outline: string, script: Script, size = RASTER_SIZE): Pt[][] {
+export function strokesFromOutline(
+  outline: string,
+  script: Script,
+  size = RASTER_SIZE,
+  options: StrokeOptions = {},
+): Pt[][] {
   const contours = flattenPath(parseOutline(outline)).map(c =>
     c.map(([x, y]) => [x * size, y * size] as Pt),
   );
@@ -911,24 +1485,83 @@ export function strokesFromOutline(outline: string, script: Script, size = RASTE
   let branches = traceSkeleton(skeleton, size, size);
   branches = pruneSpurs(branches, size * 0.07);
   branches = contractShortLinks(branches, size * 0.06);
+  branches = dropParallel(branches, size * 0.12);
   branches = pruneSpurs(branches, size * 0.07);
+  let heads: Pt[][] = [];
+  let attached = new Set<number>();
+  if (script !== 'Latn' && (options.headline ?? true)) {
+    const band = findHeadlineBand(
+      grid,
+      size,
+      size,
+      0.3,
+      0.7 * strokeWidth(grid, skeleton, size, size),
+    );
+    if (band) {
+      // keep the main bar and bars nearly as wide; a short flat bit apart from it (e.g. the flat
+      // top of the curve of Devanagari अ) stays part of its stroke
+      const bars = mergeHeadPieces(
+        extractHeadline(branches, band, size * 0.03, grid, size).pieces,
+        grid,
+        size,
+        band,
+        size * 0.1,
+      );
+      const width = (s: Pt[]) => last(s)[0] - first(s)[0];
+      const widest = Math.max(0, ...bars.map(width));
+      heads = bars.filter(s => width(s) >= 0.6 * widest);
+      const cut = extractHeadline(
+        branches,
+        band,
+        size * 0.03,
+        grid,
+        size,
+        heads.map(s => [first(s)[0], last(s)[0]] as [number, number]),
+      );
+      if (heads.length) {
+        // bits left lying inside a bar (e.g. under the hook of ই) are covered by the headline
+        const half = (band.y1 - band.y0 + 1) / 2 + 1;
+        const mid = (band.y0 + band.y1 + 1) / 2;
+        const covered = (p: Pt) =>
+          Math.abs(p[1] - mid) <= half &&
+          heads.some(s => p[0] >= first(s)[0] - 2 && p[0] <= last(s)[0] + 2);
+        branches = cut.rest.filter(b => !b.pts.every(covered));
+        attached = cut.attached;
+      }
+    }
+  }
   branches = mergeContinuations(branches);
-  branches = mergeDegreeTwo(branches);
-  branches = joinGaps(branches, size * 0.025);
+  branches = mergeDegreeTwo(branches, attached);
+  branches = mergeContinuations(branches, 50, 10, 2);
+  if (script !== 'Latn') {
+    branches = joinLoops(branches);
+  }
+  branches = joinGaps(branches, size * 0.025, heads.length ? 60 : 180);
   branches = dropTiny(branches, size * 0.04);
-  const unit = branches.map(b => {
-    const simple = rdp(b.pts, 1.0).map(([x, y]) => [x / size, y / size] as Pt);
+  if (script !== 'Latn') {
+    branches = dropSpurs(branches, heads, labelComponents(grid, size, size), size, size * 0.09);
+    branches = mergeDegreeTwo(branches, attached);
+    branches = mergeContinuations(branches, 50, 10, 2);
+    branches = joinLoops(branches);
+  }
+  const toUnit = (pts: Pt[]): Pt[] => {
+    const simple = rdp(pts, 1.0).map(([x, y]) => [x / size, y / size] as Pt);
     if (simple.length === 1 || polylineLength(simple) < 0.005) {
+      // a dot becomes a tiny dash, long enough not to count as a tap for the scorer
       const [x, y] = first(simple);
       return [
-        [x - 0.01, y],
-        [x + 0.01, y],
+        [x - 0.015, y],
+        [x + 0.015, y],
       ] as Pt[];
     }
     return simple;
-  });
+  };
   const clamp = (v: number) => round3(Math.min(1, Math.max(0, v)));
-  return orderStrokes(unit, script).map(s => s.map(([x, y]) => [clamp(x), clamp(y)] as Pt));
+  return orderStrokes(
+    branches.map(b => toUnit(b.pts)),
+    script,
+    heads.map(toUnit),
+  ).map(s => s.map(([x, y]) => [clamp(x), clamp(y)] as Pt));
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1085,7 +1718,9 @@ async function main() {
         return {
           text: t.text,
           outline,
-          strokes: strokesFromOutline(outline, pack.script).map(points => ({ points })),
+          strokes: strokesFromOutline(outline, pack.script, RASTER_SIZE, {
+            headline: !t.key.startsWith('number:'),
+          }).map(points => ({ points })),
           strokeSource: 'auto',
         };
       },

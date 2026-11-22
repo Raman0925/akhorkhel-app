@@ -79,3 +79,6 @@ yarn-error.log
 *.keystore
 !android/app/debug.keystore
 .claude/
+
+# Dev-only geometry contact sheets (npm run render:geometry)
+.geometry-sheets/

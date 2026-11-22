@@ -3,22 +3,32 @@ import {
   type Branch,
   type Pt,
   contractShortLinks,
+  dropParallel,
+  dropSpurs,
   dropTiny,
+  extractHeadline,
+  findHeadlineBand,
   fitToUnitBox,
   formatOutline,
   isHeadline,
+  isStem,
   joinGaps,
+  joinLoops,
+  labelComponents,
   mergeContinuations,
   mergeDegreeTwo,
   mergeGeometry,
+  mergeHeadPieces,
   orderStrokes,
   orientStroke,
   parseOutline,
+  polylineDistance,
   pruneSpurs,
   rasterize,
   rdp,
   stableGeometryJson,
   strokesFromOutline,
+  strokeWidth,
   traceSkeleton,
   zhangSuen,
 } from '../glyph-geometry';
@@ -262,6 +272,154 @@ describe('branch clean-up', () => {
   });
 });
 
+describe('joining and dropping branches', () => {
+  const left: Branch = { pts: line([0, 10], [10, 10]), a: 1, b: 0 };
+  const right: Branch = { pts: line([10, 10], [20, 10]), a: 0, b: 2 };
+  const down: Branch = { pts: line([10, 10], [10, 20]), a: 0, b: 4 };
+
+  it('joins a degree-two node only when the branches continue smoothly', () => {
+    expect(mergeContinuations([left, right], 50, 10, 2)).toHaveLength(1);
+    expect(mergeContinuations([left, down], 50, 10, 2)).toHaveLength(2);
+  });
+
+  it('can leave chosen degree-two nodes unmerged', () => {
+    expect(mergeDegreeTwo([left, down], new Set([0]))).toHaveLength(2);
+    expect(mergeDegreeTwo([left, down])).toHaveLength(1);
+  });
+
+  it('joins gaps only between smooth continuations when asked', () => {
+    const p: Branch = { pts: line([0, 0], [10, 0]), a: 1, b: 2 };
+    const turn: Branch = { pts: line([11, 0], [11, 10]), a: 3, b: 4 };
+    const straight: Branch = { pts: line([11, 0], [20, 0]), a: 3, b: 4 };
+    expect(joinGaps([p, turn], 2, 60)).toHaveLength(2);
+    expect(joinGaps([p, turn], 2)).toHaveLength(1);
+    expect(joinGaps([p, straight], 2, 60)).toHaveLength(1);
+  });
+
+  it('drops the shorter of two parallel branches (a tiny hole)', () => {
+    const tail1: Branch = { pts: line([-10, 0], [0, 0]), a: 0, b: 1 };
+    const flat: Branch = { pts: line([0, 0], [10, 0]), a: 1, b: 2 };
+    const bump: Branch = {
+      pts: [
+        [0, 0],
+        [5, 2],
+        [10, 0],
+      ],
+      a: 2,
+      b: 1,
+    };
+    const tail2: Branch = { pts: line([10, 0], [20, 0]), a: 2, b: 3 };
+    const out = dropParallel([tail1, flat, bump, tail2], 15);
+    expect(out).toHaveLength(1);
+    expect(out[0]?.pts.some(([, y]) => y > 0)).toBe(true);
+    expect(dropParallel([tail1, flat, bump, tail2], 5)).toHaveLength(4);
+  });
+
+  it('joins a stem with the loop it enters, continuing the smooth way round', () => {
+    const stem: Branch = { pts: line([10, 0], [10, 10]), a: 5, b: 0 };
+    const loop: Branch = {
+      pts: [
+        ...line([10, 10], [20, 10]),
+        ...line([20, 10], [20, 20]).slice(1),
+        ...line([20, 20], [10, 20]).slice(1),
+        ...line([10, 20], [10, 10]).slice(1),
+      ],
+      a: 0,
+      b: 0,
+    };
+    const out = joinLoops([stem, loop]);
+    expect(out).toHaveLength(1);
+    expect(out[0]?.pts[0]).toEqual([10, 0]);
+    expect(out[0]?.pts[11]).toEqual([10, 11]); // straight on down, not a sharp turn right
+  });
+
+  it('drops short branches that touch other ink but keeps isolated dots', () => {
+    const w = 20;
+    const g = new Uint8Array(w * 10);
+    for (let y = 0; y < 4; y++) {
+      for (let x = 0; x < 16; x++) {
+        g[y * w + x] = 1;
+      }
+    }
+    g[8 * w + 18] = 1;
+    const labels = labelComponents(g, w, 10);
+    const bar: Branch = { pts: line([1.5, 1.5], [14.5, 1.5]), a: 1, b: 2 };
+    const spur: Branch = { pts: line([5.5, 1.5], [5.5, 3.5], 2), a: 3, b: 4 };
+    const dot: Branch = { pts: [[18.5, 8.5]], a: 5, b: 5 };
+    const out = dropSpurs([bar, spur, dot], [], labels, w, 5);
+    expect(out).toEqual([bar, dot]);
+    // a short branch next to a headline (given as `others`) is a spur too
+    expect(dropSpurs([spur], [line([1.5, 1.5], [14.5, 1.5])], labels, w, 5)).toEqual([]);
+  });
+});
+
+describe('headline', () => {
+  /** A 60x60 raster: a bar (rows 10..15) with a stem below its middle. */
+  function tee(gap = false) {
+    const w = 60;
+    const g = new Uint8Array(w * w);
+    for (let y = 10; y <= 15; y++) {
+      for (let x = 5; x <= 55; x++) {
+        if (!gap || x < 36 || x > 44) {
+          g[y * w + x] = 1;
+        }
+      }
+    }
+    for (let y = 16; y <= 55; y++) {
+      for (let x = 28; x <= 33; x++) {
+        g[y * w + x] = 1;
+      }
+    }
+    return { g, w };
+  }
+
+  it('finds the bar rows', () => {
+    const { g, w } = tee();
+    expect(findHeadlineBand(g, w, w)).toEqual({ y0: 10, y1: 15 });
+    expect(findHeadlineBand(g, w, w, 0.3, 8)).toBeNull(); // thinner than the pen
+  });
+
+  it('does not take the top of a ring for a headline', () => {
+    const ring = (r: number, dir: number): Pt[] =>
+      Array.from({ length: 64 }, (_, i) => {
+        const a = (dir * 2 * Math.PI * i) / 64;
+        return [30 + r * Math.cos(a), 30 + r * Math.sin(a)] as Pt;
+      });
+    const g = rasterize([ring(25, 1), ring(18, -1)], 60, 60);
+    expect(findHeadlineBand(g, 60, 60)).toBeNull();
+  });
+
+  it('measures the pen width', () => {
+    const { g, w } = tee();
+    expect(strokeWidth(g, zhangSuen(g, w, w), w, w)).toBeGreaterThanOrEqual(5);
+    expect(strokeWidth(g, zhangSuen(g, w, w), w, w)).toBeLessThanOrEqual(7);
+  });
+
+  it('cuts the headline out of the skeleton and merges it into one bar', () => {
+    const { g, w } = tee();
+    const band = findHeadlineBand(g, w, w) as { y0: number; y1: number };
+    const branches = pruneSpurs(traceSkeleton(zhangSuen(g, w, w), w, w), 4);
+    const cut = extractHeadline(branches, band, 3, g, w);
+    expect(cut.pieces.length).toBeGreaterThanOrEqual(2);
+    expect(cut.rest).toHaveLength(1); // the stem
+    const bars = mergeHeadPieces(cut.pieces, g, w, band, 5);
+    expect(bars).toHaveLength(1);
+    const [[x0, y0], [x1, y1]] = bars[0] as [Pt, Pt];
+    expect(x0).toBeLessThanOrEqual(9);
+    expect(x1).toBeGreaterThanOrEqual(52);
+    expect(y0).toBe(y1);
+    expect(Math.abs(y0 - 13)).toBeLessThanOrEqual(1.5);
+  });
+
+  it('keeps bars apart when no ink bridges them', () => {
+    const { g, w } = tee(true);
+    const band = findHeadlineBand(g, w, w) as { y0: number; y1: number };
+    const branches = pruneSpurs(traceSkeleton(zhangSuen(g, w, w), w, w), 4);
+    const cut = extractHeadline(branches, band, 3, g, w);
+    expect(mergeHeadPieces(cut.pieces, g, w, band, 5)).toHaveLength(2);
+  });
+});
+
 describe('stroke ordering', () => {
   it('starts open strokes at the upper end, or the left end when level', () => {
     expect(orientStroke(line([0.5, 0.9], [0.5, 0.1]))[0]).toEqual([0.5, 0.1]);
@@ -286,20 +444,77 @@ describe('stroke ordering', () => {
     const glyph = { minX: 0.1, minY: 0.1, maxX: 0.9, maxY: 0.9 };
     expect(isHeadline(line([0.1, 0.12], [0.9, 0.12]), glyph)).toBe(true);
     expect(isHeadline(line([0.1, 0.8], [0.9, 0.8]), glyph)).toBe(false);
-    expect(isHeadline(line([0.4, 0.12], [0.5, 0.12]), glyph)).toBe(false);
+    expect(isHeadline(line([0.4, 0.12], [0.45, 0.12]), glyph)).toBe(false);
+    // a short but perfectly flat bit at the very top (mātrā right of the stem in প)
+    expect(isHeadline(line([0.7, 0.11], [0.85, 0.11]), glyph)).toBe(true);
   });
 
-  it('draws body strokes top-to-bottom, left-to-right, and the headline last left to right', () => {
+  it('draws near-horizontal strokes left to right even when slightly slanted', () => {
+    expect(orientStroke(line([0.9, 0.5], [0.3, 0.4]))[0]).toEqual([0.3, 0.4]);
+  });
+
+  it('detects straight vertical stems', () => {
+    const glyph = { minX: 0.1, minY: 0.1, maxX: 0.9, maxY: 0.9 };
+    expect(isStem(line([0.5, 0.1], [0.5, 0.9]), glyph)).toBe(true);
+    expect(isStem(line([0.5, 0.1], [0.5, 0.2]), glyph)).toBe(false);
+    expect(isStem(line([0.2, 0.1], [0.8, 0.9]), glyph)).toBe(false);
+    const bow: Pt[] = [
+      [0.5, 0.1],
+      [0.65, 0.5],
+      [0.5, 0.9],
+    ];
+    expect(isStem(bow, glyph)).toBe(false);
+  });
+
+  it('measures the distance between polylines', () => {
+    expect(polylineDistance(line([0, 0], [1, 0]), line([0.5, 0.2], [0.5, 1]))).toBeCloseTo(0.2);
+    expect(polylineDistance(line([0, 0], [1, 0]), [[0.5, -0.1]])).toBeCloseTo(0.1);
+  });
+
+  it('draws the body first, then stems left to right, then the headline left to right', () => {
     const headline = line([0.9, 0.1], [0.1, 0.1]);
     const rightStem = line([0.7, 0.9], [0.7, 0.1]);
     const leftStem = line([0.3, 0.1], [0.3, 0.9]);
     const foot = line([0.2, 0.85], [0.6, 0.85]);
     const out = orderStrokes([headline, foot, rightStem, leftStem], 'Beng');
     expect(out.map(s => s[0])).toEqual([
+      [0.2, 0.85],
       [0.3, 0.1],
       [0.7, 0.1],
-      [0.2, 0.85],
       [0.1, 0.1],
+    ]);
+    expect(out[3]?.[out[3].length - 1]).toEqual([0.9, 0.1]);
+  });
+
+  it('puts known headlines last, then marks above the headline, then dots', () => {
+    const bar = line([0.85, 0.3], [0.15, 0.3]);
+    const stem = line([0.5, 0.3], [0.5, 0.9]);
+    const arc: Pt[] = [
+      [0.4, 0.15],
+      [0.5, 0.22],
+      [0.6, 0.15],
+    ];
+    const nukta = line([0.3, 0.95], [0.32, 0.95], 1);
+    const out = orderStrokes([nukta, arc, stem], 'Deva', [bar]);
+    expect(out.map(s => s[0])).toEqual([
+      [0.5, 0.3],
+      [0.15, 0.3],
+      [0.4, 0.15],
+      [0.3, 0.95],
+    ]);
+  });
+
+  it('writes a number without headline digit by digit, left to right', () => {
+    const one = line([0.15, 0.8], [0.3, 0.2]);
+    const oneFoot = line([0.35, 0.8], [0.1, 0.8]);
+    const twoTop = line([0.6, 0.2], [0.8, 0.4]);
+    const twoFoot = line([0.8, 0.4], [0.6, 0.8]);
+    const out = orderStrokes([twoFoot, oneFoot, one, twoTop], 'Beng');
+    expect(out.map(s => s[0])).toEqual([
+      [0.3, 0.2],
+      [0.1, 0.8],
+      [0.6, 0.2],
+      [0.8, 0.4],
     ]);
   });
 
@@ -331,6 +546,36 @@ describe('strokesFromOutline', () => {
     const plus =
       'M0.45 0.1L0.55 0.1L0.55 0.45L0.9 0.45L0.9 0.55L0.55 0.55L0.55 0.9L0.45 0.9L0.45 0.55L0.1 0.55L0.1 0.45L0.45 0.45Z';
     expect(strokesFromOutline(plus, 'Latn')).toHaveLength(2);
+  });
+
+  it('makes a Devanagari-like glyph: whole stems, one headline last, spur dropped, dot kept', () => {
+    const glyph = [
+      'M0.1 0.15L0.9 0.15L0.9 0.23L0.1 0.23Z', // headline
+      'M0.3 0.23L0.37 0.23L0.37 0.85L0.3 0.85Z', // left stem, hanging from the headline
+      'M0.37 0.5L0.41 0.5L0.41 0.56L0.37 0.56Z', // a nub on the left stem (spur)
+      'M0.65 0.1L0.72 0.1L0.72 0.9L0.65 0.9Z', // right stem, poking above the headline
+      'M0.48 0.89L0.53 0.89L0.53 0.94L0.48 0.94Z', // a dot
+    ].join('');
+    const strokes = strokesFromOutline(glyph, 'Deva');
+    expect(strokes).toHaveLength(4);
+    const [leftStem, rightStem, head, dot] = strokes as [Pt[], Pt[], Pt[], Pt[]];
+    const start = (s: Pt[]) => s[0] as Pt;
+    const end = (s: Pt[]) => s[s.length - 1] as Pt;
+    // left stem: one stroke from the headline down
+    expect(Math.abs(start(leftStem)[0] - 0.335)).toBeLessThan(0.02);
+    expect(start(leftStem)[1]).toBeLessThan(0.25);
+    expect(end(leftStem)[1]).toBeGreaterThan(0.8);
+    // right stem: one stroke from the headline (its tiny tip above is thinning noise) down
+    expect(Math.abs(start(rightStem)[0] - 0.685)).toBeLessThan(0.02);
+    expect(start(rightStem)[1]).toBeLessThan(0.25);
+    expect(end(rightStem)[1]).toBeGreaterThan(0.85);
+    // headline: one stroke, left to right, the full bar
+    expect(start(head)[0]).toBeLessThan(0.16);
+    expect(end(head)[0]).toBeGreaterThan(0.84);
+    expect(Math.abs(start(head)[1] - 0.19)).toBeLessThan(0.02);
+    // dot last
+    expect(Math.abs(start(dot)[0] - 0.505)).toBeLessThan(0.03);
+    expect(Math.abs(start(dot)[1] - 0.915)).toBeLessThan(0.02);
   });
 
   it('is deterministic', () => {
