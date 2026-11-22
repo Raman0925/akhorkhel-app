@@ -35,7 +35,7 @@ java -jar "$BUNDLETOOL" build-apks --bundle="$AAB" --output="$RUNNER_TEMP/app.ap
   --ks=android/app/debug.keystore --ks-pass=pass:android --ks-key-alias=androiddebugkey --key-pass=pass:android
 java -jar "$BUNDLETOOL" get-size total --apks="$RUNNER_TEMP/app.apks" --dimensions=ABI | tee "$RUNNER_TEMP/size.csv"
 # CSV columns: ABI,MIN,MAX (bytes)
-MAX_BYTES=$(tail -n +2 "$RUNNER_TEMP/size.csv" | tr -d "" | cut -d, -f3 | sort -n | tail -1)
+MAX_BYTES=$(tail -n +2 "$RUNNER_TEMP/size.csv" | tr -d '\r' | cut -d, -f3 | sort -n | tail -1)
 MAX_MB=$(( MAX_BYTES / 1024 / 1024 ))
 echo "Largest per-device download: ${MAX_MB} MB"
 if [ "$MAX_MB" -ge 40 ]; then
