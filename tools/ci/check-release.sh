@@ -23,6 +23,10 @@ echo "== targetSdk"
 "$BT/aapt2" dump badging "$APK" | grep -E "targetSdkVersion:'36'" >/dev/null || {
   echo "::error::targetSdkVersion must be 36"; exit 1; }
 
+echo "== Portrait is preferred, not required (landscape-only devices can still install)"
+"$BT/aapt2" dump badging "$APK" | grep -q "uses-feature-not-required: name='android.hardware.screen.portrait'" || {
+  echo "::error::android.hardware.screen.portrait must be declared with required=false"; exit 1; }
+
 echo "== AdMob App ID (tag builds must carry the real one, never Google's sample ID)"
 if [[ "${GITHUB_REF:-}" == refs/tags/v* ]]; then
   "$BT/aapt2" dump xmltree --file AndroidManifest.xml "$APK" > "$RUNNER_TEMP/manifest.txt"
