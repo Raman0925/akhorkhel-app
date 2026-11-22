@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react-native';
 
-import { useSettings } from '@/storage';
+import { mmkv, STORAGE_KEYS, useSettings } from '@/storage';
 
-import { initAds, STICKER_THEMES, useActiveStickers, useUnlocks } from '..';
+import { initAds, resetAdsState, STICKER_THEMES, useActiveStickers, useUnlocks } from '..';
 import {
   activeStickerTheme,
   grantUnlock,
@@ -13,7 +13,7 @@ import {
   UNLOCK_DURATION_MS,
   unlockedUntil,
 } from '../logic/unlocks';
-import { useUnlocksStore } from '../stores';
+import { useAdsRuntime, useAdsStore, useUnlocksStore } from '../stores';
 import { __mock, AdEventType, fakeClock, resetMonetization, T0 } from '../testing';
 
 const HOUR = 60 * 60 * 1000;
@@ -65,14 +65,37 @@ describe('useUnlocks', () => {
   async function mountReady() {
     const clock = fakeClock();
     await initAds();
-    const hook = await renderHook(() => useUnlocks());
+    const hook = await renderHook(() => useUnlocks({ preloadRewarded: true }));
     return { clock, hook };
   }
 
-  it('loads a rewarded ad lazily on mount and reports readiness', async () => {
+  it('does not load a rewarded ad by default (child screens only read state)', async () => {
+    await initAds();
+    const { result, unmount } = await renderHook(() => useUnlocks());
+    expect(__mock.lastRewarded()).toBeUndefined();
+    expect(result.current.rewardedReady).toBe(false);
+    await expect(result.current.watchRewarded('bonusWords')).resolves.toBe(false);
+    await unmount();
+  });
+
+  it('stops reloading once the preloading screen unmounts', async () => {
+    const { hook } = await mountReady();
+    const ad = __mock.lastRewarded();
+    await act(async () => ad?.simulateLoaded());
+    let earned: Promise<boolean> = Promise.resolve(true);
+    await act(async () => {
+      earned = hook.result.current.watchRewarded('bonusWords');
+    });
+    await hook.unmount();
+    await act(async () => ad?.emit(AdEventType.CLOSED));
+    await earned;
+    expect(ad?.loadCalls).toBe(1);
+  });
+
+  it('preloads only with { preloadRewarded: true } and reports readiness', async () => {
     await initAds();
     expect(__mock.lastRewarded()).toBeUndefined();
-    const { result } = await renderHook(() => useUnlocks());
+    const { result } = await renderHook(() => useUnlocks({ preloadRewarded: true }));
     const ad = __mock.lastRewarded();
     expect(ad?.loadCalls).toBe(1);
     expect(ad?.requestOptions).toEqual({ requestNonPersonalizedAdsOnly: true });
@@ -132,7 +155,7 @@ describe('useUnlocks', () => {
   it('offers nothing before the ads notice or in the first session', async () => {
     resetMonetization({ adsNoticeSeen: false });
     await initAds();
-    const { result } = await renderHook(() => useUnlocks());
+    const { result } = await renderHook(() => useUnlocks({ preloadRewarded: true }));
     expect(__mock.lastRewarded()).toBeUndefined();
     expect(result.current.rewardedReady).toBe(false);
     await expect(result.current.watchRewarded('bonusWords')).resolves.toBe(false);
@@ -156,5 +179,27 @@ describe('useActiveStickers', () => {
     clock.advance(24 * HOUR + 1);
     await rerender({});
     expect(result.current).toBe(STICKER_THEMES[0]?.emoji);
+  });
+});
+
+describe('resetAdsState', () => {
+  it('clears persisted counters, unlocks and the session count', async () => {
+    const clock = fakeClock();
+    await initAds();
+    useAdsStore.setState({ lastInterstitialAt: clock.get() });
+    useAdsRuntime.setState({ interstitialsThisSession: 2 });
+    useUnlocksStore.getState().grant('theme:animals', clock.get());
+    const { result } = await renderHook(() => useUnlocks());
+    expect(result.current.isUnlocked('theme:animals')).toBe(true);
+
+    await act(async () => resetAdsState());
+
+    expect(useAdsStore.getState()).toMatchObject({ launchCount: 0, lastInterstitialAt: null });
+    expect(useUnlocksStore.getState().unlocks).toEqual({});
+    expect(useAdsRuntime.getState().interstitialsThisSession).toBe(0);
+    expect(result.current.isUnlocked('theme:animals')).toBe(false);
+    // Persisted too (MMKV), not just in memory.
+    expect(mmkv.getString(STORAGE_KEYS.unlocks)).toContain('"unlocks":{}');
+    expect(mmkv.getString(STORAGE_KEYS.ads)).toContain('"launchCount":0');
   });
 });

@@ -46,6 +46,8 @@ type Phase = 'loading' | 'loaded' | 'failed';
 export function BannerSlot(): React.JSX.Element {
   const available = useAdsAvailable();
   const { width } = useWindowDimensions();
+  // A failed slot stays empty until it remounts (e.g. Home, the stack root, until the next launch).
+  // Deliberate: no timers, no retry loops while offline.
   const [phase, setPhase] = useState<Phase>(() => (recentlyFailed() ? 'failed' : 'loading'));
   const [fixedSize, setFixedSize] = useState(false);
 

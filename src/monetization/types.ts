@@ -18,6 +18,18 @@ export type UnlocksApi = {
   unlockedUntil: (id: RewardId) => number;
   /** Shows a rewarded ad (parent area only). Resolves true if the reward was earned. */
   watchRewarded: (id: RewardId) => Promise<boolean>;
-  /** Whether a rewarded ad is loaded and can be shown right now. */
+  /**
+   * Whether a rewarded ad is loaded and can be shown right now. Always false unless the hook was
+   * called with `{ preloadRewarded: true }`.
+   */
   rewardedReady: boolean;
+};
+
+/** Options for `useUnlocks` (ADR 0002). */
+export type UnlocksOptions = {
+  /**
+   * Load a rewarded ad while mounted. Default false: child screens only read unlock state.
+   * Only the parent-area Rewards screen passes true.
+   */
+  preloadRewarded?: boolean;
 };

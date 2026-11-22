@@ -1,6 +1,6 @@
 /**
- * Rewarded ad, parent area only (handover 3.2): "watch one ad to unlock X for 24 h". Loaded lazily
- * when a screen using useUnlocks() mounts, once the SDK is ready. Never rejects.
+ * Rewarded ad, parent area only (handover 3.2): "watch one ad to unlock X for 24 h". Loaded only
+ * while a screen using useUnlocks({ preloadRewarded: true }) is mounted (ADR 0002). Never rejects.
  */
 import { AdEventType, RewardedAd, RewardedAdEventType } from 'react-native-google-mobile-ads';
 
@@ -42,7 +42,14 @@ function create(): RewardedAd {
 }
 
 function load() {
-  if (loading || showing || !useAdsRuntime.getState().sdkReady || currentAdBlockReason()) {
+  // Only while a screen that offers the ad (preloadRewarded) is mounted: no loads, no reload loop.
+  if (
+    wanted === 0 ||
+    loading ||
+    showing ||
+    !useAdsRuntime.getState().sdkReady ||
+    currentAdBlockReason()
+  ) {
     return;
   }
   try {

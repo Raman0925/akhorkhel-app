@@ -18,10 +18,12 @@ import {
   type UnlockMap,
 } from './logic/unlocks';
 import { requestRewarded, watchRewarded } from './rewarded';
+import { resetAdsState } from './reset';
 import { useAdsAvailable, useAdsRuntime, useUnlocksStore } from './stores';
-import type { AdsApi, RewardId, UnlocksApi } from './types';
+import type { AdsApi, RewardId, UnlocksApi, UnlocksOptions } from './types';
 
-export type { AdsApi, RewardId, UnlocksApi } from './types';
+export type { AdsApi, RewardId, UnlocksApi, UnlocksOptions } from './types';
+export { resetAdsState };
 export { initAds } from './sdk';
 export { BannerSlot } from './BannerSlot';
 export { STICKER_THEMES, type StickerTheme } from './stickers';
@@ -48,20 +50,24 @@ function useExpiryTick(unlocks: UnlockMap): void {
   });
 }
 
-/** Rewarded unlocks (parent area only). Loads a rewarded ad lazily while mounted. */
-export function useUnlocks(): UnlocksApi {
+/**
+ * Unlock state for any screen. Only the parent-area Rewards screen passes
+ * `{ preloadRewarded: true }`, which loads a rewarded ad while mounted (ADR 0002).
+ */
+export function useUnlocks(options?: UnlocksOptions): UnlocksApi {
+  const preload = options?.preloadRewarded === true;
   const unlocks = useUnlocksStore(s => s.unlocks);
   const rewardedReady = useAdsRuntime(s => s.rewardedReady);
   const available = useAdsAvailable();
   useExpiryTick(unlocks);
 
-  useEffect(() => requestRewarded(), []);
+  useEffect(() => (preload ? requestRewarded() : undefined), [preload]);
 
   return {
     isUnlocked: (id: RewardId) => isUnlocked(unlocks, id, now()),
     unlockedUntil: (id: RewardId) => unlockedUntil(unlocks, id, now()),
     watchRewarded,
-    rewardedReady: available && rewardedReady,
+    rewardedReady: preload && available && rewardedReady,
   };
 }
 
