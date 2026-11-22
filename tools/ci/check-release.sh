@@ -23,6 +23,18 @@ echo "== targetSdk"
 "$BT/aapt2" dump badging "$APK" | grep -E "targetSdkVersion:'36'" >/dev/null || {
   echo "::error::targetSdkVersion must be 36"; exit 1; }
 
+echo "== AdMob App ID (tag builds must carry the real one, never Google's sample ID)"
+if [[ "${GITHUB_REF:-}" == refs/tags/v* ]]; then
+  "$BT/aapt2" dump xmltree --file AndroidManifest.xml "$APK" > "$RUNNER_TEMP/manifest.txt"
+  if grep -q "ca-app-pub-3940256099942544" "$RUNNER_TEMP/manifest.txt"; then
+    echo "::error::Release build still uses Google's sample AdMob App ID (set the ADMOB_APP_ID secret)"
+    exit 1
+  fi
+  grep -oE "ca-app-pub-[0-9]+~[0-9]+" "$RUNNER_TEMP/manifest.txt" | head -1
+else
+  echo "Not a tag build: test App ID expected."
+fi
+
 echo "== 16 KB page alignment of native libraries"
 "$BT/zipalign" -c -P 16 -v 4 "$APK" | tail -3
 
