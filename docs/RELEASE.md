@@ -22,51 +22,46 @@ Facts checked on 22 Nov 2026 (re-check before the first launch; Google changes t
   (<https://support.google.com/admob/answer/9363762>).
 
 Related documents: `docs/store/*` (listing, Data safety, Families, graphics),
-`docs/privacy-policy.md` and `site/` (privacy policy), `docs/CONTENT_GUIDE.md` (content work),
+`docs/privacy-policy.md` (privacy policy reference), `docs/CONTENT_GUIDE.md` (content work),
 `docs/HANDOVER.md`.
 
 ---
 
 ## 0. Before anything: placeholders the owner must replace
 
-| Placeholder                                                         | Where it is used                                                                             | Action **(owner)**                                                                                                                                                                                                                    |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`akhorkhel.app@gmail.com`** — PLACEHOLDER EMAIL                   | Privacy policy, `site/index.html`, store listing, Play contact, IARC                         | Create this Gmail address (or choose another address you control) **before** publishing the privacy page. If you choose another address, replace it in every file: `grep -rn "akhorkhel.app@gmail.com" docs site`. It will be public. |
-| Privacy policy URL `https://raman0925.github.io/akhorkhel-privacy/` | Listing, Play Console, in-app parent area                                                    | Publish it (section 1). If you move to a custom domain, update every reference, including the app's parent-area link.                                                                                                                 |
-| Developer website                                                   | Play contact details; `app-ads.txt`                                                          | Decide (section 1.2).                                                                                                                                                                                                                 |
-| Publisher "**an individual developer**"                             | `docs/privacy-policy.md` ("Published by", contact), `site/index.html` (English and Assamese) | The Play account is an organization account: replace it with the organization's legal name (as verified in Play) in both files, ideally as part of the legal review (section 9), before publishing the policy.                        |
+| Placeholder                                                             | Where it is used                                                       | Action **(owner)**                                                                                                                                                                                                                    |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`akhorkhel.app@gmail.com`** — PLACEHOLDER EMAIL                       | Privacy policy (live page), store listing, Play contact, IARC          | Create this Gmail address (or choose another address you control) **before** publishing the privacy page. If you choose another address, replace it in every file: `grep -rn "akhorkhel.app@gmail.com" docs site`. It will be public. |
+| Privacy policy URL `https://raman0925.github.io/akhorkhel/privacy.html` | Listing, Play Console, in-app parent area                              | Publish it (section 1). If you move to a custom domain, update every reference, including the app's parent-area link.                                                                                                                 |
+| Developer website                                                       | Play contact details; `app-ads.txt`                                    | Decide (section 1.2).                                                                                                                                                                                                                 |
+| Publisher "**an individual developer**"                                 | `docs/privacy-policy.md` and the live page (`/akhorkhel/privacy.html`) | The Play account is an organization account: replace it with the organization's legal name (as verified in Play) in both files, ideally as part of the legal review (section 9), before publishing the policy.                        |
 
 ## 1. Privacy policy site and developer website
 
-### 1.1 Publish the privacy policy **(owner)**
+### 1.1 Privacy policy (published)
 
-The app repo `Raman0925/akhorkhel-app` is public (CI needs it). The privacy policy is published
-from its own separate **public** repo, `Raman0925/akhorkhel-privacy`, so the Pages site contains
-only the policy:
+The privacy policy is live on the owner's root GitHub Pages site (repo `Raman0925/raman0925.github.io`):
+<https://raman0925.github.io/akhorkhel/privacy.html>. The app's parent area, the Play listing and the
+Data safety form all point to this URL. `docs/privacy-policy.md` is the reference text; when the
+app's behaviour changes, update the live page and its effective date.
 
-```bash
-gh repo create Raman0925/akhorkhel-privacy --public --description "Akhor Khel privacy policy"
-git clone https://github.com/Raman0925/akhorkhel-privacy.git
-cp akhorkhel-app/site/index.html akhorkhel-privacy/index.html
-cd akhorkhel-privacy && git add index.html && git commit -m "docs: publish privacy policy" && git push
-gh api -X POST repos/Raman0925/akhorkhel-privacy/pages -f "source[branch]=main" -f "source[path]=/"
-```
+Before release, check that the live page matches the app:
 
-Wait a minute, then open <https://raman0925.github.io/akhorkhel-privacy/> on a phone and check that
-both the English and Assamese sections display. Before publishing:
-
-- [ ] the contact email exists and you can read mail sent to it;
-- [ ] a lawyer has reviewed the policy (section 9, recommended);
-- [ ] optional: an Assamese speaker has read the Assamese section of `site/index.html`.
-
-Whenever `docs/privacy-policy.md` changes, update `site/index.html`, copy it to the public repo and
-change the effective date in both.
+- [ ] describes tracing and writing Assamese and Bodo letters and numbers only (no recorded audio,
+      Mising pack or word content ships at launch);
+- [ ] names in-app deletion: Parent area → Delete all data (profiles, progress, settings);
+- [ ] names device identifiers such as the app set ID among what the AdMob SDK may process
+      (matches the Data safety form);
+- [ ] names the publisher exactly as the Play developer account (organization name if the app is
+      published under the organization);
+- [ ] a lawyer has reviewed it (section 9, recommended).
 
 ### 1.2 Developer website and `app-ads.txt` **(owner decision)**
 
 AdMob's crawler reads `https://<developer-website-host>/app-ads.txt`, i.e. the **root** of the host
-named as "Website" in the Play listing. A project page such as `…github.io/akhorkhel-privacy/` is not
-a root, so a file there would not be found. Pick one:
+named as "Website" in the Play listing. A project page (a sub-path) is not a root, so a file there would not be found. The
+root site `raman0925.github.io` already serves `app-ads.txt` for AdMob verification, so using it as the
+Play "Website" works. Pick one:
 
 1. **Recommended: `akhorkhel.in`** (HANDOVER 0 says to register it). Point it at a GitHub Pages
    site (custom domain) and put `app-ads.txt` and a simple home page at its root. Use
@@ -322,7 +317,7 @@ Audio can be added in any later release without code changes (`docs/CONTENT_GUID
 The developer is not a lawyer and neither are the agents who wrote these documents. Before the
 first production release, have a lawyer familiar with Indian data-protection law review:
 
-- the privacy policy (`docs/privacy-policy.md` / `site/index.html`);
+- the privacy policy (`docs/privacy-policy.md` / live page);
 - the ads setup against the **DPDP Act 2023 and DPDP Rules 2025** (notified 14 Nov 2025; most
   obligations, including those on children's data, apply about 18 months later, around May 2027 —
   confirm the exact date), in particular Section 9 (verifiable parental consent; no tracking,

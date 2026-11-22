@@ -151,7 +151,7 @@ describe('static screens', () => {
     expect(screen.getByText(/device identifiers such as the app set ID/)).toBeTruthy();
     expect(screen.getByText(/does not use or send the Android Advertising ID/)).toBeTruthy();
     expect(screen.getByTestId('privacy-url')).toHaveTextContent(
-      'https://raman0925.github.io/akhorkhel-privacy/',
+      'https://raman0925.github.io/akhorkhel/privacy.html',
     );
   });
 

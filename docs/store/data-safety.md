@@ -116,6 +116,6 @@ more accurate answer.
 
 ## 7. Keep in sync
 
-Change this file **and** `docs/privacy-policy.md` / `site/index.html` **and** the Play Console form
+Change this file **and** `docs/privacy-policy.md` / the live privacy page **and** the Play Console form
 together whenever any of these change: the ads SDK version, a new SDK, a new permission, a new
 network call, or Google's AdMob disclosure page.

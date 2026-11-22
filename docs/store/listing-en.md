@@ -62,7 +62,7 @@ About ads: Akhor Khel is free because it shows ads from Google AdMob. Ads are se
 
 Whether you want an Assamese alphabet learning app for a preschooler, an Assamese writing app for a first-grader, or an Assamese learning app for the whole class, Akhor Khel helps children write Assamese alphabet letters with confidence. If your child enjoys this Assamese letter writing app, please leave a rating – it helps other families find it.
 
-Privacy policy: https://raman0925.github.io/akhorkhel-privacy/
+Privacy policy: https://raman0925.github.io/akhorkhel/privacy.html
 ```
 
 ## Search-phrase coverage (from HANDOVER section 9)
@@ -95,7 +95,7 @@ metadata policy violation.
 | Tags               | Pick up to 5 from Play's list, e.g. Alphabet, Language learning, Kids, Writing, Education. Choose only tags that match. |
 | Contact email      | `akhorkhel.app@gmail.com` (placeholder — see `docs/RELEASE.md`)                                                         |
 | Website            | The developer website that hosts `app-ads.txt` (see `docs/RELEASE.md`)                                                  |
-| Privacy policy URL | `https://raman0925.github.io/akhorkhel-privacy/`                                                                        |
+| Privacy policy URL | `https://raman0925.github.io/akhorkhel/privacy.html`                                                                    |
 | Graphics           | See `graphics-spec.md`                                                                                                  |
 
 ## Wording rules for any future edit

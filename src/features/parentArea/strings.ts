@@ -1,6 +1,6 @@
 import { defineStrings } from '@/i18n';
 
-export const PRIVACY_POLICY_URL = 'https://raman0925.github.io/akhorkhel-privacy/';
+export const PRIVACY_POLICY_URL = 'https://raman0925.github.io/akhorkhel/privacy.html';
 
 export const strings = defineStrings({
   as: {

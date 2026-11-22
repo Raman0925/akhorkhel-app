@@ -1,11 +1,10 @@
 # Akhor Khel — Privacy Policy
 
-> Source text of the public policy. The published copy is `site/index.html`, served at
-> <https://raman0925.github.io/akhorkhel-privacy/>. Keep both identical in meaning; update the
-> effective date in both when anything changes. **Have this policy reviewed by a lawyer before
-> launch** (Indian DPDP Act/Rules and, if the app is offered outside India, other children's privacy
-> laws). A read-through of the Assamese section in `site/index.html` by an Assamese speaker is
-> recommended.
+> Reference text. The published policy lives on the owner's site at
+> <https://raman0925.github.io/akhorkhel/privacy.html> (repo `Raman0925/raman0925.github.io`). Keep
+> the two identical in meaning and update the effective date when anything changes. **Have the
+> policy reviewed by a lawyer before launch** (Indian DPDP Act/Rules and, if the app is offered
+> outside India, other children's privacy laws).
 
 **Effective date:** 22 November 2026
 **App:** Akhor Khel (আখৰ খেল), Android, package `in.akhorkhel.app`

@@ -105,6 +105,6 @@ it('opens the privacy policy from the notice', async () => {
   await passGate();
   await fireEvent.press(await screen.findByTestId('ads-notice-policy'));
   expect(await screen.findByTestId('privacy-url')).toHaveTextContent(
-    'https://raman0925.github.io/akhorkhel-privacy/',
+    'https://raman0925.github.io/akhorkhel/privacy.html',
   );
 });

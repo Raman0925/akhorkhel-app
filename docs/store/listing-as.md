@@ -64,7 +64,7 @@ Counts are Unicode code points (Play Console shows its own counter; trust it if 
 
 প্ৰাক্-বিদ্যালয়ৰ শিশুৰ বাবে অসমীয়া বৰ্ণমালা শিকা এপ, প্ৰথম শ্ৰেণীৰ বাবে অসমীয়া লিখা এপ, বা গোটেই শ্ৰেণীৰ বাবে অসমীয়া শিকা এপ – আখৰ খেলে শিশুক আত্মবিশ্বাসেৰে অসমীয়া আখৰ লিখাত (write Assamese alphabet) সহায় কৰে। আপোনাৰ শিশুৱে এই অসমীয়া আখৰ লিখা এপ ভাল পালে অনুগ্ৰহ কৰি ৰেটিং দিয়ক – ই আন পৰিয়ালক এপটো বিচাৰি পোৱাত সহায় কৰে।
 
-গোপনীয়তা নীতি: https://raman0925.github.io/akhorkhel-privacy/
+গোপনীয়তা নীতি: https://raman0925.github.io/akhorkhel/privacy.html
 ```
 
 ## Notes for the native reviewer

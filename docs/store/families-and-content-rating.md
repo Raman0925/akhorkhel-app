@@ -15,7 +15,7 @@ Play Console → Policy → App content. Answers for the Akhor Khel release buil
 
 | Declaration        | Answer                                                                                                                                                        |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Privacy policy     | `https://raman0925.github.io/akhorkhel-privacy/`                                                                                                              |
+| Privacy policy     | `https://raman0925.github.io/akhorkhel/privacy.html`                                                                                                          |
 | Ads                | **Yes, my app contains ads** (Play shows the "Contains ads" label)                                                                                            |
 | App access         | **All functionality is available without special access.** In the notes, explain the parent gate (an adult question shown on screen; no password or account). |
 | Content rating     | IARC questionnaire, section 4                                                                                                                                 |
