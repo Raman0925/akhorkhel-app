@@ -60,8 +60,11 @@ What we do to protect children:
   removed from the app, and child-directed requests do not transmit it;
 - the app uses only Google AdMob, which is on Google Play's list of Families Self-Certified Ads
   SDKs, and no other advertising, analytics or tracking software;
-- ads never appear when the app opens or while a child is tracing or playing a learning game.
-  Optional reward ads are offered only to adults, behind the parent gate.
+- no full-screen ad is shown when the app opens, and no ads at all are shown before a parent has
+  seen the ads notice or during the first session after install;
+- a small banner appears only on the home screen, letter grid, word list and parent area, never
+  while a child is tracing or playing a learning game; optional reward ads are offered only to
+  adults, behind the parent gate.
 
 Google processes this data under its own policies. Learn more:
 
@@ -101,7 +104,8 @@ Parents with questions can contact us at the email below.
 Because the developer holds no information about you or your child, there is nothing for us to
 delete on our side. Parents can remove the on-device information at any time:
 
-- in the app: Parent area → delete a child profile, or delete all progress on this device;
+- in the app: Parent area → delete a child profile, or Delete all data (profiles, progress, settings) on
+  this device;
 - in Android: Settings → Apps → Akhor Khel → Storage → Clear storage; or
 - by uninstalling the app.
 

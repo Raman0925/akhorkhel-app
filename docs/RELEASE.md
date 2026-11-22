@@ -34,8 +34,9 @@ Related documents: `docs/store/*` (listing, Data safety, Families, graphics),
 
 ### 1.1 Publish the privacy policy **(owner)**
 
-The app repo is private, and GitHub Pages on a private repo needs a paid plan, so the policy goes in
-a small **public** repo:
+The app repo `Raman0925/akhorkhel-app` is public (CI needs it). The privacy policy is published
+from its own separate **public** repo, `Raman0925/akhorkhel-privacy`, so the Pages site contains
+only the policy:
 
 ```bash
 gh repo create Raman0925/akhorkhel-privacy --public --description "Akhor Khel privacy policy"
@@ -299,11 +300,11 @@ The release gate refuses to build until this is done. Details and procedures are
 
 ### App checks (A6 audit on the signed build)
 
-- [ ] Parent area has **delete child profile** and **delete all progress on this device**
+- [ ] Parent area has **delete child profile** and **Delete all data (profiles, progress, settings) on this device**
       (promised in the privacy policy and Data safety).
 - [ ] Parent gate guards settings, teacher mode, share/export, rewarded ads and the privacy link.
 - [ ] Privacy policy link in the parent area opens the published URL.
-- [ ] Ads: child-directed + G + non-personalised in logs; no interstitial at launch or in the
+- [ ] Ads: child-directed + G + non-personalised in logs; no full-screen ad at launch; no ads at all before the parent has seen the ads notice or in the
       first session; caps; no ads on tracing/game screens; rewarded only behind the gate; unlock
       expires after 24 h; lessons work in airplane mode.
 - [ ] Merged manifest: only `INTERNET` and `ACCESS_NETWORK_STATE`; no `AD_ID`.

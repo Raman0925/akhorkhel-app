@@ -96,7 +96,7 @@ analytics, no crash reporting, no remote config, no other SDK that sends data.
 - The app has no accounts, so Play's account-deletion requirement (and the "delete account" URL)
   does not apply.
 - On-device data is not "collected" and so is outside this question, but parents can delete it at
-  any time: Parent area → delete a child profile, or delete all progress on this device (A5 must
+  any time: Parent area → delete a child profile, or Delete all data (profiles, progress, settings) on this device (A5 must
   ship this control; see `docs/RELEASE.md` pre-launch checks), or Android Settings → Apps →
   Akhor Khel → Storage → Clear storage, or uninstall. The privacy policy explains this.
 
