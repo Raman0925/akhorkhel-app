@@ -7,6 +7,7 @@ import { Text } from 'react-native';
 import type { RootStackParamList } from '@/navigation';
 import { DEFAULT_SETTINGS, useSettings } from '@/storage';
 
+import { resetGateMemory } from '../gateMemory';
 import { ParentGateScreen } from '../screens/ParentGateScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,41 +32,60 @@ async function renderGate() {
   await screen.findByTestId('screen-ParentGate');
 }
 
-/** Any keypad key that is not part of the answer. */
-function wrongKey() {
-  return screen.getAllByTestId(/^parent-gate-key-/)[0]!;
+function answer(): number {
+  const text = String(screen.getByTestId('parent-gate-question').props.children);
+  const [, a, b] = /(\d+) × (\d+)/.exec(text)!;
+  return Number(a) * Number(b);
 }
 
-beforeEach(() => useSettings.setState({ ...DEFAULT_SETTINGS, uiLanguage: 'en' }));
+async function type(value: number) {
+  for (const d of String(value)) {
+    await fireEvent.press(screen.getByTestId(`parent-gate-key-${d}`));
+  }
+  await fireEvent.press(screen.getByTestId('parent-gate-submit'));
+}
 
-it('shows the numbers as words and a 9-key keypad', async () => {
+beforeEach(() => {
+  resetGateMemory();
+  useSettings.setState({ ...DEFAULT_SETTINGS, uiLanguage: 'en' });
+});
+
+it('shows a multiplication and a numeric keypad', async () => {
   await renderGate();
-  expect(screen.getByText('Tap the numbers in this order:')).toBeTruthy();
-  expect(screen.getByTestId('parent-gate-words').props.children).toMatch(
-    /^(one|two|three|four|five|six|seven|eight|nine)(, (one|two|three|four|five|six|seven|eight|nine)){2}$/,
+  expect(screen.getByTestId('parent-gate-question').props.children).toMatch(/^1\d × [3-9] = \?$/);
+  for (let d = 0; d <= 9; d++) {
+    expect(screen.getByTestId(`parent-gate-key-${d}`)).toBeTruthy();
+  }
+});
+
+it('opens the next screen after the right answer', async () => {
+  await renderGate();
+  await type(answer());
+  expect(await screen.findByTestId('screen-Teacher')).toBeTruthy();
+});
+
+it('gives a new question after a wrong answer', async () => {
+  await renderGate();
+  const first = screen.getByTestId('parent-gate-question').props.children;
+  await type(answer() + 1);
+  expect(screen.getByText('That is not right. Here is a new question.')).toBeTruthy();
+  expect(screen.getByTestId('parent-gate-question').props.children).not.toBe(first);
+  await type(answer());
+  expect(await screen.findByTestId('screen-Teacher')).toBeTruthy();
+});
+
+it('locks for 30 seconds after 3 wrong answers, even when reopened', async () => {
+  await renderGate();
+  await type(answer() + 1);
+  await type(answer() + 1);
+  await type(answer() + 1);
+  expect(screen.getByTestId('parent-gate-feedback')).toHaveTextContent(
+    'Too many wrong answers. Please wait 30 seconds and try again.',
   );
-  expect(screen.getAllByRole('button', { name: /^[1-9]$/ })).toHaveLength(9);
-});
+  await fireEvent.press(screen.getByTestId('parent-gate-key-1'));
+  expect(screen.getByTestId('parent-gate-answer')).toHaveTextContent('');
+  screen.unmount();
 
-it('opens the next screen after the right sequence', async () => {
   await renderGate();
-  await fireEvent.press(screen.getByTestId('parent-gate-step-1'));
-  await fireEvent.press(screen.getByTestId('parent-gate-step-2'));
-  await fireEvent.press(screen.getByTestId('parent-gate-step-3'));
-  expect(await screen.findByTestId('screen-Teacher')).toBeTruthy();
-});
-
-it('lets the grown-up retry after a wrong tap, then gives a new challenge', async () => {
-  await renderGate();
-  await fireEvent.press(screen.getByTestId('parent-gate-step-1'));
-  await fireEvent.press(wrongKey());
-  expect(screen.getByText('Not quite. Start again from the first number.')).toBeTruthy();
-  await fireEvent.press(wrongKey());
-  await fireEvent.press(wrongKey());
-  expect(screen.getByText('Here is a new one. Take your time.')).toBeTruthy();
-  // The new challenge still works.
-  await fireEvent.press(screen.getByTestId('parent-gate-step-1'));
-  await fireEvent.press(screen.getByTestId('parent-gate-step-2'));
-  await fireEvent.press(screen.getByTestId('parent-gate-step-3'));
-  expect(await screen.findByTestId('screen-Teacher')).toBeTruthy();
+  expect(screen.getByTestId('parent-gate-feedback')).toHaveTextContent(/Please wait \d+ seconds/);
 });

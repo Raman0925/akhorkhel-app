@@ -36,9 +36,12 @@ async function renderOnboarding() {
 
 async function passGate() {
   await screen.findByTestId('screen-ParentGate');
-  await fireEvent.press(screen.getByTestId('parent-gate-step-1'));
-  await fireEvent.press(screen.getByTestId('parent-gate-step-2'));
-  await fireEvent.press(screen.getByTestId('parent-gate-step-3'));
+  const question = String(screen.getByTestId('parent-gate-question').props.children);
+  const [, a, b] = /(\d+) × (\d+)/.exec(question)!;
+  for (const d of String(Number(a) * Number(b))) {
+    await fireEvent.press(screen.getByTestId(`parent-gate-key-${d}`));
+  }
+  await fireEvent.press(screen.getByTestId('parent-gate-submit'));
 }
 
 beforeEach(() => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { audio } from '@/audio';
@@ -6,95 +6,148 @@ import { format, useStrings } from '@/i18n';
 import { colors, fonts, fontSize, MIN_TOUCH, radius, spacing } from '@/theme';
 
 import {
+  appendDigit,
   createChallenge,
-  KEYPAD_DIGITS,
-  START,
-  tap,
+  isLocked,
+  secondsLeft,
+  submit,
   type Challenge,
-  type Digit,
-  type GateProgress,
 } from '../challenge';
+import { getGateState, setGateState } from '../gateMemory';
 import { strings } from '../strings';
 
 type Props = { onPass: () => void };
 
-type Feedback = 'none' | 'miss' | 'new';
+const KEYS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 
 /**
- * Keypad challenge. Keys that belong to the answer carry `parent-gate-step-<n>` test IDs so E2E
- * flows can pass the gate; test IDs are never shown or spoken to the child.
+ * Multiplication typed on a keypad. The question text has a stable test ID (`parent-gate-question`)
+ * so E2E flows can read it, compute the answer and tap `parent-gate-key-<digit>` + `parent-gate-submit`.
  */
 export function GateChallenge({ onPass }: Props) {
   const s = useStrings(strings);
   const [challenge, setChallenge] = useState<Challenge>(() => createChallenge());
-  const [progress, setProgress] = useState<GateProgress>(START);
-  const [feedback, setFeedback] = useState<Feedback>('none');
+  const [input, setInput] = useState('');
+  const [wrong, setWrong] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+  const locked = isLocked(getGateState(), now);
 
-  const words = challenge.order.map(d => s[`w${d}`]).join(s.separator);
+  // Tick once a second while the cooldown runs.
+  useEffect(() => {
+    if (!locked) {
+      return;
+    }
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [locked]);
 
-  const onKey = useCallback(
-    (digit: Digit) => {
-      const result = tap(challenge, progress, digit);
-      switch (result.kind) {
-        case 'passed':
-          onPass();
-          return;
-        case 'progress':
-          setProgress(result.state);
-          setFeedback('none');
-          return;
-        case 'miss':
-          setProgress(result.state);
-          setFeedback('miss');
-          return;
-        case 'newChallenge':
-          setChallenge(prev => createChallenge(Math.random, prev));
-          setProgress(START);
-          setFeedback('new');
-      }
-    },
-    [challenge, progress, onPass],
-  );
+  const onSubmit = () => {
+    const time = Date.now();
+    const result = submit(challenge, input, getGateState(), time);
+    setGateState(result.state);
+    if (result.kind === 'passed') {
+      onPass();
+      return;
+    }
+    setChallenge(prev => createChallenge(Math.random, prev));
+    setInput('');
+    setWrong(result.kind === 'wrong');
+    setNow(time);
+  };
+
+  const press = (fn: () => void) => () => {
+    audio.sfx('tap');
+    fn();
+  };
 
   return (
     <View style={styles.root}>
       <Text style={styles.instruction}>{s.instruction}</Text>
-      <Text style={styles.words} testID="parent-gate-words" accessibilityLiveRegion="polite">
-        {words}
+      <Text style={styles.question} testID="parent-gate-question">
+        {format(s.question, { a: challenge.a, b: challenge.b })}
       </Text>
-      <Text style={styles.progress} testID="parent-gate-progress">
-        {format(s.progress, { done: progress.step, total: challenge.order.length })}
+      <Text
+        style={styles.answer}
+        testID="parent-gate-answer"
+        accessibilityLabel={`${s.answerLabel}: ${input}`}
+      >
+        {input || ' '}
+      </Text>
+      <Text style={styles.feedback} testID="parent-gate-feedback" accessibilityLiveRegion="polite">
+        {locked ? format(s.locked, { s: secondsLeft(getGateState(), now) }) : wrong ? s.wrong : ' '}
       </Text>
       <View style={styles.keypad}>
-        {KEYPAD_DIGITS.map(d => {
-          const answerIndex = challenge.order.indexOf(d);
-          const testID =
-            answerIndex >= 0 ? `parent-gate-step-${answerIndex + 1}` : `parent-gate-key-${d}`;
-          return (
-            <Pressable
-              key={d}
-              testID={testID}
-              accessibilityRole="button"
-              accessibilityLabel={String(d)}
-              onPress={() => {
-                audio.sfx('tap');
-                onKey(d);
-              }}
-              style={({ pressed }) => [styles.key, pressed && styles.keyPressed]}
-            >
-              <Text style={styles.keyText}>{d}</Text>
-            </Pressable>
-          );
-        })}
+        {KEYS.map(d => (
+          <Key
+            key={d}
+            label={String(d)}
+            testID={`parent-gate-key-${d}`}
+            disabled={locked}
+            onPress={press(() => setInput(v => appendDigit(v, d)))}
+          />
+        ))}
+        <Key
+          label="⌫"
+          a11yLabel={s.erase}
+          testID="parent-gate-erase"
+          disabled={locked}
+          onPress={press(() => setInput(v => v.slice(0, -1)))}
+        />
+        <Key
+          label="0"
+          testID="parent-gate-key-0"
+          disabled={locked}
+          onPress={press(() => setInput(v => appendDigit(v, 0)))}
+        />
+        <Key
+          label="✓"
+          a11yLabel={s.submit}
+          testID="parent-gate-submit"
+          disabled={locked || input === ''}
+          onPress={press(onSubmit)}
+          primary
+        />
       </View>
-      <Text style={styles.feedback} testID="parent-gate-feedback">
-        {feedback === 'miss' ? s.tryAgain : feedback === 'new' ? s.newChallenge : ' '}
-      </Text>
     </View>
   );
 }
 
-const KEY = MIN_TOUCH + 16;
+function Key({
+  label,
+  a11yLabel,
+  testID,
+  disabled,
+  onPress,
+  primary,
+}: {
+  label: string;
+  a11yLabel?: string;
+  testID: string;
+  disabled: boolean;
+  onPress: () => void;
+  primary?: boolean;
+}) {
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={a11yLabel ?? label}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.key,
+        primary && styles.keyPrimary,
+        pressed && styles.keyPressed,
+        disabled && styles.keyDisabled,
+      ]}
+    >
+      <Text style={[styles.keyText, primary && styles.keyTextPrimary]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+const KEY = MIN_TOUCH + 8;
 
 const styles = StyleSheet.create({
   root: { alignItems: 'center', gap: spacing.sm },
@@ -104,20 +157,31 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
   },
-  words: {
-    fontFamily: fonts.bengaliBold,
+  question: { fontFamily: fonts.latinBold, fontSize: fontSize.xl, color: colors.text },
+  answer: {
+    minWidth: KEY * 2,
+    minHeight: MIN_TOUCH,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontFamily: fonts.latinBold,
     fontSize: fontSize.xl,
     color: colors.text,
+    borderBottomWidth: 3,
+    borderColor: colors.border,
+  },
+  feedback: {
+    minHeight: 48,
+    fontFamily: fonts.bengali,
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
     textAlign: 'center',
   },
-  progress: { fontFamily: fonts.bengali, fontSize: fontSize.sm, color: colors.textMuted },
   keypad: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: spacing.md,
-    width: KEY * 3 + spacing.md * 2,
-    marginTop: spacing.sm,
+    gap: spacing.sm,
+    width: KEY * 3 + spacing.sm * 2,
   },
   key: {
     width: KEY,
@@ -129,13 +193,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  keyPressed: { backgroundColor: colors.surfaceAlt },
+  keyPrimary: { backgroundColor: colors.secondary, borderColor: colors.secondary },
+  keyPressed: { opacity: 0.8 },
+  keyDisabled: { opacity: 0.4 },
   keyText: { fontFamily: fonts.latinBold, fontSize: fontSize.xl, color: colors.text },
-  feedback: {
-    minHeight: 48,
-    fontFamily: fonts.bengali,
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
+  keyTextPrimary: { color: colors.onSecondary },
 });

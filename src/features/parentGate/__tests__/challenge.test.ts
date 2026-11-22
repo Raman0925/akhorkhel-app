@@ -1,76 +1,93 @@
 import {
-  CHALLENGE_LENGTH,
+  appendDigit,
+  COOLDOWN_MS,
   createChallenge,
-  KEYPAD_DIGITS,
+  INITIAL_STATE,
+  isLocked,
   MAX_MISSES,
-  START,
-  tap,
+  secondsLeft,
+  submit,
   type Challenge,
+  type GateState,
 } from '../challenge';
 
-/** Deterministic rng from a list of values in [0, 1). */
-const seq = (values: number[]) => {
-  let i = 0;
-  return () => values[i++ % values.length] as number;
-};
-
 describe('createChallenge', () => {
-  it('returns distinct keypad digits of the right length', () => {
-    for (let i = 0; i < 200; i++) {
-      const { order } = createChallenge();
-      expect(order).toHaveLength(CHALLENGE_LENGTH);
-      expect(new Set(order).size).toBe(CHALLENGE_LENGTH);
-      order.forEach(d => expect(KEYPAD_DIGITS).toContain(d));
+  it('is a two-digit × one-digit multiplication', () => {
+    for (let i = 0; i < 300; i++) {
+      const c = createChallenge();
+      expect(c.a).toBeGreaterThanOrEqual(11);
+      expect(c.a).toBeLessThanOrEqual(19);
+      expect(c.b).toBeGreaterThanOrEqual(3);
+      expect(c.b).toBeLessThanOrEqual(9);
+      expect(c.answer).toBe(c.a * c.b);
     }
   });
 
-  it('is driven by the rng (0 picks the first remaining digit)', () => {
-    expect(createChallenge(() => 0).order).toEqual([1, 2, 3]);
-    expect(createChallenge(() => 0.999).order).toEqual([9, 8, 7]);
+  it('is driven by the rng', () => {
+    expect(createChallenge(() => 0)).toEqual({ a: 11, b: 3, answer: 33 });
+    expect(createChallenge(() => 0.9999)).toEqual({ a: 19, b: 9, answer: 171 });
   });
 
-  it('never repeats the previous challenge', () => {
-    const previous: Challenge = { order: [1, 2, 3] };
-    const next = createChallenge(() => 0, previous);
-    expect(next.order).not.toEqual(previous.order);
-    expect(new Set(next.order).size).toBe(CHALLENGE_LENGTH);
+  it('never repeats the previous question', () => {
+    const previous: Challenge = { a: 11, b: 3, answer: 33 };
+    expect(createChallenge(() => 0, previous)).toEqual({ a: 12, b: 3, answer: 36 });
+    expect(createChallenge(() => 0.9999, { a: 19, b: 9, answer: 171 })).toEqual({
+      a: 11,
+      b: 9,
+      answer: 99,
+    });
   });
 
   it('varies between calls', () => {
-    const seen = new Set<string>();
-    for (let i = 0; i < 50; i++) {
-      seen.add(createChallenge().order.join(''));
+    const seen = new Set<number>();
+    for (let i = 0; i < 100; i++) {
+      seen.add(createChallenge().answer);
     }
-    expect(seen.size).toBeGreaterThan(10);
-  });
-
-  it('uses the rng for every pick', () => {
-    expect(createChallenge(seq([0.5, 0, 0.99])).order).toEqual([5, 1, 9]);
+    expect(seen.size).toBeGreaterThan(20);
   });
 });
 
-describe('tap', () => {
-  const challenge: Challenge = { order: [7, 2, 9] };
+describe('submit', () => {
+  const c: Challenge = { a: 14, b: 6, answer: 84 };
 
-  it('passes after the digits are tapped in order', () => {
-    const a = tap(challenge, START, 7);
-    expect(a).toEqual({ kind: 'progress', state: { step: 1, misses: 0 } });
-    const b = a.kind === 'progress' ? tap(challenge, a.state, 2) : a;
-    expect(b).toEqual({ kind: 'progress', state: { step: 2, misses: 0 } });
-    const c = b.kind === 'progress' ? tap(challenge, b.state, 9) : b;
-    expect(c).toEqual({ kind: 'passed' });
-  });
-
-  it('restarts the sequence on a wrong tap and keeps the challenge', () => {
-    expect(tap(challenge, { step: 2, misses: 0 }, 1)).toEqual({
-      kind: 'miss',
-      state: { step: 0, misses: 1 },
+  it('passes on the right answer and clears misses', () => {
+    expect(submit(c, '84', { misses: 2, lockedUntil: 0 }, 0)).toEqual({
+      kind: 'passed',
+      state: INITIAL_STATE,
     });
   });
 
-  it('asks for a new challenge after too many misses', () => {
-    expect(tap(challenge, { step: 0, misses: MAX_MISSES - 1 }, 1)).toEqual({
-      kind: 'newChallenge',
+  it('counts wrong answers, then locks for 30 seconds', () => {
+    let state: GateState = INITIAL_STATE;
+    for (let i = 1; i < MAX_MISSES; i++) {
+      const r = submit(c, '80', state, 1000);
+      expect(r).toEqual({ kind: 'wrong', state: { misses: i, lockedUntil: 0 } });
+      state = r.state;
+    }
+    const locked = submit(c, '', state, 1000);
+    expect(locked).toEqual({
+      kind: 'locked',
+      state: { misses: 0, lockedUntil: 1000 + COOLDOWN_MS },
     });
+    state = locked.state;
+
+    expect(isLocked(state, 1000 + COOLDOWN_MS - 1)).toBe(true);
+    expect(secondsLeft(state, 1000)).toBe(30);
+    expect(secondsLeft(state, 1000 + COOLDOWN_MS - 1500)).toBe(2);
+    // Even the right answer is refused during the cooldown.
+    expect(submit(c, '84', state, 2000)).toEqual({ kind: 'locked', state });
+    // Afterwards it works again.
+    expect(isLocked(state, 1000 + COOLDOWN_MS)).toBe(false);
+    expect(secondsLeft(state, 1000 + COOLDOWN_MS)).toBe(0);
+    expect(submit(c, '84', state, 1000 + COOLDOWN_MS).kind).toBe('passed');
+  });
+});
+
+describe('appendDigit', () => {
+  it('limits to 3 digits and ignores a leading zero', () => {
+    expect(appendDigit('', 0)).toBe('');
+    expect(appendDigit('', 8)).toBe('8');
+    expect(appendDigit('8', 0)).toBe('80');
+    expect(appendDigit('123', 4)).toBe('123');
   });
 });
