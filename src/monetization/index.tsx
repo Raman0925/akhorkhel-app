@@ -1,54 +1,75 @@
 /**
  * The ONLY entry point for ads (handover section 3). Screens import from '@/monetization', never from
- * react-native-google-mobile-ads (enforced by ESLint).
+ * react-native-google-mobile-ads (enforced by ESLint). Policy details: docs/ads.md.
  *
- * STUB: A8 replaces the implementation; the exported names and types are frozen.
+ * Frozen contract: exported names and types must not change without an ADR.
  */
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
 
-import { BANNER_HEIGHT } from '@/theme';
+import { useSettings } from '@/storage';
 
+import { now } from './clock';
+import { onSetComplete } from './interstitial';
+import {
+  activeStickerTheme,
+  isUnlocked,
+  nextExpiry,
+  unlockedUntil,
+  type UnlockMap,
+} from './logic/unlocks';
+import { requestRewarded, watchRewarded } from './rewarded';
+import { useAdsAvailable, useAdsRuntime, useUnlocksStore } from './stores';
 import type { AdsApi, RewardId, UnlocksApi } from './types';
 
 export type { AdsApi, RewardId, UnlocksApi } from './types';
+export { initAds } from './sdk';
+export { BannerSlot } from './BannerSlot';
+export { STICKER_THEMES, type StickerTheme } from './stickers';
 
-/** Initialise AdMob in child-directed, G-rated, non-personalised mode. Safe to call more than once. */
-export async function initAds(): Promise<void> {}
+const ADS_API: AdsApi = { onSetComplete };
 
-/**
- * Bottom banner for MENU screens only (home, grids, lists, parent area). Always reserves its height
- * so the layout never jumps. Never use on tracing or game screens.
- */
-export function BannerSlot(): React.JSX.Element {
-  return <View style={styles.slot} testID="banner-slot" />;
-}
-
+/** `onSetComplete()` for the letter grid: may show a capped interstitial, never blocks. */
 export function useAds(): AdsApi {
-  return { onSetComplete: async () => {} };
+  return ADS_API;
 }
 
+/** Re-renders when the earliest unlock expires, so expired unlocks disappear on their own. */
+function useExpiryTick(unlocks: UnlockMap): void {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const expiry = nextExpiry(unlocks, now());
+    if (expiry === null) {
+      return;
+    }
+    // setTimeout delays above 2^31-1 ms overflow; 24 h is well below, but clamp anyway.
+    const delay = Math.min(Math.max(expiry - now(), 0) + 50, 2 ** 31 - 1);
+    const timer = setTimeout(() => setTick(t => t + 1), delay);
+    return () => clearTimeout(timer);
+  });
+}
+
+/** Rewarded unlocks (parent area only). Loads a rewarded ad lazily while mounted. */
 export function useUnlocks(): UnlocksApi {
+  const unlocks = useUnlocksStore(s => s.unlocks);
+  const rewardedReady = useAdsRuntime(s => s.rewardedReady);
+  const available = useAdsAvailable();
+  useExpiryTick(unlocks);
+
+  useEffect(() => requestRewarded(), []);
+
   return {
-    isUnlocked: (_id: RewardId) => false,
-    unlockedUntil: (_id: RewardId) => 0,
-    watchRewarded: async (_id: RewardId) => false,
-    rewardedReady: false,
+    isUnlocked: (id: RewardId) => isUnlocked(unlocks, id, now()),
+    unlockedUntil: (id: RewardId) => unlockedUntil(unlocks, id, now()),
+    watchRewarded,
+    rewardedReady: available && rewardedReady,
   };
 }
 
-/** Celebration sticker sets. `stars` is always free; the others unlock for 24 h via a rewarded ad. */
-export type StickerTheme = { id: string; emoji: readonly string[]; free: boolean };
-export const STICKER_THEMES: readonly StickerTheme[] = [
-  { id: 'stars', emoji: ['⭐', '🌟', '✨'], free: true },
-  { id: 'animals', emoji: ['🦏', '🐘', '🦌', '🐒', '🐟'], free: false },
-  { id: 'fruits', emoji: ['🥭', '🍌', '🍍', '🍊', '🍈'], free: false },
-  { id: 'festival', emoji: ['🥁', '🪔', '🎉', '🌸', '🎈'], free: false },
-];
-
 /** Emoji for celebrations: the selected theme if it is free or currently unlocked, else stars. */
 export function useActiveStickers(): readonly string[] {
-  return (STICKER_THEMES[0] as StickerTheme).emoji;
+  const selected = useSettings(s => s.stickerTheme);
+  const unlocks = useUnlocksStore(s => s.unlocks);
+  useExpiryTick(unlocks);
+  // Theme emoji arrays are module constants, so the returned reference is stable.
+  return activeStickerTheme(selected, unlocks, now()).emoji;
 }
-
-const styles = StyleSheet.create({ slot: { height: BANNER_HEIGHT } });

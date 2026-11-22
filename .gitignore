@@ -78,5 +78,4 @@ yarn-error.log
 .env
 *.keystore
 !android/app/debug.keystore
-src/monetization/adUnits.release.ts
 .claude/
