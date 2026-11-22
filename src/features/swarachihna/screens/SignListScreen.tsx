@@ -45,7 +45,7 @@ export function SignListScreen({ navigation }: ScreenProps<'SignList'>) {
   );
 
   return (
-    <Screen prompt="signs" banner testID="screen-SignList">
+    <Screen prompt="signs" testID="screen-SignList">
       <Header title={c.signs} prompt="signs" />
       <FlatList
         data={pack.signs}

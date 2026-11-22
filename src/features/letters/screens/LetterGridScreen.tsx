@@ -17,6 +17,8 @@ import { setsDone, takeBaseline, tracedSince, type Baseline } from '../logic/set
 import { strings } from '../strings';
 
 const COLUMNS = 4;
+/** Quiet time on the grid between the celebration and any interstitial. */
+const AD_DELAY_MS = 1000;
 
 type Row =
   | { kind: 'header'; key: string; title: string }
@@ -75,11 +77,34 @@ export function LetterGridScreen({ navigation }: ScreenProps<'LetterGrid'>) {
     }
   }, [isFocused, baseline, progress, keys, incrementSessions]);
 
-  const onCelebrationDone = useCallback(() => {
-    setCelebrating(false);
-    // The ads module enforces every cap; lessons never wait on it.
-    ads.onSetComplete().catch(() => undefined);
-  }, [ads]);
+  const adTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (adTimer.current) {
+        clearTimeout(adTimer.current);
+      }
+    },
+    [],
+  );
+
+  const onCelebrationDone = useCallback(
+    (byTap: boolean) => {
+      setCelebrating(false);
+      // A tap must never lead into an ad: if the child tapped the celebration away, skip the
+      // interstitial for this set. Otherwise wait a moment on the plain grid first.
+      if (byTap) {
+        return;
+      }
+      adTimer.current = setTimeout(() => {
+        adTimer.current = null;
+        if (navigation.isFocused()) {
+          // The ads module enforces every cap; lessons never wait on it.
+          ads.onSetComplete().catch(() => undefined);
+        }
+      }, AD_DELAY_MS);
+    },
+    [ads, navigation],
+  );
 
   const font = fontForScript(pack.script, true);
   const tileSize = Math.max(MIN_TOUCH, (width - spacing.md * 2 - spacing.sm * COLUMNS) / COLUMNS);

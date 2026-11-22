@@ -36,7 +36,8 @@ it('shows letters by section with a banner and opens a letter', async () => {
   expect(await screen.findByTestId('screen-Letter')).toHaveTextContent('{"letterId":"b"}');
 });
 
-it('celebrates a set of 5 traced letters on return, counts a session, then asks the ads module', async () => {
+/** Open a letter, trace 5 letters (one twice), come back to the grid. */
+async function completeSetAndReturn() {
   await renderScreen('LetterGrid', LetterGridScreen, undefined, ['Letter']);
   await fireEvent.press(screen.getByTestId('letter-tile-a'));
   await screen.findByTestId('screen-Letter');
@@ -52,13 +53,44 @@ it('celebrates a set of 5 traced letters on return, counts a session, then asks 
   });
 
   await fireEvent.press(screen.getByTestId('stub-back'));
-  expect(await screen.findByTestId('celebration')).toBeTruthy();
+  expect(screen.getByTestId('celebration')).toBeTruthy();
   expect(useSettings.getState().completedSessions).toBe(1);
   expect(mockOnSetComplete).not.toHaveBeenCalled();
+}
 
-  await fireEvent.press(screen.getByTestId('celebration'));
-  expect(screen.queryByTestId('celebration')).toBeNull();
-  expect(mockOnSetComplete).toHaveBeenCalledTimes(1);
+const advance = (ms: number) =>
+  act(async () => {
+    jest.advanceTimersByTime(ms);
+  });
+
+describe('set complete', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it('celebrates, counts a session, then asks the ads module after a quiet second', async () => {
+    await completeSetAndReturn();
+    await advance(2500); // the celebration ends on its own
+    expect(screen.queryByTestId('celebration')).toBeNull();
+    expect(mockOnSetComplete).not.toHaveBeenCalled();
+    await advance(1000);
+    expect(mockOnSetComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it('never leads a tap into an ad: tapping the celebration away skips the interstitial', async () => {
+    await completeSetAndReturn();
+    await fireEvent.press(screen.getByTestId('celebration'));
+    expect(screen.queryByTestId('celebration')).toBeNull();
+    await advance(5000);
+    expect(mockOnSetComplete).not.toHaveBeenCalled();
+  });
+
+  it('skips the ad if the child left the grid during the quiet second', async () => {
+    await completeSetAndReturn();
+    await advance(2500);
+    await fireEvent.press(screen.getByTestId('letter-tile-b'));
+    await advance(1000);
+    expect(mockOnSetComplete).not.toHaveBeenCalled();
+  });
 });
 
 it('does not celebrate fewer than 5 new letters', async () => {

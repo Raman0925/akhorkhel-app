@@ -9,7 +9,8 @@ type Props = {
   message: string;
   /** Voice prompt played with the chime (e.g. setComplete). */
   prompt?: PromptId;
-  onDone: () => void;
+  /** `byTap` is true when the child tapped it away, false when it ended on its own. */
+  onDone: (byTap: boolean) => void;
   durationMs?: number;
   testID?: string;
 };
@@ -31,14 +32,14 @@ export function Celebration({ message, prompt, onDone, durationMs = 2500, testID
     }
     // Native-driven pop-in: no per-frame JS work.
     Animated.spring(scale, { toValue: 1, friction: 4, useNativeDriver: true }).start();
-    const t = setTimeout(() => done.current(), durationMs);
+    const t = setTimeout(() => done.current(false), durationMs);
     return () => clearTimeout(t);
   }, [prompt, durationMs, scale]);
 
   return (
     <Pressable
       style={styles.overlay}
-      onPress={() => done.current()}
+      onPress={() => done.current(true)}
       accessibilityRole="button"
       accessibilityLabel={message}
       testID={testID ?? 'celebration'}

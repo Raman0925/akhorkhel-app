@@ -26,10 +26,10 @@ it('countObjects makes one object per number, capped', () => {
   expect(countObjects(99, ['x'], 0)).toHaveLength(MAX_COUNT);
 });
 
-it('NumberList shows numerals with stars and a banner', async () => {
+it('NumberList shows numerals with stars and no banner', async () => {
   useProgress.getState().record(PROFILE_ID, mockPack.id, 'number:2', 1, 2);
   await renderScreen('NumberList', NumberListScreen, undefined, ['Number']);
-  expect(screen.getByTestId('banner-slot')).toBeTruthy();
+  expect(screen.queryByTestId('banner-slot')).toBeNull();
   expect(screen.getByText('n3')).toBeTruthy();
   expect(screen.getByTestId('number-tile-2')).toHaveTextContent(/n2/);
   expect(screen.getAllByLabelText('2 / 3')).toHaveLength(1);

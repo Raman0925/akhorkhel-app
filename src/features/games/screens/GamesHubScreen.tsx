@@ -19,7 +19,7 @@ export function GamesHubScreen({ navigation }: ScreenProps<'GamesHub'>) {
   const available = useMemo(() => gameAvailability(pack), [pack]);
 
   return (
-    <Screen prompt="home" banner testID="screen-GamesHub">
+    <Screen prompt="home" testID="screen-GamesHub">
       <Header title={c.games} prompt="home" />
       <View style={styles.list}>
         {available.hear ? (

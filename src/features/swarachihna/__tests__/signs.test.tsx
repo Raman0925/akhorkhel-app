@@ -24,10 +24,10 @@ it('puts a lone sign on a dotted circle once', () => {
   expect(signAlone('◌a')).toBe('◌a');
 });
 
-it('SignList shows results with stars and a banner, and opens a sign', async () => {
+it('SignList shows results with stars and no banner, and opens a sign', async () => {
   useProgress.getState().record(PROFILE_ID, mockPack.id, 'sign:ki', 1, 3);
   await renderScreen('SignList', SignListScreen, undefined, ['Sign']);
-  expect(screen.getByTestId('banner-slot')).toBeTruthy();
+  expect(screen.queryByTestId('banner-slot')).toBeNull();
   expect(screen.getByText('Ka')).toBeTruthy();
   expect(screen.getByTestId('sign-tile-ki')).toHaveTextContent(/Ki/);
   expect(screen.getAllByLabelText('3 / 3')).toHaveLength(1);

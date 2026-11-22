@@ -37,9 +37,9 @@ function lastPlayedId(): string {
 }
 
 describe('GamesHub', () => {
-  it('lists playable games with a banner', async () => {
+  it('lists playable games without a banner', async () => {
     await renderScreen('GamesHub', GamesHubScreen, undefined, ['GameHear', 'GamePicture']);
-    expect(screen.getByTestId('banner-slot')).toBeTruthy();
+    expect(screen.queryByTestId('banner-slot')).toBeNull();
     await fireEvent.press(screen.getByTestId('games-picture'));
     expect(await screen.findByTestId('screen-GamePicture')).toBeTruthy();
   });

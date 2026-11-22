@@ -47,7 +47,7 @@ export function NumberListScreen({ navigation }: ScreenProps<'NumberList'>) {
   );
 
   return (
-    <Screen prompt="numbers" banner testID="screen-NumberList">
+    <Screen prompt="numbers" testID="screen-NumberList">
       <Header title={c.numbers} prompt="numbers" />
       <FlatList
         data={pack.numbers}
