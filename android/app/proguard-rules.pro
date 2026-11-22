@@ -11,3 +11,9 @@
 
 # react-native-html-to-pdf → pdfbox-android references an optional JPEG2000 decoder we never use.
 -dontwarn com.gemalto.jp2.**
+
+# WorkManager (pulled in by the AdMob SDK) instantiates its Room database reflectively.
+# R8 full mode strips the generated no-arg constructor, crashing the app at startup.
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
+-keep class androidx.work.impl.** extends androidx.room.RoomDatabase { *; }
