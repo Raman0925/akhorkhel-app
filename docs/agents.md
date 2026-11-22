@@ -20,6 +20,7 @@
 | Pack registry  | `src/content/packs/index.ts` | `PACKS`, `getPack`, `packAsset`                                                                  |
 | Routes         | `src/navigation/routes.ts`   | Every screen and its params                                                                      |
 | AudioPlayer    | `src/audio/AudioPlayer.ts`   | `audio.playPack`, `audio.playPrompt`, `audio.sfx`, `audio.preload`                               |
+| Audio presence | `src/audio/assets.ts`        | `hasPackAudio`, `hasPrompt`, `usePromptAvailable` (hide speakers without audio, ADR 0004)        |
 | Voice prompts  | `src/audio/prompts.ts`       | Prompt ids + recording script                                                                    |
 | Progress store | `src/progress/progress.ts`   | `useProgress().record(profileId, packId, itemKey, level, stars)`                                 |
 | Profiles       | `src/progress/profiles.ts`   | `useProfiles`, `useCurrentProfile`, 40 max                                                       |

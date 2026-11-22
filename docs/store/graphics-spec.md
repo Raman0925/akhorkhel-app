@@ -46,25 +46,27 @@ real app: no feature, language or screen in a screenshot that is not in the rele
 | Layout | Top ~20%: caption band (Assamese line large, English line smaller in the English listing; Assamese only in the Assamese listing). Below: a real screen capture from a release build with test content replaced by final content. |
 | Banner | Capture with ads off (a debug build that hides `BannerSlot`), or crop the banner strip. Never show a live ad.                                                                                                                    |
 
-Captions (Assamese drafts need the same native review as `listing-as.md`):
+Captions (an Assamese read-through, as for `listing-as.md`, is recommended). The first release has
+no recorded audio, sound games or picture words (ADR 0004), so no screenshot shows a speaker
+button, a sound game or a bridge card:
 
 | #   | Screen                                                                                   | Caption — Assamese (draft)             | Caption — English                          |
 | --- | ---------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------ |
 | 1   | Tracing "ক" at Level 1: start dot, numbered strokes, animated arrow, a finger mid-stroke | আঁচে আঁচে ক খ লিখিবলৈ শিকক               | Trace each letter, stroke by stroke        |
-| 2   | Letter screen: big "অ", picture word, speaker button                                     | শুনক, চাওক, লিখক                        | See it, hear it, write it                  |
+| 2   | Letter screen: big "অ" with the trace button                                             | চাওক, লিখক                             | See it, write it                           |
 | 3   | Three-level selector / Level 3 blank page with stars                                     | সহায়ৰ পৰা নিজে লিখালৈ – তিনিটা স্তৰ     | Three levels: guided, faded, from memory   |
 | 4   | Letter grid showing স্বৰবৰ্ণ and ব্যঞ্জনবৰ্ণ tabs with stars                                  | সম্পূৰ্ণ অসমীয়া বৰ্ণমালা                   | The full Assamese alphabet                 |
 | 5   | Vowel sign screen: ক + া = কা                                                            | কাৰ: ক + া = কা                        | Vowel signs made simple                    |
-| 6   | Sound game "Tap the letter you hear"                                                     | শুনি সঠিক আখৰটো বিচাৰক                  | Fun sound games                            |
-| 7   | Language picker / Bodo or Mising bridge card (word + Assamese + English)                 | বড়ো আৰু মিচিং বৰ্ণমালাও                  | Bodo and Mising alphabets too              |
+| 6   | Numbers screen / counting objects                                                        | সংখ্যা ১–২০                             | Numbers 1 to 20                            |
+| 7   | Language picker / Bodo letter grid                                                       | বড়ো আৰু মিচিং বৰ্ণমালাও                  | Bodo and Mising alphabets too              |
 | 8   | Teacher mode class grid (fictional nicknames)                                            | শ্ৰেণীৰ বাবে – ৪০টালৈকে প্ৰ'ফাইল, অফলাইন | For classrooms: 40 profiles, works offline |
 
 Notes:
 
 - Screenshot 1 is the most important (first impression). The arrow and the numbered strokes must be
   clearly visible; capture mid-animation or add a static arrow overlay matching the app's style.
-- Screenshot 7 only if the Bodo/Mising packs are verified and shipped. Otherwise replace it with the
-  numbers screen (সংখ্যা ১–২০ / "Numbers 1 to 20") and remove Bodo/Mising from the listing.
+- Screenshot 7 shows only languages that are in the release build; drop any that is not (from the
+  caption and the listing too). If none is left, use the vowel-sign list instead.
 - Use fictional nicknames in screenshot 8 (e.g. "Moina", "Bitu"), never real children's names or
   photos.
 - Optional: 7-inch and 10-inch tablet screenshots only if the app is tested on tablets; it is
@@ -72,28 +74,28 @@ Notes:
 
 ## 4. Preview video — 30 seconds
 
-| Spec     | Value                                                                                                  |
-| -------- | ------------------------------------------------------------------------------------------------------ |
-| Host     | YouTube, public or unlisted, embeddable, **not** age-restricted, **monetisation off** (no ads)         |
-| Length   | 30 s (only the first 30 s autoplay on Play); show the app in use within the first 10 s                 |
-| Format   | 1080 × 1920 portrait or 1920 × 1080 landscape; screen recording of a release build + simple titles     |
-| Audio    | The app's own voice prompts and a light instrumental track that is royalty-free with a licence on file |
-| Captions | Burned-in bilingual captions (many parents watch muted)                                                |
-| YouTube  | "Made for kids" setting: **Yes** (it is child-directed content)                                        |
+| Spec     | Value                                                                                              |
+| -------- | -------------------------------------------------------------------------------------------------- |
+| Host     | YouTube, public or unlisted, embeddable, **not** age-restricted, **monetisation off** (no ads)     |
+| Length   | 30 s (only the first 30 s autoplay on Play); show the app in use within the first 10 s             |
+| Format   | 1080 × 1920 portrait or 1920 × 1080 landscape; screen recording of a release build + simple titles |
+| Audio    | A light instrumental track that is royalty-free with a licence on file (no recorded voices yet)    |
+| Captions | Burned-in bilingual captions (many parents watch muted)                                            |
+| YouTube  | "Made for kids" setting: **Yes** (it is child-directed content)                                    |
 
 Storyboard:
 
-| Time    | Picture                                                                                  | Sound / caption                                                |
-| ------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| 0–3 s   | Mascot waves; title card "আখৰ খেল · Akhor Khel"                                          | Voice: "আহা, আখৰ খেলোঁ!" (final line from the recorded prompts) |
-| 3–10 s  | Finger traces "ক": start dot, arrow, numbered strokes; stroke turns green; 3 stars burst | Caption: আঁচে আঁচে লিখক · Trace stroke by stroke                 |
-| 10–14 s | Level 2 faded guide, then Level 3 blank page, child writes "খ"                           | Caption: তিনিটা স্তৰ · Three levels                             |
-| 14–17 s | Letter screen "অ": tap speaker, picture word appears                                     | Recorded letter audio                                          |
-| 17–20 s | Vowel sign: ক + া slides together into কা                                                | Caption: কাৰ · Vowel signs                                     |
-| 20–23 s | Sound game: correct letter tapped, gentle celebration                                    | Caption: শব্দৰ খেল · Sound games                                |
-| 23–26 s | Bodo and Mising bridge cards side by side                                                | Caption: বড়ো আৰু মিচিং · Bodo & Mising                          |
-| 26–28 s | Teacher class grid; airplane-mode icon                                                   | Caption: অফলাইনত চলে · Works offline                           |
-| 28–30 s | Mascot + icon + name                                                                     | Caption: আখৰ খেল · Akhor Khel                                  |
+| Time    | Picture                                                                                  | Sound / caption                                |
+| ------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 0–3 s   | Mascot waves; title card "আখৰ খেল · Akhor Khel"                                          | Music; caption: আখৰ খেল · Akhor Khel           |
+| 3–10 s  | Finger traces "ক": start dot, arrow, numbered strokes; stroke turns green; 3 stars burst | Caption: আঁচে আঁচে লিখক · Trace stroke by stroke |
+| 10–14 s | Level 2 faded guide, then Level 3 blank page, child writes "খ"                           | Caption: তিনিটা স্তৰ · Three levels             |
+| 14–17 s | Letter screen "অ": tap the trace button                                                  | Caption: চাওক, লিখক · See it, write it         |
+| 17–20 s | Vowel sign: ক + া slides together into কা                                                | Caption: কাৰ · Vowel signs                     |
+| 20–23 s | Counting objects; the running numeral grows; gentle celebration                          | Caption: সংখ্যা ১–২০ · Numbers 1 to 20          |
+| 23–26 s | Bodo letter grid                                                                         | Caption: বড়ো আৰু মিচিং · Bodo & Mising          |
+| 26–28 s | Teacher class grid; airplane-mode icon                                                   | Caption: অফলাইনত চলে · Works offline           |
+| 28–30 s | Mascot + icon + name                                                                     | Caption: আখৰ খেল · Akhor Khel                  |
 
 Same rules as screenshots: no live ads in the video; Bodo/Mising shots only if those packs ship.
 
@@ -104,7 +106,7 @@ Same rules as screenshots: no live ads in the video; Bodo/Mising shots only if t
 - [ ] `screenshot-en-01.png` … `screenshot-en-08.png`
 - [ ] `screenshot-as-01.png` … `screenshot-as-08.png`
 - [ ] YouTube URL of the 30 s video (made for kids, monetisation off)
-- [ ] Native Assamese review of every caption, recorded in `listing-as.md`
+- [ ] Optional: Assamese read-through of every caption, noted in `listing-as.md`
 
 Keep source files (layered) outside the repo or in a design drive; do not commit large binaries
 unless the repo owner agrees.

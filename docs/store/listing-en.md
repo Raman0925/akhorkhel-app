@@ -23,18 +23,16 @@ Akhor Khel: Assamese Alphabet
 Learn & write Assamese ক খ, অ আ letters. Kids tracing game + Bodo & Mising
 ```
 
-## Full description — 3,818 / 4,000
+## Full description — 3,266 / 4,000
 
 ```text
-Akhor Khel (আখৰ খেল, "letter play") is an Assamese alphabet learning app for children aged 3 to 8. Your child sees each letter, hears it spoken by a real Assamese voice, and then learns to write Assamese alphabet letters with a finger, stroke by stroke. It is the gentle way to learn অসমীয়া বৰ্ণমালা at home or in class.
+Akhor Khel (আখৰ খেল, "letter play") is an Assamese alphabet learning app for children aged 3 to 8. Your child sees each letter and then learns to write Assamese alphabet letters with a finger, stroke by stroke. It is the gentle way to learn অসমীয়া বৰ্ণমালা at home or in class.
 
 WHAT KIDS LEARN
-• স্বৰবৰ্ণ – the Assamese vowels অ আ ই ঈ, each with sound and a picture word
+• স্বৰবৰ্ণ – the Assamese vowels অ আ ই ঈ
 • ব্যঞ্জনবৰ্ণ – the consonants, ko kho go gho (ক খ গ ঘ) in Asam Sahitya Sabha order, including ৰ and ৱ
-• Vowel signs (কাৰ): ক + া = কা, with tracing and listening
+• Vowel signs (কাৰ): ক + া = কা, with tracing
 • Numbers ১ to ২০: trace the numerals and count objects
-• Picture words with audio that link each letter to everyday Assamese life
-• Sound games: "Tap the letter you hear" and "Which picture starts with this sound?"
 
 The full অসমীয়া বৰ্ণমালা is here, from the first স্বৰবৰ্ণ to the last ব্যঞ্জনবৰ্ণ. Children who already sing "ko kho go gho" learn what each sound looks like and how to write it.
 
@@ -46,7 +44,7 @@ Akhor Khel is an Assamese letter writing app built around real stroke order. Eve
 Children earn up to three stars. There is no red cross and no fail screen: if a stroke goes the wrong way, the app simply shows the correct stroke again. Left-hand mode is available in the parent area. Sessions are short, about 5 to 10 minutes, which suits young learners.
 
 BODO AND MISING
-Akhor Khel is also the first kids' app for the Bodo alphabet and the Mising alphabet. The Bodo alphabet is taught in Devanagari script and the Mising alphabet in Latin script (Mising Agom Kébang spelling). Bridge cards show a Bodo or Mising word next to its Assamese and English meaning, so children can learn their mother tongue and Assamese side by side. All three languages are free.
+Akhor Khel is also the first kids' app for the Bodo alphabet and the Mising alphabet. The Bodo alphabet is taught in Devanagari script and the Mising alphabet in Latin script (Mising Agom Kébang spelling). All three languages are free.
 
 FOR SCHOOLS AND TEACHERS
 Teachers and Anganwadi workers can use this Assamese learning app with a whole class on one phone:
@@ -59,7 +57,6 @@ SAFE, CALM AND OFFLINE
 • Every lesson works offline. No internet is needed to learn.
 • No sign-up, no account and no chat. Progress is stored only on this device.
 • Settings, teacher mode and anything that leaves the app are behind a parent gate.
-• Voice prompts on every screen, so pre-readers can find their way.
 
 About ads: Akhor Khel is free because it shows ads from Google AdMob. Ads are set up for a children's app: child-directed, non-personalised and limited to general-audience (G) content. A small banner appears only on the home screen, letter grid, word list and parent area, and a full-screen ad may appear at a natural break after a set of letters, never at launch and never while your child is tracing or playing a game. There are no "watch an ad to unlock" ads: everything in the app is free. There are no in-app purchases.
 
@@ -110,5 +107,8 @@ metadata policy violation.
 - Do not claim the app is "ad-free", "100% safe" or "COPPA certified".
 - Keep the ads paragraph; parents must know before installing that the app contains ads (the
   "Contains ads" label is also shown by Play).
-- If a language pack is not verified at release, remove every mention of it here and in the
+- If a language pack is not in the release build, remove every mention of it here and in the
   Assamese listing.
+- The first release has no recorded audio and no picture words (ADR 0004): do not mention
+  recorded voices, listening, voice prompts, sound games, picture words or bridge cards until a
+  release actually contains them.

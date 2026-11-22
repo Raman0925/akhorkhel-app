@@ -83,7 +83,7 @@ Notes on these answers:
 ## 4. Things that are NOT collected (for reviewers and for the privacy policy)
 
 Name, email, phone, address, photos, audio/microphone (the `RECORD_AUDIO` permission is removed;
-the app only plays pre-recorded audio), contacts, files, precise location, the child's drawings,
+the app never records audio; it only plays bundled sounds), contacts, files, precise location, the child's drawings,
 nicknames, avatars, progress, teacher exports, in-app search, installed apps, purchase history. No
 analytics, no crash reporting, no remote config, no other SDK that sends data.
 

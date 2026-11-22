@@ -1,15 +1,20 @@
 # Release runbook
 
 How to take Akhor Khel from a green `main` to Google Play, and how to keep it there. Written for the
-owner, who is an individual developer. Steps marked **(owner)** need a human with access to the
-accounts; nothing here can be done by an agent.
+owner, who publishes through an **organization** Google Play developer account. Steps marked
+**(owner)** need a human with access to the accounts; nothing here can be done by an agent.
+
+Release path (owner decision, 2026-11-22): **internal testing** (a quick smoke install from Play)
+→ **production**. The first release ships without the native-review gate and without recorded
+audio (ADR 0004); speaker buttons and the sound games stay hidden until recordings are added.
 
 Facts checked on 22 Nov 2026 (re-check before the first launch; Google changes these often):
 
 - Target API: new apps and updates must target **API 36** from 31 Aug 2026
   (<https://developer.android.com/google/play/requirements/target-sdk>). The project targets 36.
-- New **personal** developer accounts (created after 13 Nov 2023) must run a **closed test with at
-  least 12 testers opted in continuously for 14 days** before applying for production access
+- The rule that new developer accounts must run a **closed test with at least 12 testers for 14
+  days** before production access applies to **personal** accounts created after 13 Nov 2023 only.
+  **Organization accounts are not subject to it** and can publish to production directly
   (<https://support.google.com/googleplay/android-developer/answer/14151465>).
 - Google AdMob (`play-services-ads` **19.0.0 or later**) is on the Families Self-Certified Ads SDK
   list (<https://support.google.com/googleplay/android-developer/answer/12955712>).
@@ -24,11 +29,12 @@ Related documents: `docs/store/*` (listing, Data safety, Families, graphics),
 
 ## 0. Before anything: placeholders the owner must replace
 
-| Placeholder                                                         | Where it is used                                                     | Action **(owner)**                                                                                                                                                                                                                    |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`akhorkhel.app@gmail.com`** — PLACEHOLDER EMAIL                   | Privacy policy, `site/index.html`, store listing, Play contact, IARC | Create this Gmail address (or choose another address you control) **before** publishing the privacy page. If you choose another address, replace it in every file: `grep -rn "akhorkhel.app@gmail.com" docs site`. It will be public. |
-| Privacy policy URL `https://raman0925.github.io/akhorkhel-privacy/` | Listing, Play Console, in-app parent area                            | Publish it (section 1). If you move to a custom domain, update every reference, including the app's parent-area link.                                                                                                                 |
-| Developer website                                                   | Play contact details; `app-ads.txt`                                  | Decide (section 1.2).                                                                                                                                                                                                                 |
+| Placeholder                                                         | Where it is used                                                                             | Action **(owner)**                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`akhorkhel.app@gmail.com`** — PLACEHOLDER EMAIL                   | Privacy policy, `site/index.html`, store listing, Play contact, IARC                         | Create this Gmail address (or choose another address you control) **before** publishing the privacy page. If you choose another address, replace it in every file: `grep -rn "akhorkhel.app@gmail.com" docs site`. It will be public. |
+| Privacy policy URL `https://raman0925.github.io/akhorkhel-privacy/` | Listing, Play Console, in-app parent area                                                    | Publish it (section 1). If you move to a custom domain, update every reference, including the app's parent-area link.                                                                                                                 |
+| Developer website                                                   | Play contact details; `app-ads.txt`                                                          | Decide (section 1.2).                                                                                                                                                                                                                 |
+| Publisher "**an individual developer**"                             | `docs/privacy-policy.md` ("Published by", contact), `site/index.html` (English and Assamese) | The Play account is an organization account: replace it with the organization's legal name (as verified in Play) in both files, ideally as part of the legal review (section 9), before publishing the policy.                        |
 
 ## 1. Privacy policy site and developer website
 
@@ -50,8 +56,8 @@ Wait a minute, then open <https://raman0925.github.io/akhorkhel-privacy/> on a p
 both the English and Assamese sections display. Before publishing:
 
 - [ ] the contact email exists and you can read mail sent to it;
-- [ ] a native Assamese speaker has reviewed the Assamese section of `site/index.html`;
-- [ ] a lawyer has reviewed the policy (section 9).
+- [ ] a lawyer has reviewed the policy (section 9, recommended);
+- [ ] optional: an Assamese speaker has read the Assamese section of `site/index.html`.
 
 Whenever `docs/privacy-policy.md` changes, update `site/index.html`, copy it to the public repo and
 change the effective date in both.
@@ -115,8 +121,8 @@ Delete `upload.b64` after setting the secret.
 
 ## 3. GitHub Actions secrets **(owner)**
 
-The `CI` workflow (`.github/workflows/ci.yml`) uses these repository secrets on `v*` tag builds only.
-Every other build uses Google's test ad IDs and is not release-signed.
+The `CI` workflow (`.github/workflows/ci.yml`) uses exactly these seven repository secrets, on `v*`
+tag builds only. Every other build uses Google's test ad IDs and is not release-signed.
 
 | Secret                            | Value                                                              |
 | --------------------------------- | ------------------------------------------------------------------ |
@@ -139,6 +145,9 @@ gh secret set ADMOB_INTERSTITIAL_ID
 gh secret list
 ```
 
+The old `ADMOB_REWARDED_ID` secret is **unused** since rewarded ads were removed (ADR 0003). If it
+still shows in `gh secret list`, the owner can delete it: `gh secret delete ADMOB_REWARDED_ID`.
+
 Never put real ad unit IDs in the repo, and never tap your own live ads (AdMob can suspend the
 account). For testing on your own phone use a test build or add the phone as an AdMob test device.
 
@@ -158,8 +167,9 @@ account). For testing on your own phone use a test build or add the phone as an 
    ```
 
 4. CI on the tag runs: lint → typecheck → format → tests → `validate-packs` → **release gate**
-   (`validate-packs:release`: every shipped pack verified, all audio/images present, no `auto`
-   strokes) → no TODO/placeholder check → signed `bundleRelease` with the real AdMob IDs → policy
+   (`validate-packs:release`: every integrity check plus no `placeholderEmoji` words; missing
+   audio/images are warnings only, ADR 0004) → no TODO/placeholder check → signed `bundleRelease`
+   with the real AdMob IDs → policy
    checks (`tools/ci/check-release.sh`: permissions, targetSdk 36, 16 KB alignment, size) → Maestro
    E2E. If the gate fails, fix on `main`, bump `versionCode` again only if an AAB was already
    uploaded, and re-tag a new version (do not move an existing tag).
@@ -177,15 +187,15 @@ account). For testing on your own phone use a test build or add the phone as an 
 
 ### 5.1 First-time setup **(owner)**
 
-1. Create a **personal** developer account (one-time fee, identity verification; use your legal
-   name for verification — the public developer name can be "Akhor Khel"). Verify the contact
-   email and phone.
+1. Use the **organization** developer account (one-time fee; organization verification needs a
+   D-U-N-S number matching the organization's legal name and address — the public developer name
+   can be "Akhor Khel"). Verify the contact email and phone.
 2. **Create app**: name `Akhor Khel: Assamese Alphabet`, default language English (India), App,
    **Free**. Accept the declarations. Free cannot later be changed to paid.
 3. **Play App Signing**: accept Google-generated app signing key (default for new apps). The first
    AAB you upload registers your upload key.
 4. **Store listing**: paste from `docs/store/listing-en.md`; add the Assamese translation from
-   `docs/store/listing-as.md` only after native review; upload graphics from
+   `docs/store/listing-as.md` (a read-through by an Assamese speaker is recommended); upload graphics from
    `docs/store/graphics-spec.md`; category Education; contact email; website (section 1.2);
    privacy policy URL.
 5. **App content** (Policy → App content), answers in `docs/store/families-and-content-rating.md`
@@ -201,25 +211,24 @@ account). For testing on your own phone use a test build or add the phone as an 
 6. **Countries**: owner decision. Recommended first launch: **India only** (simplest legally; EEA/UK
    would also need a review of consent requirements for ads). Add countries later after legal advice.
 
-### 5.2 Testing tracks
+### 5.2 Internal testing (smoke install)
 
-1. **Internal testing**: upload the AAB, add yourself and a few testers by email, install from the
-   opt-in link, smoke-test on a real low-end phone (cold start, tracing at all 3 levels, airplane
-   mode, a set completion → interstitial, parent gate → parent area).
+Organization accounts do not need closed testing or a production-access application; internal
+testing is only a quick check that the Play-delivered build installs and works.
+
+1. **Internal testing**: upload the AAB, add yourself (and anyone helping) by email, install from
+   the opt-in link, smoke-test on a real low-end phone: cold start, tracing at all 3 levels,
+   airplane mode, a set completion → interstitial, parent gate → parent area, and check that no
+   speaker button or Games tile shows while no audio is bundled.
 2. **Pre-launch report**: runs automatically on testing tracks. Fix crashes, accessibility warnings
-   (touch targets, contrast) and any policy flags before going further. The parent gate will stop
-   the robot from entering adult areas; that is expected.
-3. **Closed testing** (required for new personal accounts): create a closed track, upload the same
-   or a newer AAB, add **at least 12 testers** (Google Group or email list — e.g. teachers and
-   parents who agreed to help) and keep them **opted in for 14 consecutive days**. Testers who
-   leave and re-join lose their earlier days. Collect feedback via the track's feedback channel.
-4. **Apply for production access** (Dashboard) after the 14 days, answering Google's questions
-   about the test honestly (who tested, what you changed).
+   (touch targets, contrast) and any policy flags before promoting. The parent gate will stop the
+   robot from entering adult areas; that is expected.
 
 ### 5.3 Production
 
-1. Promote the tested release to **Production** with a **staged rollout** (e.g. 10% → 50% → 100%
-   over a few days), watching Android vitals (crash rate, ANR rate) and reviews.
+1. Promote the tested release from internal testing to **Production** with a **staged rollout**
+   (e.g. 10% → 50% → 100% over a few days), watching Android vitals (crash rate, ANR rate) and
+   reviews.
 2. First review of a Families app can take longer than usual. If rejected, read the email, fix the
    exact issue, and reply through the Policy status page; do not resubmit blindly.
 3. After it is live: link the app in AdMob (section 6), set the developer website so
@@ -227,7 +236,8 @@ account). For testing on your own phone use a test build or add the phone as an 
 
 ## 6. AdMob setup **(owner)**
 
-1. Create an AdMob account with the same Google account (payments profile: individual, India;
+1. Create an AdMob account with the same Google account (payments profile: business, matching the
+   organization;
    add tax and bank details under Payments so earnings can be paid).
 2. **Add app** → Android → "not yet published" at first; after launch, link it to the Play listing.
    Copy the **App ID** to the `ADMOB_APP_ID` secret.
@@ -277,23 +287,15 @@ Also: respond to Play policy emails within their deadline; reply to reviews in E
 
 ## 8. Ready to ship — checklist
 
-### Human content work (must be finished first)
+### Content (ADR 0004)
 
-The release gate refuses to build until this is done. Details and procedures are in
-**`docs/CONTENT_GUIDE.md`**.
+Native review and recorded audio are **not** prerequisites (owner decision, 2026-11-22). The release
+gate only needs `npm run validate-packs:release` to pass (integrity checks, no placeholder emoji).
+Audio can be added in any later release without code changes (`docs/CONTENT_GUIDE.md` section 3).
 
-- [ ] Native review of every shipped pack (`asm-beng`, `brx-deva`, `mrg-latn`): alphabet order,
-      spellings, words, translations; reviewer names recorded in the pack (`reviewedBy`).
-- [ ] Audio recorded by native speakers (letters, words, voice prompts), processed to spec, with
-      signed consent kept outside the repo.
-- [ ] Original illustrations for every picture word, mascot and store graphics; licences/written
-      permissions on file.
-- [ ] Stroke review: every glyph's strokes checked or re-recorded by a native writer (no
-      `strokeSource: "auto"` left).
-- [ ] Any pack that cannot be verified in time is removed completely, and removed from the store
-      listing, screenshots and video.
-- [ ] Native review of `docs/store/listing-as.md`, the Assamese captions in
-      `docs/store/graphics-spec.md` and the Assamese section of `site/index.html`.
+- [ ] `npm run validate-packs:release` passes on the tagged commit.
+- [ ] Store graphics (icon, feature graphic, screenshots) are original or licensed, and show only
+      what the build contains (no speaker buttons or sound games while no audio is bundled).
 
 ### App checks (A6 audit on the signed build)
 
@@ -305,13 +307,15 @@ The release gate refuses to build until this is done. Details and procedures are
       first session; caps; no ads on tracing/game screens; no rewarded ads; lessons work in
       airplane mode.
 - [ ] Merged manifest: only `INTERNET` and `ACCESS_NETWORK_STATE`; no `AD_ID`.
-- [ ] Pre-launch report clean; Android vitals fine on internal/closed tracks.
+- [ ] Pre-launch report clean; smoke install from the internal testing track works.
 
 ### Store and accounts
 
-- [ ] Contact email created; privacy site live; developer website + `app-ads.txt` live.
-- [ ] Graphics, listing (en + reviewed as), Data safety, Families, ads, content rating done.
-- [ ] Closed test 12 testers × 14 days completed; production access granted.
+- [ ] Organization developer account verified.
+- [ ] Contact email created; privacy policy published; developer website + `app-ads.txt` live.
+- [ ] Graphics, listing (en + as), Data safety, Families (target audience), ads declaration
+      ("contains ads") and content rating (IARC) done.
+- [ ] Legal review done or consciously deferred by the owner (section 9).
 
 ## 9. Legal review before launch **(owner)**
 

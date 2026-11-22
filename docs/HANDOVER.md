@@ -154,7 +154,9 @@ Pack ID = ISO 639-3 + ISO 15924 script (e.g. `asm-beng`).
 
 ### 5.1 Content schema
 
-See `src/content/schema.ts` (the contract). The CI validator fails on an invalid schema, non-NFC glyphs, an item with no strokes, or a `verified` pack without `reviewedBy`. **The release build fails if any shipped pack is unverified.**
+See `src/content/schema.ts` (the contract). The CI validator fails on an invalid schema, non-NFC glyphs, dangling references, broken or out-of-date geometry, or an item with no strokes. The release gate (`validate-packs --release`, tags only) runs the same integrity checks and also rejects words that still use a placeholder emoji.
+
+> **Owner decisions, 2026-11-22 (ADR 0004):** the native-review gate is removed. The pack fields `status` and `reviewedBy` no longer exist, and `strokeSource: "auto"` strokes may ship (tools still never overwrite `recorded`/`reviewed` strokes). The owner reports that an Assamese-speaking reviewer checked the content; native review stays recommended for future changes but is not enforced. Recorded audio is optional: the release gate does not require audio, image or prompt files, and the app hides speaker buttons and the sound games until recordings are added.
 
 ### 5.2 Tracing engine
 
@@ -171,11 +173,13 @@ Local only: stars, attempts, settings, ad counters. Profile = nickname + avatar.
 ## 6. Content rules
 
 1. **Agents never make up letters, spellings, words, translations or audio.** Content comes from humans.
-2. Assamese: Asam Sahitya Sabha alphabet order; a native teacher reviews and records (female and male child-friendly voices).
+2. Assamese: Asam Sahitya Sabha alphabet order; native review of changes is recommended (no longer enforced, ADR 0004).
 3. Bodo/Mising: alphabet from the language body (Bodo Sahitya Sabha, Mising Agom Kébang). CIIL/NCERT primers are reference only; examples and images are original or used with written permission.
-4. Audio: 44.1 kHz WAV masters → mono AAC ~32 kbps, normalised, silence trimmed, named by item ID; signed consent kept outside the repo.
+4. Audio (optional; the app launches without it, ADR 0004): if added, native child-friendly voices, 44.1 kHz WAV masters → mono AAC ~32 kbps, normalised, silence trimmed, named by item ID; signed consent kept outside the repo. Drop the files in place and run `npm run gen:assets`; no code change.
 5. Images: original, flat, Assamese-culture illustrations. No known characters.
-6. Unverified packs stay `draft-needs-native-review`; developers use clearly marked placeholders.
+6. Placeholder emoji for word pictures are for development only; the release gate rejects them.
+
+Owner decisions, 2026-11-22: see the note in 5.1 and `docs/adr/0004-launch-without-review-gate-and-audio.md`.
 
 ## 7. Multi-agent operating model
 
@@ -206,7 +210,7 @@ PRs against `main`, green CI and an A6 review before merge, squash-merge, Conven
 ### 7.4 Definition of done
 
 - [ ] Signed AAB, targetSdk 36, 16 KB compatible, no AD_ID, download < 40 MB.
-- [ ] `asm-beng`, `brx-deva`, `mrg-latn` verified with reviewer names.
+- [ ] Shipped packs pass `npm run validate-packs:release` (integrity + no placeholder emoji). Owner decision 2026-11-22 (ADR 0004): no native-review gate and no reviewer names in packs; launch without recorded audio (speaker buttons and sound games stay hidden until recordings are added).
 - [ ] Tracing works for every glyph at all 3 levels; scorer coverage ≥ 90%.
 - [ ] Cold start < 2.5 s; 60fps tracing on a low-end device.
 - [ ] Ads: child-directed + G in logs; caps tested; none on tracing/game screens; no rewarded ads; lessons work in airplane mode.

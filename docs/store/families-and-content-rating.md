@@ -48,8 +48,8 @@ mixed-audience app.
   "can opt in to be rated" and that inclusion is not guaranteed. Google describes teachers rating apps on things
   such as age-appropriateness, quality of the experience and learning value, and on whether ads
   and monetisation suit children.
-- What helps Akhor Khel: real learning goal (tracing with stroke order), no fail screens, voice
-  prompts for pre-readers, tribal-language content, calm ad placement (none during learning),
+- What helps Akhor Khel: real learning goal (tracing with stroke order), no fail screens,
+  tribal-language content, calm ad placement (none during learning),
   no rewarded or "watch an ad to unlock" ads, nothing locked behind an ad.
 - What can hurt: ad frequency. If Teacher Approved matters more than revenue, consider removing
   the interstitial in a later yearly update (the caps live in `src/monetization/`).
@@ -107,7 +107,7 @@ policy audit; Maestro covers the flows).
 | One ad placement per page                                                                  | At most one banner per screen; no banner while a full-screen ad is shown.                                                                                                                                            | `src/monetization/`                                   |
 | No emotionally manipulative tactics to encourage ad viewing or purchases                   | No rewarded ads; no "watch to continue" or "watch to unlock" prompts; lessons never wait for an ad; no purchases.                                                                                                    | `src/monetization/`                                   |
 | Links out of the app / settings for adults                                                 | Privacy policy link, settings, teacher mode and share/export are behind the parent gate.                                                                                                                             | `src/features/parentGate`, `parentArea`               |
-| Content appropriate for children                                                           | All content human-made and reviewed by native speakers; original illustrations; no known characters.                                                                                                                 | `docs/CONTENT_GUIDE.md`                               |
+| Content appropriate for children                                                           | All language content from cited human sources (no invented content); the owner reports an Assamese speaker checked it (ADR 0004); no known characters; no recorded voices or pictures in the first release.          | `docs/CONTENT_GUIDE.md`                               |
 | No social features / chat; no user-generated content shared                                | None.                                                                                                                                                                                                                | —                                                     |
 | Target API meets Play requirement                                                          | targetSdk 36 (required for new apps and updates from 31 Aug 2026). CI fails otherwise.                                                                                                                               | `android/build.gradle`; `check-release.sh`            |
 | Accurate Play Console declarations                                                         | This file + `data-safety.md`.                                                                                                                                                                                        | Play Console                                          |

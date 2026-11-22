@@ -1,6 +1,6 @@
 # Akhor Khel · আখৰ খেল
 
-An Android app that teaches children aged 3–8 to see, hear, trace and write **Assamese** letters,
+An Android app that teaches children aged 3–8 to see, trace and write **Assamese** letters,
 with **Bodo** and **Mising** packs. Lessons work fully offline, progress stays on the device, and
 there is no backend. Revenue comes from Families-compliant AdMob ads only.
 
@@ -27,6 +27,7 @@ Requirements: Node ≥ 22.11, JDK 17, Android SDK 36.
 ## Release
 
 Releases are built by GitHub Actions from a `v*` tag. The tag build runs the **release gate**
-(`npm run validate-packs:release`): every shipped language pack must be `verified` by a native
-reviewer, with recorded audio, illustrations and reviewed strokes. See
+(`npm run validate-packs:release`): every shipped language pack must pass the integrity checks and
+contain no placeholder emoji. Native review and recorded audio are optional (ADR 0004); speaker
+buttons and sound games appear once audio files are added. See
 [docs/RELEASE.md](docs/RELEASE.md) for secrets and Play Console steps.

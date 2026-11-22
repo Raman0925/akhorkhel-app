@@ -4,7 +4,8 @@
 > <https://raman0925.github.io/akhorkhel-privacy/>. Keep both identical in meaning; update the
 > effective date in both when anything changes. **Have this policy reviewed by a lawyer before
 > launch** (Indian DPDP Act/Rules and, if the app is offered outside India, other children's privacy
-> laws). The Assamese section in `site/index.html` is a draft that a native speaker must review.
+> laws). A read-through of the Assamese section in `site/index.html` by an Assamese speaker is
+> recommended.
 
 **Effective date:** 22 November 2026
 **App:** Akhor Khel (আখৰ খেল), Android, package `in.akhorkhel.app`

@@ -7,10 +7,10 @@ Every audio file the app plays. Record to the spec in [CONTENT_GUIDE.md](CONTENT
 at the listed path inside `src/content/packs/<packId>/` (pack audio) or `src/audio/prompts/`
 (voice prompts). Then run `npm run gen:assets`.
 
-All text below comes from draft packs (`draft-needs-native-review`): the reviewer confirms each
-item before it is recorded.
+Recordings are optional (ADR 0004): the app hides the speaker button for any file that is
+missing. Have the voice artist (or a native speaker) confirm each item before it is recorded.
 
-## Assamese (`asm-beng`): draft-needs-native-review
+## Assamese (`asm-beng`)
 
 ### Letters
 
@@ -109,7 +109,7 @@ item before it is recorded.
 | `audio/numbers/19.m4a` | ১৯  | number 19: number word still needed | no       |
 | `audio/numbers/20.m4a` | ২০  | number 20: number word still needed | no       |
 
-## Bodo (`brx-deva`): draft-needs-native-review
+## Bodo (`brx-deva`)
 
 ### Letters
 
@@ -186,10 +186,6 @@ item before it is recorded.
 | `audio/numbers/18.m4a` | १८  | number 18: number word still needed | no       |
 | `audio/numbers/19.m4a` | १९  | number 19: number word still needed | no       |
 | `audio/numbers/20.m4a` | २०  | number 20: number word still needed | no       |
-
-## Mising (`mrg-latn`): draft-needs-native-review
-
-Nothing to record yet: the pack has no content.
 
 ## Voice prompts
 
