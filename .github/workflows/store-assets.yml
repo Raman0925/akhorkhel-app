@@ -57,18 +57,9 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
+      # Built from the input: unmatched `include` rows would otherwise be added as extra jobs.
       matrix:
-        device: ${{ fromJSON(inputs.tablets && '["phone","tablet7","tablet10"]' || '["phone"]') }}
-        include:
-          - device: phone
-            profile: pixel_7
-            skin: ''
-          - device: tablet7
-            profile: pixel_7
-            skin: '-skin 1200x1920'
-          - device: tablet10
-            profile: pixel_7
-            skin: '-skin 1600x2560'
+        include: ${{ fromJSON(inputs.tablets && '[{"device":"phone","profile":"pixel_7","skin":""},{"device":"tablet7","profile":"pixel_7","skin":"-skin 1200x1920"},{"device":"tablet10","profile":"pixel_7","skin":"-skin 1600x2560"}]' || '[{"device":"phone","profile":"pixel_7","skin":""}]') }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v7
