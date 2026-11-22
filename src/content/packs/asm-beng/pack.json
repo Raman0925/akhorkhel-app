@@ -9,8 +9,553 @@
   "script": "Beng",
   "fontFamily": "NotoSansBengali-Regular",
   "status": "draft-needs-native-review",
-  "letters": [],
-  "signs": [],
+  "letters": [
+    {
+      "id": "a",
+      "glyph": "অ",
+      "group": "vowel",
+      "order": 1,
+      "audio": "audio/letters/a.m4a"
+    },
+    {
+      "id": "aa",
+      "glyph": "আ",
+      "group": "vowel",
+      "order": 2,
+      "audio": "audio/letters/aa.m4a"
+    },
+    {
+      "id": "i",
+      "glyph": "ই",
+      "group": "vowel",
+      "order": 3,
+      "audio": "audio/letters/i.m4a"
+    },
+    {
+      "id": "ii",
+      "glyph": "ঈ",
+      "group": "vowel",
+      "order": 4,
+      "audio": "audio/letters/ii.m4a"
+    },
+    {
+      "id": "u",
+      "glyph": "উ",
+      "group": "vowel",
+      "order": 5,
+      "audio": "audio/letters/u.m4a"
+    },
+    {
+      "id": "uu",
+      "glyph": "ঊ",
+      "group": "vowel",
+      "order": 6,
+      "audio": "audio/letters/uu.m4a"
+    },
+    {
+      "id": "ri",
+      "glyph": "ঋ",
+      "group": "vowel",
+      "order": 7,
+      "audio": "audio/letters/ri.m4a"
+    },
+    {
+      "id": "e",
+      "glyph": "এ",
+      "group": "vowel",
+      "order": 8,
+      "audio": "audio/letters/e.m4a"
+    },
+    {
+      "id": "oi",
+      "glyph": "ঐ",
+      "group": "vowel",
+      "order": 9,
+      "audio": "audio/letters/oi.m4a"
+    },
+    {
+      "id": "o",
+      "glyph": "ও",
+      "group": "vowel",
+      "order": 10,
+      "audio": "audio/letters/o.m4a"
+    },
+    {
+      "id": "ou",
+      "glyph": "ঔ",
+      "group": "vowel",
+      "order": 11,
+      "audio": "audio/letters/ou.m4a"
+    },
+    {
+      "id": "ka",
+      "glyph": "ক",
+      "group": "consonant",
+      "order": 12,
+      "audio": "audio/letters/ka.m4a"
+    },
+    {
+      "id": "kha",
+      "glyph": "খ",
+      "group": "consonant",
+      "order": 13,
+      "audio": "audio/letters/kha.m4a"
+    },
+    {
+      "id": "ga",
+      "glyph": "গ",
+      "group": "consonant",
+      "order": 14,
+      "audio": "audio/letters/ga.m4a"
+    },
+    {
+      "id": "gha",
+      "glyph": "ঘ",
+      "group": "consonant",
+      "order": 15,
+      "audio": "audio/letters/gha.m4a"
+    },
+    {
+      "id": "nga",
+      "glyph": "ঙ",
+      "group": "consonant",
+      "order": 16,
+      "audio": "audio/letters/nga.m4a"
+    },
+    {
+      "id": "ca",
+      "glyph": "চ",
+      "group": "consonant",
+      "order": 17,
+      "audio": "audio/letters/ca.m4a"
+    },
+    {
+      "id": "cha",
+      "glyph": "ছ",
+      "group": "consonant",
+      "order": 18,
+      "audio": "audio/letters/cha.m4a"
+    },
+    {
+      "id": "ja",
+      "glyph": "জ",
+      "group": "consonant",
+      "order": 19,
+      "audio": "audio/letters/ja.m4a"
+    },
+    {
+      "id": "jha",
+      "glyph": "ঝ",
+      "group": "consonant",
+      "order": 20,
+      "audio": "audio/letters/jha.m4a"
+    },
+    {
+      "id": "nya",
+      "glyph": "ঞ",
+      "group": "consonant",
+      "order": 21,
+      "audio": "audio/letters/nya.m4a"
+    },
+    {
+      "id": "tta",
+      "glyph": "ট",
+      "group": "consonant",
+      "order": 22,
+      "audio": "audio/letters/tta.m4a"
+    },
+    {
+      "id": "ttha",
+      "glyph": "ঠ",
+      "group": "consonant",
+      "order": 23,
+      "audio": "audio/letters/ttha.m4a"
+    },
+    {
+      "id": "dda",
+      "glyph": "ড",
+      "group": "consonant",
+      "order": 24,
+      "audio": "audio/letters/dda.m4a"
+    },
+    {
+      "id": "ddha",
+      "glyph": "ঢ",
+      "group": "consonant",
+      "order": 25,
+      "audio": "audio/letters/ddha.m4a"
+    },
+    {
+      "id": "nna",
+      "glyph": "ণ",
+      "group": "consonant",
+      "order": 26,
+      "audio": "audio/letters/nna.m4a"
+    },
+    {
+      "id": "ta",
+      "glyph": "ত",
+      "group": "consonant",
+      "order": 27,
+      "audio": "audio/letters/ta.m4a"
+    },
+    {
+      "id": "tha",
+      "glyph": "থ",
+      "group": "consonant",
+      "order": 28,
+      "audio": "audio/letters/tha.m4a"
+    },
+    {
+      "id": "da",
+      "glyph": "দ",
+      "group": "consonant",
+      "order": 29,
+      "audio": "audio/letters/da.m4a"
+    },
+    {
+      "id": "dha",
+      "glyph": "ধ",
+      "group": "consonant",
+      "order": 30,
+      "audio": "audio/letters/dha.m4a"
+    },
+    {
+      "id": "na",
+      "glyph": "ন",
+      "group": "consonant",
+      "order": 31,
+      "audio": "audio/letters/na.m4a"
+    },
+    {
+      "id": "pa",
+      "glyph": "প",
+      "group": "consonant",
+      "order": 32,
+      "audio": "audio/letters/pa.m4a"
+    },
+    {
+      "id": "pha",
+      "glyph": "ফ",
+      "group": "consonant",
+      "order": 33,
+      "audio": "audio/letters/pha.m4a"
+    },
+    {
+      "id": "ba",
+      "glyph": "ব",
+      "group": "consonant",
+      "order": 34,
+      "audio": "audio/letters/ba.m4a"
+    },
+    {
+      "id": "bha",
+      "glyph": "ভ",
+      "group": "consonant",
+      "order": 35,
+      "audio": "audio/letters/bha.m4a"
+    },
+    {
+      "id": "ma",
+      "glyph": "ম",
+      "group": "consonant",
+      "order": 36,
+      "audio": "audio/letters/ma.m4a"
+    },
+    {
+      "id": "ya",
+      "glyph": "য",
+      "group": "consonant",
+      "order": 37,
+      "audio": "audio/letters/ya.m4a"
+    },
+    {
+      "id": "ra",
+      "glyph": "ৰ",
+      "group": "consonant",
+      "order": 38,
+      "audio": "audio/letters/ra.m4a"
+    },
+    {
+      "id": "la",
+      "glyph": "ল",
+      "group": "consonant",
+      "order": 39,
+      "audio": "audio/letters/la.m4a"
+    },
+    {
+      "id": "wa",
+      "glyph": "ৱ",
+      "group": "consonant",
+      "order": 40,
+      "audio": "audio/letters/wa.m4a"
+    },
+    {
+      "id": "sha",
+      "glyph": "শ",
+      "group": "consonant",
+      "order": 41,
+      "audio": "audio/letters/sha.m4a"
+    },
+    {
+      "id": "ssa",
+      "glyph": "ষ",
+      "group": "consonant",
+      "order": 42,
+      "audio": "audio/letters/ssa.m4a"
+    },
+    {
+      "id": "sa",
+      "glyph": "স",
+      "group": "consonant",
+      "order": 43,
+      "audio": "audio/letters/sa.m4a"
+    },
+    {
+      "id": "ha",
+      "glyph": "হ",
+      "group": "consonant",
+      "order": 44,
+      "audio": "audio/letters/ha.m4a"
+    },
+    {
+      "id": "ksha",
+      "glyph": "ক্ষ",
+      "group": "consonant",
+      "order": 45,
+      "audio": "audio/letters/ksha.m4a"
+    },
+    {
+      "id": "rra",
+      "glyph": "ড়",
+      "group": "consonant",
+      "order": 46,
+      "audio": "audio/letters/rra.m4a"
+    },
+    {
+      "id": "rha",
+      "glyph": "ঢ়",
+      "group": "consonant",
+      "order": 47,
+      "audio": "audio/letters/rha.m4a"
+    },
+    {
+      "id": "yya",
+      "glyph": "য়",
+      "group": "consonant",
+      "order": 48,
+      "audio": "audio/letters/yya.m4a"
+    },
+    {
+      "id": "khanda-ta",
+      "glyph": "ৎ",
+      "group": "other",
+      "order": 49,
+      "audio": "audio/letters/khanda-ta.m4a"
+    },
+    {
+      "id": "anusvara",
+      "glyph": "ং",
+      "group": "other",
+      "order": 50,
+      "audio": "audio/letters/anusvara.m4a"
+    },
+    {
+      "id": "visarga",
+      "glyph": "ঃ",
+      "group": "other",
+      "order": 51,
+      "audio": "audio/letters/visarga.m4a"
+    },
+    {
+      "id": "chandrabindu",
+      "glyph": "ঁ",
+      "group": "other",
+      "order": 52,
+      "audio": "audio/letters/chandrabindu.m4a"
+    }
+  ],
+  "signs": [
+    {
+      "id": "ka-aa",
+      "base": "ক",
+      "sign": "া",
+      "result": "কা",
+      "audio": "audio/signs/ka-aa.m4a"
+    },
+    {
+      "id": "ka-i",
+      "base": "ক",
+      "sign": "ি",
+      "result": "কি",
+      "audio": "audio/signs/ka-i.m4a"
+    },
+    {
+      "id": "ka-ii",
+      "base": "ক",
+      "sign": "ী",
+      "result": "কী",
+      "audio": "audio/signs/ka-ii.m4a"
+    },
+    {
+      "id": "ka-u",
+      "base": "ক",
+      "sign": "ু",
+      "result": "কু",
+      "audio": "audio/signs/ka-u.m4a"
+    },
+    {
+      "id": "ka-uu",
+      "base": "ক",
+      "sign": "ূ",
+      "result": "কূ",
+      "audio": "audio/signs/ka-uu.m4a"
+    },
+    {
+      "id": "ka-ri",
+      "base": "ক",
+      "sign": "ৃ",
+      "result": "কৃ",
+      "audio": "audio/signs/ka-ri.m4a"
+    },
+    {
+      "id": "ka-e",
+      "base": "ক",
+      "sign": "ে",
+      "result": "কে",
+      "audio": "audio/signs/ka-e.m4a"
+    },
+    {
+      "id": "ka-oi",
+      "base": "ক",
+      "sign": "ৈ",
+      "result": "কৈ",
+      "audio": "audio/signs/ka-oi.m4a"
+    },
+    {
+      "id": "ka-o",
+      "base": "ক",
+      "sign": "ো",
+      "result": "কো",
+      "audio": "audio/signs/ka-o.m4a"
+    },
+    {
+      "id": "ka-ou",
+      "base": "ক",
+      "sign": "ৌ",
+      "result": "কৌ",
+      "audio": "audio/signs/ka-ou.m4a"
+    }
+  ],
   "words": [],
-  "numbers": []
+  "numbers": [
+    {
+      "value": 1,
+      "numeral": "১",
+      "audio": "audio/numbers/1.m4a"
+    },
+    {
+      "value": 2,
+      "numeral": "২",
+      "audio": "audio/numbers/2.m4a"
+    },
+    {
+      "value": 3,
+      "numeral": "৩",
+      "audio": "audio/numbers/3.m4a"
+    },
+    {
+      "value": 4,
+      "numeral": "৪",
+      "audio": "audio/numbers/4.m4a"
+    },
+    {
+      "value": 5,
+      "numeral": "৫",
+      "audio": "audio/numbers/5.m4a"
+    },
+    {
+      "value": 6,
+      "numeral": "৬",
+      "audio": "audio/numbers/6.m4a"
+    },
+    {
+      "value": 7,
+      "numeral": "৭",
+      "audio": "audio/numbers/7.m4a"
+    },
+    {
+      "value": 8,
+      "numeral": "৮",
+      "audio": "audio/numbers/8.m4a"
+    },
+    {
+      "value": 9,
+      "numeral": "৯",
+      "audio": "audio/numbers/9.m4a"
+    },
+    {
+      "value": 10,
+      "numeral": "১০",
+      "audio": "audio/numbers/10.m4a"
+    },
+    {
+      "value": 11,
+      "numeral": "১১",
+      "audio": "audio/numbers/11.m4a"
+    },
+    {
+      "value": 12,
+      "numeral": "১২",
+      "audio": "audio/numbers/12.m4a"
+    },
+    {
+      "value": 13,
+      "numeral": "১৩",
+      "audio": "audio/numbers/13.m4a"
+    },
+    {
+      "value": 14,
+      "numeral": "১৪",
+      "audio": "audio/numbers/14.m4a"
+    },
+    {
+      "value": 15,
+      "numeral": "১৫",
+      "audio": "audio/numbers/15.m4a"
+    },
+    {
+      "value": 16,
+      "numeral": "১৬",
+      "audio": "audio/numbers/16.m4a"
+    },
+    {
+      "value": 17,
+      "numeral": "১৭",
+      "audio": "audio/numbers/17.m4a"
+    },
+    {
+      "value": 18,
+      "numeral": "১৮",
+      "audio": "audio/numbers/18.m4a"
+    },
+    {
+      "value": 19,
+      "numeral": "১৯",
+      "audio": "audio/numbers/19.m4a"
+    },
+    {
+      "value": 20,
+      "numeral": "২০",
+      "audio": "audio/numbers/20.m4a"
+    }
+  ],
+  "sources": [
+    "Letter inventory and order (11 vowels; consonants ক…হ then ক্ষ ড় ঢ় য়): Wikipedia, \"Assamese alphabet\", vowel and consonant tables, read 2026-11-22. https://en.wikipedia.org/wiki/Assamese_alphabet",
+    "ৎ ং ঃ ঁ: the same article lists ৎ (khanda ta) with the dentals and ং (anuxar), ঃ (bixarga), ঁ (chandrabindu) as separate groups, not in the consonant table. They are placed here at the end in group \"other\"; their position must be confirmed by the reviewer.",
+    "Cross-check: Unicode CLDR common/main/as.xml exemplar characters (main/index/auxiliary) and native digits ০–৯, read 2026-11-22. https://github.com/unicode-org/cldr/blob/main/common/main/as.xml",
+    "Vowel signs on ক (কা কি কী কু কূ কৃ কে কৈ কো কৌ): Wikipedia, \"Assamese alphabet\", vowel table.",
+    "Not included (needs the reviewer): the urdho-comma vowel অʼ listed in the Wikipedia vowel table; number words; picture words.",
+    "Asam Sahitya Sabha order could not be checked against a Sabha publication online: a native teacher must confirm the order before release."
+  ]
 }

@@ -1,10 +1,446 @@
 {
   "id": "brx-deva",
-  "language": { "iso639_3": "brx", "nameNative": "बर'", "nameEn": "Bodo", "nameAs": "বড়ো" },
+  "language": {
+    "iso639_3": "brx",
+    "nameNative": "बर'",
+    "nameEn": "Bodo",
+    "nameAs": "বড়ো"
+  },
   "script": "Deva",
   "fontFamily": "NotoSansDevanagari-Regular",
   "status": "draft-needs-native-review",
-  "letters": [],
+  "letters": [
+    {
+      "id": "a",
+      "glyph": "अ",
+      "group": "vowel",
+      "order": 1,
+      "audio": "audio/letters/a.m4a"
+    },
+    {
+      "id": "aa",
+      "glyph": "आ",
+      "group": "vowel",
+      "order": 2,
+      "audio": "audio/letters/aa.m4a"
+    },
+    {
+      "id": "i",
+      "glyph": "इ",
+      "group": "vowel",
+      "order": 3,
+      "audio": "audio/letters/i.m4a"
+    },
+    {
+      "id": "ii",
+      "glyph": "ई",
+      "group": "vowel",
+      "order": 4,
+      "audio": "audio/letters/ii.m4a"
+    },
+    {
+      "id": "u",
+      "glyph": "उ",
+      "group": "vowel",
+      "order": 5,
+      "audio": "audio/letters/u.m4a"
+    },
+    {
+      "id": "uu",
+      "glyph": "ऊ",
+      "group": "vowel",
+      "order": 6,
+      "audio": "audio/letters/uu.m4a"
+    },
+    {
+      "id": "e-candra",
+      "glyph": "ऍ",
+      "group": "vowel",
+      "order": 7,
+      "audio": "audio/letters/e-candra.m4a"
+    },
+    {
+      "id": "e",
+      "glyph": "ए",
+      "group": "vowel",
+      "order": 8,
+      "audio": "audio/letters/e.m4a"
+    },
+    {
+      "id": "ai",
+      "glyph": "ऐ",
+      "group": "vowel",
+      "order": 9,
+      "audio": "audio/letters/ai.m4a"
+    },
+    {
+      "id": "o-candra",
+      "glyph": "ऑ",
+      "group": "vowel",
+      "order": 10,
+      "audio": "audio/letters/o-candra.m4a"
+    },
+    {
+      "id": "o",
+      "glyph": "ओ",
+      "group": "vowel",
+      "order": 11,
+      "audio": "audio/letters/o.m4a"
+    },
+    {
+      "id": "au",
+      "glyph": "औ",
+      "group": "vowel",
+      "order": 12,
+      "audio": "audio/letters/au.m4a"
+    },
+    {
+      "id": "ka",
+      "glyph": "क",
+      "group": "consonant",
+      "order": 13,
+      "audio": "audio/letters/ka.m4a"
+    },
+    {
+      "id": "kha",
+      "glyph": "ख",
+      "group": "consonant",
+      "order": 14,
+      "audio": "audio/letters/kha.m4a"
+    },
+    {
+      "id": "ga",
+      "glyph": "ग",
+      "group": "consonant",
+      "order": 15,
+      "audio": "audio/letters/ga.m4a"
+    },
+    {
+      "id": "gha",
+      "glyph": "घ",
+      "group": "consonant",
+      "order": 16,
+      "audio": "audio/letters/gha.m4a"
+    },
+    {
+      "id": "ca",
+      "glyph": "च",
+      "group": "consonant",
+      "order": 17,
+      "audio": "audio/letters/ca.m4a"
+    },
+    {
+      "id": "cha",
+      "glyph": "छ",
+      "group": "consonant",
+      "order": 18,
+      "audio": "audio/letters/cha.m4a"
+    },
+    {
+      "id": "ja",
+      "glyph": "ज",
+      "group": "consonant",
+      "order": 19,
+      "audio": "audio/letters/ja.m4a"
+    },
+    {
+      "id": "jha",
+      "glyph": "झ",
+      "group": "consonant",
+      "order": 20,
+      "audio": "audio/letters/jha.m4a"
+    },
+    {
+      "id": "nya",
+      "glyph": "ञ",
+      "group": "consonant",
+      "order": 21,
+      "audio": "audio/letters/nya.m4a"
+    },
+    {
+      "id": "tta",
+      "glyph": "ट",
+      "group": "consonant",
+      "order": 22,
+      "audio": "audio/letters/tta.m4a"
+    },
+    {
+      "id": "ttha",
+      "glyph": "ठ",
+      "group": "consonant",
+      "order": 23,
+      "audio": "audio/letters/ttha.m4a"
+    },
+    {
+      "id": "dda",
+      "glyph": "ड",
+      "group": "consonant",
+      "order": 24,
+      "audio": "audio/letters/dda.m4a"
+    },
+    {
+      "id": "rra",
+      "glyph": "ड़",
+      "group": "consonant",
+      "order": 25,
+      "audio": "audio/letters/rra.m4a"
+    },
+    {
+      "id": "ddha",
+      "glyph": "ढ",
+      "group": "consonant",
+      "order": 26,
+      "audio": "audio/letters/ddha.m4a"
+    },
+    {
+      "id": "nna",
+      "glyph": "ण",
+      "group": "consonant",
+      "order": 27,
+      "audio": "audio/letters/nna.m4a"
+    },
+    {
+      "id": "ta",
+      "glyph": "त",
+      "group": "consonant",
+      "order": 28,
+      "audio": "audio/letters/ta.m4a"
+    },
+    {
+      "id": "tha",
+      "glyph": "थ",
+      "group": "consonant",
+      "order": 29,
+      "audio": "audio/letters/tha.m4a"
+    },
+    {
+      "id": "da",
+      "glyph": "द",
+      "group": "consonant",
+      "order": 30,
+      "audio": "audio/letters/da.m4a"
+    },
+    {
+      "id": "dha",
+      "glyph": "ध",
+      "group": "consonant",
+      "order": 31,
+      "audio": "audio/letters/dha.m4a"
+    },
+    {
+      "id": "na",
+      "glyph": "न",
+      "group": "consonant",
+      "order": 32,
+      "audio": "audio/letters/na.m4a"
+    },
+    {
+      "id": "pa",
+      "glyph": "प",
+      "group": "consonant",
+      "order": 33,
+      "audio": "audio/letters/pa.m4a"
+    },
+    {
+      "id": "pha",
+      "glyph": "फ",
+      "group": "consonant",
+      "order": 34,
+      "audio": "audio/letters/pha.m4a"
+    },
+    {
+      "id": "ba",
+      "glyph": "ब",
+      "group": "consonant",
+      "order": 35,
+      "audio": "audio/letters/ba.m4a"
+    },
+    {
+      "id": "bha",
+      "glyph": "भ",
+      "group": "consonant",
+      "order": 36,
+      "audio": "audio/letters/bha.m4a"
+    },
+    {
+      "id": "ma",
+      "glyph": "म",
+      "group": "consonant",
+      "order": 37,
+      "audio": "audio/letters/ma.m4a"
+    },
+    {
+      "id": "ya",
+      "glyph": "य",
+      "group": "consonant",
+      "order": 38,
+      "audio": "audio/letters/ya.m4a"
+    },
+    {
+      "id": "ra",
+      "glyph": "र",
+      "group": "consonant",
+      "order": 39,
+      "audio": "audio/letters/ra.m4a"
+    },
+    {
+      "id": "la",
+      "glyph": "ल",
+      "group": "consonant",
+      "order": 40,
+      "audio": "audio/letters/la.m4a"
+    },
+    {
+      "id": "lla",
+      "glyph": "ळ",
+      "group": "consonant",
+      "order": 41,
+      "audio": "audio/letters/lla.m4a"
+    },
+    {
+      "id": "va",
+      "glyph": "व",
+      "group": "consonant",
+      "order": 42,
+      "audio": "audio/letters/va.m4a"
+    },
+    {
+      "id": "sha",
+      "glyph": "श",
+      "group": "consonant",
+      "order": 43,
+      "audio": "audio/letters/sha.m4a"
+    },
+    {
+      "id": "ssa",
+      "glyph": "ष",
+      "group": "consonant",
+      "order": 44,
+      "audio": "audio/letters/ssa.m4a"
+    },
+    {
+      "id": "sa",
+      "glyph": "स",
+      "group": "consonant",
+      "order": 45,
+      "audio": "audio/letters/sa.m4a"
+    },
+    {
+      "id": "ha",
+      "glyph": "ह",
+      "group": "consonant",
+      "order": 46,
+      "audio": "audio/letters/ha.m4a"
+    }
+  ],
   "words": [],
-  "numbers": []
+  "numbers": [
+    {
+      "value": 1,
+      "numeral": "१",
+      "audio": "audio/numbers/1.m4a"
+    },
+    {
+      "value": 2,
+      "numeral": "२",
+      "audio": "audio/numbers/2.m4a"
+    },
+    {
+      "value": 3,
+      "numeral": "३",
+      "audio": "audio/numbers/3.m4a"
+    },
+    {
+      "value": 4,
+      "numeral": "४",
+      "audio": "audio/numbers/4.m4a"
+    },
+    {
+      "value": 5,
+      "numeral": "५",
+      "audio": "audio/numbers/5.m4a"
+    },
+    {
+      "value": 6,
+      "numeral": "६",
+      "audio": "audio/numbers/6.m4a"
+    },
+    {
+      "value": 7,
+      "numeral": "७",
+      "audio": "audio/numbers/7.m4a"
+    },
+    {
+      "value": 8,
+      "numeral": "८",
+      "audio": "audio/numbers/8.m4a"
+    },
+    {
+      "value": 9,
+      "numeral": "९",
+      "audio": "audio/numbers/9.m4a"
+    },
+    {
+      "value": 10,
+      "numeral": "१०",
+      "audio": "audio/numbers/10.m4a"
+    },
+    {
+      "value": 11,
+      "numeral": "११",
+      "audio": "audio/numbers/11.m4a"
+    },
+    {
+      "value": 12,
+      "numeral": "१२",
+      "audio": "audio/numbers/12.m4a"
+    },
+    {
+      "value": 13,
+      "numeral": "१३",
+      "audio": "audio/numbers/13.m4a"
+    },
+    {
+      "value": 14,
+      "numeral": "१४",
+      "audio": "audio/numbers/14.m4a"
+    },
+    {
+      "value": 15,
+      "numeral": "१५",
+      "audio": "audio/numbers/15.m4a"
+    },
+    {
+      "value": 16,
+      "numeral": "१६",
+      "audio": "audio/numbers/16.m4a"
+    },
+    {
+      "value": 17,
+      "numeral": "१७",
+      "audio": "audio/numbers/17.m4a"
+    },
+    {
+      "value": 18,
+      "numeral": "१८",
+      "audio": "audio/numbers/18.m4a"
+    },
+    {
+      "value": 19,
+      "numeral": "१९",
+      "audio": "audio/numbers/19.m4a"
+    },
+    {
+      "value": 20,
+      "numeral": "२०",
+      "audio": "audio/numbers/20.m4a"
+    }
+  ],
+  "sources": [
+    "Script: Wikipedia, \"Boro language (India)\", read 2026-11-22: written in Devanagari since 1975; the Bodo Sahitya Sabha accepted Devanagari in the April 1975 Memorandum of Understanding. https://en.wikipedia.org/wiki/Boro_language_(India)",
+    "Letter inventory and order: Unicode CLDR common/main/brx.xml exemplar characters, index set (अ आ इ ई उ ऊ ऍ ए ऐ ऑ ओ औ क ख ग घ च छ ज झ ञ ट ठ ड ड़ ढ ण त थ द ध न प फ ब भ म य र ल ळ व श ष स ह), read 2026-11-22. https://github.com/unicode-org/cldr/blob/main/common/main/brx.xml",
+    "CLDR is a locale data set, NOT the Bodo Sahitya Sabha alphabet. A Bodo teacher must confirm the inventory and order against the Sabha primer (e.g. whether ऍ ऑ ळ ड़ belong in a children's alphabet, and whether ङ ऋ are missing).",
+    "Numerals १–२०: CLDR brx.xml lists the native numbering system as deva (Devanagari digits).",
+    "Not included: vowel signs, number words, picture words (no cited source)."
+  ]
 }
