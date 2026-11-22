@@ -555,6 +555,9 @@
     "Cross-check: Unicode CLDR common/main/as.xml exemplar characters (main/index/auxiliary) and native digits ০–৯, read 2026-11-22. https://github.com/unicode-org/cldr/blob/main/common/main/as.xml",
     "Vowel signs on ক (কা কি কী কু কূ কৃ কে কৈ কো কৌ): Wikipedia, \"Assamese alphabet\", vowel table.",
     "Not included (needs the reviewer): the urdho-comma vowel অʼ listed in the Wikipedia vowel table; number words; picture words.",
-    "Asam Sahitya Sabha order could not be checked against a Sabha publication online: a native teacher must confirm the order before release."
+    "Asam Sahitya Sabha order could not be checked against a Sabha publication online: a native teacher must confirm the order before release.",
+    "Stroke order and direction aligned to Amar Boi (আমার বই), Class I, West Bengal Board of Primary Education, letter-writing pages with arrows, printed pp. 88, 96, 100, 109, 117, 122, 125, 127 (reference only, no content copied), read 2026-11-22. https://banglarshiksha.wb.gov.in/readwrite/etextbook/Amar%20Bai%20Class%20I.pdf",
+    "Strokes marked reviewed from that primer: 48 letters it shows (all vowels; consonants except ক্ষ and ল; ৎ ং ঃ ঁ) plus ৰ and ৱ aligned like ব. Kept auto: ক্ষ, ল (Assamese shape differs from the primer), vowel signs and numerals (no arrows in the primer). Review by a native writer is still recommended (ADR 0004).",
+    "Checked, no stroke arrows: CIIL/NCERT Assamese Primer (অসমীয়া আদিপাঠ), 2024, tracing boxes only. https://www.ciil.gov.in/primers/Assamese_Primer.pdf"
   ]
 }

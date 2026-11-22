@@ -145,6 +145,35 @@ A native writer improves an item in one of two ways:
 The generator never overwrites `reviewed` or `recorded` entries. If an item's text changes, the
 entry is regenerated as `auto` with a loud warning, and the writer should review it again.
 
+### Stroke order from school primers
+
+Where a government school primer shows how each letter is written (start point, arrows), the
+`auto` strokes are re-ordered, reversed, joined or split to match it and the entry is set to
+`"reviewed"`. The primer is used **only as a reference** for order and direction: its pages are
+"all rights reserved", so no image or text from it goes into the repo. Each pack's `sources`
+lists the book, publisher and pages used.
+
+What the primers teach (Bengali-Assamese script, _Amar Boi_ Class I, WBBPE):
+
+- A letter's body is written in one movement wherever the pen can stay down, e.g. ব ক য ঘ: from
+  the top, down-left, round to the foot, then **up** the vertical stem; ক then goes on into its
+  right-hand loop. Where the body ends at the top (ণ ন গ প শ), the stem is drawn **down**.
+- Loops start at their inner end (ত অ এ ও ভ ণ), curls above the headline are drawn from the
+  headline out to their tip (উ ঊ ই ঈ ঐ ঔ ট).
+- The headline (মাত্ৰা) comes after the body, left to right; dots (ড় ঢ় য়) and ং ঃ ঁ marks last.
+  The circles of ং ঃ are drawn anticlockwise.
+
+Glyphs the primer does not show (Assamese ৰ ৱ are aligned like ব; ক্ষ, ল, vowel signs and
+numerals keep `auto`) are left for a native writer. A primer-aligned entry is a better starting
+point, not a substitute for the recommended native review: when a writer checks these items, fix
+any that differ in the Stroke Recorder.
+
+To edit an entry by hand: strokes are `points` in the unit box (x right, y down), in writing
+order, each from start to end. Keep every point on the ink, check with
+`npm run render:geometry` (numbered start dots show order), and run the scorer test
+`src/features/tracing/scorer/__tests__/realGlyphs.test.ts`, which traces every non-`auto` entry
+exactly along its strokes and expects 3 stars at every level.
+
 ## 6. Adding another language pack
 
 Only with content from a named authority (handover 2.1); never invent content.

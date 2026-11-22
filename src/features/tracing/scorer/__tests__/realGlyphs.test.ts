@@ -25,11 +25,27 @@ const CASES: [string, string][] = [
   ['brx-deva', 'number:14'],
 ];
 
+/**
+ * Every human-aligned entry (strokes reordered/reversed/merged to match a school primer, or
+ * recorded by a native writer) must stay traceable too.
+ */
+const HUMAN: [string, string][] = Object.entries(PACKS).flatMap(([pack, geo]) =>
+  Object.entries(geo)
+    .filter(
+      ([key, e]) => e.strokeSource !== 'auto' && !CASES.some(c => c[0] === pack && c[1] === key),
+    )
+    .map(([key]): [string, string] => [pack, key]),
+);
+
+it('has human-aligned entries to check', () => {
+  expect(HUMAN.length).toBeGreaterThan(0);
+});
+
 /** What the finger sends: many points along the stroke, a few pixels apart. */
 const trace = (stroke: readonly Vec[]): Vec[] =>
   resample(stroke, Math.max(8, Math.ceil(pathLength(stroke) / 0.01)));
 
-describe.each(CASES)('tracing %s %s exactly along its strokes', (pack, key) => {
+describe.each([...CASES, ...HUMAN])('tracing %s %s exactly along its strokes', (pack, key) => {
   const entry = (PACKS[pack] as GeometryFile)[key];
   const refs = (entry?.strokes ?? []).map(s => s.points as Vec[]);
   const drawn = refs.map(trace);

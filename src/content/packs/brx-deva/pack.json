@@ -440,6 +440,7 @@
     "Letter inventory and order: Unicode CLDR common/main/brx.xml exemplar characters, index set (अ आ इ ई उ ऊ ऍ ए ऐ ऑ ओ औ क ख ग घ च छ ज झ ञ ट ठ ड ड़ ढ ण त थ द ध न प फ ब भ म य र ल ळ व श ष स ह), read 2026-11-22. https://github.com/unicode-org/cldr/blob/main/common/main/brx.xml",
     "CLDR is a locale data set, NOT the Bodo Sahitya Sabha alphabet. A Bodo teacher must confirm the inventory and order against the Sabha primer (e.g. whether ऍ ऑ ळ ड़ belong in a children's alphabet, and whether ङ ऋ are missing).",
     "Numerals १–२०: CLDR brx.xml lists the native numbering system as deva (Devanagari digits).",
-    "Not included: vowel signs, number words, picture words (no cited source)."
+    "Not included: vowel signs, number words, picture words (no cited source).",
+    "Stroke order: no school primer with stroke arrows for Devanagari was found online (checked, tracing only: CIIL/NCERT Bodo Primer बर' बिथ'लाइ, 2024, https://www.ciil.gov.in/primers/Bodo_Primer.pdf; NCERT Sarangi Class 1). All strokes stay auto until a Bodo teacher reviews or records them (recommended, ADR 0004)."
   ]
 }
