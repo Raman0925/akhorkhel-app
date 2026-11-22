@@ -1,15 +1,110 @@
-import React from 'react';
-import { Text } from 'react-native';
+import React, { useEffect } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { audio } from '@/audio';
+import { common, useStrings } from '@/i18n';
+import { useUnlocks } from '@/monetization';
 import type { ScreenProps } from '@/navigation';
-import { Header, Screen } from '@/ui';
+import { colors, fontForScript, fonts, fontSize, radius, spacing } from '@/theme';
+import { Header, IconButton, Screen, usePack } from '@/ui';
 
-/** Scaffold placeholder: replaced by the owning agent. Must not ship. */
-export function WordScreen(_props: ScreenProps<'Word'>) {
+import { WordPicture } from '../components/WordPicture';
+import { strings } from '../strings';
+
+export function WordScreen({ navigation, route }: ScreenProps<'Word'>) {
+  const pack = usePack();
+  const c = useStrings(common);
+  const s = useStrings(strings);
+  const bonusOpen = useUnlocks().isUnlocked('bonusWords');
+  const found = pack.words.find(w => w.id === route.params.wordId);
+  // A locked bonus word is never shown to the child.
+  const word = found && (!found.bonus || bonusOpen) ? found : undefined;
+
+  // The word itself is this screen's voice.
+  useEffect(() => {
+    if (word) {
+      audio.playPack(pack.id, word.audio);
+    } else if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+    return () => audio.stop();
+  }, [pack.id, word, navigation]);
+
+  if (!word) {
+    return <Screen testID="screen-Word">{null}</Screen>;
+  }
+
+  const play = () => audio.playPack(pack.id, word.audio);
+  const bridge = word.bridge && (word.bridge.as || word.bridge.en) ? word.bridge : undefined;
+
   return (
     <Screen testID="screen-Word">
-      <Header title="Word" />
-      <Text>Word</Text>
+      <Header
+        title={c.words}
+        right={<IconButton icon="🔊" label={s.listen} onPress={play} testID="word-listen" />}
+      />
+      <View style={styles.body}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${s.listen} ${word.text}`}
+          onPress={play}
+          style={styles.picture}
+          testID="word-picture"
+        >
+          <WordPicture packId={pack.id} word={word} size={200} />
+          <Text style={[styles.text, { fontFamily: fontForScript(pack.script, true) }]}>
+            {word.text}
+          </Text>
+        </Pressable>
+
+        {bridge ? (
+          <View style={styles.bridge} testID="word-bridge">
+            <Text style={[styles.bridgeMain, { fontFamily: fontForScript(pack.script, true) }]}>
+              {word.text}
+            </Text>
+            {bridge.as ? (
+              <View style={styles.bridgeRow}>
+                <Text style={styles.bridgeLabel}>{s.assamese}</Text>
+                <Text style={[styles.bridgeText, { fontFamily: fontForScript('Beng') }]}>
+                  {bridge.as}
+                </Text>
+              </View>
+            ) : null}
+            {bridge.en ? (
+              <View style={styles.bridgeRow}>
+                <Text style={styles.bridgeLabel}>{s.english}</Text>
+                <Text style={[styles.bridgeText, { fontFamily: fontForScript('Latn') }]}>
+                  {bridge.en}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        ) : null}
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  body: { flex: 1, alignItems: 'center', justifyContent: 'space-around' },
+  picture: { alignItems: 'center', gap: spacing.md, padding: spacing.md },
+  text: { fontSize: fontSize.xl * 1.5, color: colors.text },
+  bridge: {
+    alignSelf: 'stretch',
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 2,
+    borderColor: colors.sky,
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+  bridgeMain: { fontSize: fontSize.lg, color: colors.text, textAlign: 'center' },
+  bridgeRow: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.md },
+  bridgeLabel: {
+    fontFamily: fonts.bengali,
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    minWidth: 90,
+  },
+  bridgeText: { fontSize: fontSize.lg, color: colors.text },
+});
