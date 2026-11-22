@@ -8,3 +8,6 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# react-native-html-to-pdf → pdfbox-android references an optional JPEG2000 decoder we never use.
+-dontwarn com.gemalto.jp2.**
