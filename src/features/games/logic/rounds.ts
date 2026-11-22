@@ -100,7 +100,7 @@ export function makeHearRounds(
 
 export const PICTURE_CHOICES = 3;
 
-/** A word can be a picture choice if it is not a bonus word, has a picture and a known first letter. */
+/** A word can be a picture choice if it has a picture and a known first letter. */
 export function pictureWords(
   words: readonly Word[],
   letters: readonly Letter[],
@@ -108,7 +108,7 @@ export function pictureWords(
 ): Word[] {
   const letterIds = new Set(letters.map(l => l.id));
   return words.filter(
-    w => !w.bonus && w.startsWith !== undefined && letterIds.has(w.startsWith) && hasPicture(w),
+    w => w.startsWith !== undefined && letterIds.has(w.startsWith) && hasPicture(w),
   );
 }
 

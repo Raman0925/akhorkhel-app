@@ -50,7 +50,7 @@ mixed-audience app.
   and monetisation suit children.
 - What helps Akhor Khel: real learning goal (tracing with stroke order), no fail screens, voice
   prompts for pre-readers, tribal-language content, calm ad placement (none during learning),
-  rewarded ads only for adults behind the gate.
+  no rewarded or "watch an ad to unlock" ads, nothing locked behind an ad.
 - What can hurt: ad frequency. If Teacher Approved matters more than revenue, consider removing
   the interstitial in a later yearly update (the caps live in `src/monetization/`).
 - Never use "Teacher Approved" in the listing or graphics unless the badge is granted.
@@ -70,13 +70,13 @@ option, not Game.
 | Violence (any, including cartoon)               | No             |                                                                                        |
 | Fear / horror / scary content                   | No             | Mascot is friendly; no scary sounds                                                    |
 | Sexuality / nudity                              | No             |                                                                                        |
-| Gambling (real or simulated)                    | No             | Stars are rewards for tracing, not a currency; no loot boxes                           |
+| Gambling (real or simulated)                    | No             | Stars are earned by tracing, not a currency; no loot boxes                             |
 | Language (profanity, crude humour)              | No             |                                                                                        |
 | Controlled substances (drugs, alcohol, tobacco) | No             | Check picture words: no tamul-pan (betel nut), alcohol or tobacco images in word packs |
 | Discriminatory content                          | No             |                                                                                        |
 | Users can interact or communicate               | No             | No chat, no user-generated content shared with others                                  |
 | Shares user's location with others              | No             |                                                                                        |
-| Allows purchase of digital goods                | No             | Rewarded unlocks are free, by watching an ad                                           |
+| Allows purchase of digital goods                | No             | No purchases; nothing is locked                                                        |
 | Unrestricted internet / web browser             | No             | The only outbound link (privacy policy) opens behind the parent gate                   |
 | Shares personal information                     | No             |                                                                                        |
 | Contains ads                                    | Yes (if asked) |                                                                                        |
@@ -100,13 +100,13 @@ policy audit; Maestro covers the flows).
 | No location permission or precise location                                                 | No location permission.                                                                                                                                                                                              | Manifest                                              |
 | Disclose all data collected from children, including via SDKs                              | Data safety declares everything AdMob collects; privacy policy explains it.                                                                                                                                          | `data-safety.md`, `docs/privacy-policy.md`            |
 | No interstitial at launch                                                                  | No full-screen ad at launch. Interstitial only after a finished set, on return to the grid. No ads at all (banner or full-screen) before a parent has seen the ads notice or during the first session after install. | `src/monetization/` caps                              |
-| No ads that interfere with normal use and cannot be closed after 5 seconds                 | Interstitial: max 1 per 4 min, max 3 per session. **See risk R1 below** for video creatives. Rewarded: opt-in, adult-only, behind the gate.                                                                          | AdMob ad unit settings; `src/monetization/`           |
+| No ads that interfere with normal use and cannot be closed after 5 seconds                 | Interstitial: max 1 per 4 min, max 3 per session. **See risk R1 below** for video creatives. No rewarded or opt-in ads (ADR 0003).                                                                                   | AdMob ad unit settings; `src/monetization/`           |
 | Clear close button; no ad that triggers another ad on dismiss                              | Standard AdMob full-screen formats; app never chains ads; the next interstitial waits for the cap.                                                                                                                   | `src/monetization/`                                   |
 | Ads clearly distinguishable from content; no deceptive placement                           | Banner sits in a reserved strip at the bottom of **menu screens only** (home, letter grid, word list, parent area), separated from buttons; never on tracing or game screens.                                        | `BannerSlot` usage; layouts                           |
 | No ads where the child normally taps / no accidental clicks                                | No banner on tracing/game screens; banner strip has spacing from 64 dp child buttons.                                                                                                                                | `src/ui` `Screen`                                     |
 | One ad placement per page                                                                  | At most one banner per screen; no banner while a full-screen ad is shown.                                                                                                                                            | `src/monetization/`                                   |
-| No emotionally manipulative tactics to encourage ad viewing or purchases                   | Rewarded ads are never offered to the child; no "watch to continue" prompts; lessons never wait for an ad; no purchases.                                                                                             | Parent area → Rewards                                 |
-| Links out of the app / settings for adults                                                 | Privacy policy link, rewarded ads, settings, teacher mode and share/export are behind the parent gate.                                                                                                               | `src/features/parentGate`, `parentArea`               |
+| No emotionally manipulative tactics to encourage ad viewing or purchases                   | No rewarded ads; no "watch to continue" or "watch to unlock" prompts; lessons never wait for an ad; no purchases.                                                                                                    | `src/monetization/`                                   |
+| Links out of the app / settings for adults                                                 | Privacy policy link, settings, teacher mode and share/export are behind the parent gate.                                                                                                                             | `src/features/parentGate`, `parentArea`               |
 | Content appropriate for children                                                           | All content human-made and reviewed by native speakers; original illustrations; no known characters.                                                                                                                 | `docs/CONTENT_GUIDE.md`                               |
 | No social features / chat; no user-generated content shared                                | None.                                                                                                                                                                                                                | —                                                     |
 | Target API meets Play requirement                                                          | targetSdk 36 (required for new apps and updates from 31 Aug 2026). CI fails otherwise.                                                                                                                               | `android/build.gradle`; `check-release.sh`            |
@@ -122,12 +122,9 @@ creative.
 - Interstitial: in the AdMob console, restrict the interstitial ad unit to the **Display** (image /
   rich media) ad type and turn **Video** off, unless testing on real devices shows video
   interstitials can always be closed by 5 seconds. Re-test after every SDK update.
-- Rewarded: rewarded video is usually 15–30 s and unskippable without losing the reward. It is
-  opt-in, adult-only, behind the parent gate and does not interrupt learning, which we believe
-  means it does not "interfere with normal app use", but the policy text explicitly names
-  rewarded ads. **Owner decision:** keep rewarded (moderate review risk; revenue upside) or remove
-  it before the first submission (zero risk). If kept, mention the gate in the App access notes and
-  watch the first review closely.
+- Rewarded: **resolved by removal.** Rewarded video is usually 15–30 s and cannot be closed by 5
+  seconds, and the policy names rewarded and opt-in ads explicitly, so the owner dropped rewarded
+  ads before the first submission (ADR 0003). Do not add a rewarded unit in AdMob.
 
 **R2 — `tagForChildDirectedTreatment` deprecation.** Google's AdMob targeting page now marks the
 child-directed method as deprecated in favour of an age-restricted-treatment setting. A8 should use

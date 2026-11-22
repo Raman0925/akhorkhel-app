@@ -127,7 +127,6 @@ Every other build uses Google's test ad IDs and is not release-signed.
 | `ADMOB_APP_ID`                    | AdMob App ID, `ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY` (section 6) |
 | `ADMOB_BANNER_ID`                 | Banner ad unit ID, `ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ`        |
 | `ADMOB_INTERSTITIAL_ID`           | Interstitial ad unit ID                                            |
-| `ADMOB_REWARDED_ID`               | Rewarded ad unit ID                                                |
 
 ```bash
 gh secret set UPLOAD_KEYSTORE_BASE64 < upload.b64
@@ -137,7 +136,6 @@ gh secret set AKHORKHEL_UPLOAD_KEY_PASSWORD
 gh secret set ADMOB_APP_ID
 gh secret set ADMOB_BANNER_ID
 gh secret set ADMOB_INTERSTITIAL_ID
-gh secret set ADMOB_REWARDED_ID
 gh secret list
 ```
 
@@ -207,7 +205,7 @@ account). For testing on your own phone use a test build or add the phone as an 
 
 1. **Internal testing**: upload the AAB, add yourself and a few testers by email, install from the
    opt-in link, smoke-test on a real low-end phone (cold start, tracing at all 3 levels, airplane
-   mode, a set completion → interstitial, parent gate → rewarded).
+   mode, a set completion → interstitial, parent gate → parent area).
 2. **Pre-launch report**: runs automatically on testing tracks. Fix crashes, accessibility warnings
    (touch targets, contrast) and any policy flags before going further. The parent gate will stop
    the robot from entering adult areas; that is expected.
@@ -239,8 +237,7 @@ account). For testing on your own phone use a test build or add the phone as an 
      have verified that every video interstitial can be closed within 5 seconds (Families policy;
      see risk R1 in `docs/store/families-and-content-rating.md`). Frequency capping is enforced in
      code (1 per 4 min, 3 per session); you may add the same cap in AdMob as a safety net.
-   - `rewarded-parent-unlock` — **Rewarded**. Reward: 1 "unlock" (the app ignores the amount).
-     Owner decision on keeping rewarded at all: see risk R1.
+   - Do **not** create a rewarded or rewarded-interstitial unit: the app has none (ADR 0003).
      Copy each unit ID into the matching secret.
 4. **Child-directed and content rating**:
    - The app sets child-directed treatment, non-personalised ads and max rating **G** in code
@@ -302,11 +299,11 @@ The release gate refuses to build until this is done. Details and procedures are
 
 - [ ] Parent area has **delete child profile** and **Delete all data (profiles, progress, settings) on this device**
       (promised in the privacy policy and Data safety).
-- [ ] Parent gate guards settings, teacher mode, share/export, rewarded ads and the privacy link.
+- [ ] Parent gate guards settings, teacher mode, share/export and the privacy link.
 - [ ] Privacy policy link in the parent area opens the published URL.
 - [ ] Ads: child-directed + G + non-personalised in logs; no full-screen ad at launch; no ads at all before the parent has seen the ads notice or in the
-      first session; caps; no ads on tracing/game screens; rewarded only behind the gate; unlock
-      expires after 24 h; lessons work in airplane mode.
+      first session; caps; no ads on tracing/game screens; no rewarded ads; lessons work in
+      airplane mode.
 - [ ] Merged manifest: only `INTERNET` and `ACCESS_NETWORK_STATE`; no `AD_ID`.
 - [ ] Pre-launch report clean; Android vitals fine on internal/closed tracks.
 

@@ -2,7 +2,7 @@ import { fireEvent, screen } from '@testing-library/react-native';
 
 import { useProfiles } from '@/progress';
 
-import { fixturePack, letter, word } from '../__fixtures__/pack';
+import { fixturePack, letter } from '../__fixtures__/pack';
 import { renderScreen, resetStores } from '../__fixtures__/render';
 import { visibleModules } from '../logic/modules';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -17,7 +17,7 @@ beforeEach(() => {
 
 describe('visibleModules', () => {
   it('shows every module that has content', () => {
-    expect(visibleModules(fixturePack(), false).map(m => m.id)).toEqual([
+    expect(visibleModules(fixturePack()).map(m => m.id)).toEqual([
       'letters',
       'signs',
       'games',
@@ -28,16 +28,8 @@ describe('visibleModules', () => {
 
   it('hides modules without content', () => {
     const pack = fixturePack({ letters: [letter('a')], signs: [], words: [], numbers: [] });
-    expect(visibleModules(pack, false).map(m => m.id)).toEqual(['letters']);
-    expect(visibleModules(fixturePack({ letters: [] }), false).map(m => m.id)).not.toContain(
-      'games',
-    );
-  });
-
-  it('shows words when only bonus words exist only while they are unlocked', () => {
-    const pack = fixturePack({ words: [word('b1', true)] });
-    expect(visibleModules(pack, false).map(m => m.id)).not.toContain('words');
-    expect(visibleModules(pack, true).map(m => m.id)).toContain('words');
+    expect(visibleModules(pack).map(m => m.id)).toEqual(['letters']);
+    expect(visibleModules(fixturePack({ letters: [] })).map(m => m.id)).not.toContain('games');
   });
 });
 

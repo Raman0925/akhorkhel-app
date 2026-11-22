@@ -23,7 +23,6 @@ export const STORAGE_KEYS = {
   profiles: 'profiles.v1',
   progress: 'progress.v1',
   ads: 'ads.v1',
-  unlocks: 'unlocks.v1',
 } as const;
 
 /** Wipes everything (parent area → delete all data). */

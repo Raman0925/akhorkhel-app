@@ -19,7 +19,7 @@
 - [ ] Strict types, tests added or updated
 - [ ] No new SDK outside handover section 4; no analytics; no network calls except AdMob; no AD_ID
 - [ ] No server code, "future version" stubs or TODOs
-- [ ] Ads never on tracing or game screens, never at launch; caps respected; rewarded only behind the parent gate
+- [ ] Ads never on tracing or game screens, never at launch; caps respected; no rewarded ads
 - [ ] No invented language content (letters, words, translations, audio)
 - [ ] Touch targets ≥ 64dp; strings in feature `strings.ts` (as + en)
 - [ ] No per-point React re-renders while drawing

@@ -45,7 +45,7 @@ describe('GamesHub', () => {
   });
 
   it('hides the picture game without enough pictured words', async () => {
-    mockPack = fixturePack({ words: [word('a1', 'a'), word('b1', 'b', { bonus: true })] });
+    mockPack = fixturePack({ words: [word('a1', 'a'), word('b1', 'b')] });
     await renderScreen('GamesHub', GamesHubScreen);
     expect(screen.getByTestId('games-hear')).toBeTruthy();
     expect(screen.queryByTestId('games-picture')).toBeNull();

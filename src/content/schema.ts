@@ -67,8 +67,6 @@ export const WordContentSchema = z.object({
   startsWith: z.string().regex(ITEM_ID_RE).optional(),
   /** Bridge card: the same word in Assamese and English (for Bodo/Mising packs). */
   bridge: z.object({ as: z.string().optional(), en: z.string().optional() }).optional(),
-  /** Bonus words are unlocked for 24 h by a parent via a rewarded ad (handover 3.2). */
-  bonus: z.boolean().optional(),
   /** Draft packs only: emoji shown until the real illustration exists. Rejected in release. */
   placeholderEmoji: z.string().optional(),
 });

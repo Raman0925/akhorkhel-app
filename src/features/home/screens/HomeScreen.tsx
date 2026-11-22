@@ -3,7 +3,6 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { audio } from '@/audio';
 import { common, format, useStrings } from '@/i18n';
-import { useUnlocks } from '@/monetization';
 import type { ScreenProps } from '@/navigation';
 import { useCurrentProfile } from '@/progress';
 import { useSettings } from '@/storage/settings';
@@ -27,8 +26,7 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const s = useStrings(strings);
   const uiLanguage = useSettings(st => st.uiLanguage);
   const profile = useCurrentProfile();
-  const bonusOpen = useUnlocks().isUnlocked('bonusWords');
-  const modules = useMemo(() => visibleModules(pack, bonusOpen), [pack, bonusOpen]);
+  const modules = useMemo(() => visibleModules(pack), [pack]);
   const languageName = uiLanguage === 'en' ? pack.language.nameEn : pack.language.nameAs;
   const label: Record<ModuleId, string> = {
     letters: c.letters,

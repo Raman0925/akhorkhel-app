@@ -28,8 +28,8 @@ export const sign: Sign = {
   ...geometry,
 };
 
-export function word(id: string, bonus = false): Word {
-  return { id, text: id, audio: `audio/${id}.m4a`, image: `images/${id}.webp`, bonus };
+export function word(id: string): Word {
+  return { id, text: id, audio: `audio/${id}.m4a`, image: `images/${id}.webp` };
 }
 
 export const one: NumberItem = {

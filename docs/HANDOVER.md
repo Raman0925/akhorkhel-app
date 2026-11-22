@@ -79,7 +79,7 @@ Interface: voice prompts; written UI in Assamese (default) + English.
 5. **Numbers ১–২০:** trace numerals; count objects.
 6. **Profiles:** up to 40 local child profiles (nickname + avatar only).
 7. **Teacher mode** (parent gate): class progress grid, quick child switching, PDF/CSV export via the share sheet.
-8. **Parent area** (parent gate): settings, sound, ads notice, rewarded-ad unlocks, privacy policy.
+8. **Parent area** (parent gate): settings, sound, sticker theme (all free), ads notice, privacy policy.
 
 ### 2.3 Never built
 
@@ -97,13 +97,12 @@ Backend, login, cloud sync, remote config, purchases, subscriptions, licence cod
 
 ### 3.2 Placements
 
-| Format          | Where                                                                                   | Rule                                                                                            |
-| --------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Adaptive banner | Bottom of menu screens only (home, letter grid, word list, parent area)                 | Never on tracing or game screens                                                                |
-| Interstitial    | After the child finishes a set (e.g. 5 letters) and returns to the grid                 | Never at launch; max 1 per 4 minutes and 3 per session; skip the first session of a new install |
-| Rewarded        | Behind the parent gate: "Watch one ad to unlock a sticker theme / bonus words for 24 h" | Always opt-in; never offered to the child                                                       |
+| Format          | Where                                                                   | Rule                                                                                            |
+| --------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Adaptive banner | Bottom of menu screens only (home, letter grid, word list, parent area) | Never on tracing or game screens                                                                |
+| Interstitial    | After the child finishes a set (e.g. 5 letters) and returns to the grid | Never at launch; max 1 per 4 minutes and 3 per session; skip the first session of a new install |
 
-All ad logic lives in `src/monetization/` with hard-coded caps. Ads fail silently offline; lessons never wait for an ad.
+No rewarded or opt-in ads (ADR 0003): Families policy requires ads to be closeable after 5 seconds, including rewarded ones. All ad logic lives in `src/monetization/` with hard-coded caps. Ads fail silently offline; lessons never wait for an ad.
 
 ### 3.3 Tuning without code
 
@@ -167,7 +166,7 @@ See `src/content/schema.ts` (the contract). The CI validator fails on an invalid
 
 ### 5.3 Storage & privacy
 
-Local only: stars, attempts, settings, ad counters, unlock timers. Profile = nickname + avatar. Data safety: declare exactly what the AdMob SDK collects; the app collects nothing else. Privacy policy is a static GitHub Pages page.
+Local only: stars, attempts, settings, ad counters. Profile = nickname + avatar. Data safety: declare exactly what the AdMob SDK collects; the app collects nothing else. Privacy policy is a static GitHub Pages page.
 
 ## 6. Content rules
 
@@ -202,7 +201,7 @@ Day 0 A0 + A1 (repo, CI, shell, contracts) → A2, A3, A7, A8 in parallel (A8 us
 
 PRs against `main`, green CI and an A6 review before merge, squash-merge, Conventional Commits, PRs < ~400 lines with a test plan. Only stable dependencies, pinned exactly.
 
-**Reviewer checklist:** strict types; tests; no new SDK outside section 4; no analytics; no AD_ID; no network calls except AdMob; no server code, stubs or TODOs; ads never on tracing/game screens, never at launch, caps respected, rewarded only behind the gate; no invented language content; touch targets ≥ 64dp; lessons work offline; no per-point re-renders while drawing; strings in i18n; release build passes.
+**Reviewer checklist:** strict types; tests; no new SDK outside section 4; no analytics; no AD_ID; no network calls except AdMob; no server code, stubs or TODOs; ads never on tracing/game screens, never at launch, caps respected, no rewarded ads; no invented language content; touch targets ≥ 64dp; lessons work offline; no per-point re-renders while drawing; strings in i18n; release build passes.
 
 ### 7.4 Definition of done
 
@@ -210,8 +209,8 @@ PRs against `main`, green CI and an A6 review before merge, squash-merge, Conven
 - [ ] `asm-beng`, `brx-deva`, `mrg-latn` verified with reviewer names.
 - [ ] Tracing works for every glyph at all 3 levels; scorer coverage ≥ 90%.
 - [ ] Cold start < 2.5 s; 60fps tracing on a low-end device.
-- [ ] Ads: child-directed + G in logs; caps tested; none on tracing/game screens; rewarded unlock expires after 24 h; lessons work in airplane mode.
-- [ ] Maestro: first launch → Assamese → trace 3 letters → stars → set complete → interstitial (test ID) → grid; parent gate → rewarded (test ID) → theme unlocked.
+- [ ] Ads: child-directed + G in logs; caps tested; none on tracing/game screens; no rewarded ads; lessons work in airplane mode.
+- [ ] Maestro: first launch → Assamese → trace 3 letters → stars → set complete → interstitial (test ID) → grid; parent gate → parent area banner (test ID) → pick a sticker theme.
 - [ ] Every module finished; no placeholders, "coming soon" or TODOs in the release build.
 - [ ] Listing, Data safety, privacy policy, Families + ads declarations; legal review of ads/DPDP.
 
@@ -231,11 +230,11 @@ Bright, calm colours; one main action per screen; buttons ≥ 64dp; voice prompt
 
 ## 10. Risks
 
-| Risk                          | Mitigation                                                                                     |
-| ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| Families/ads policy rejection | Exact config from 3.1; A6 ads audit; AdMob only; pre-launch report                             |
-| DPDP (May 2027)               | Child-directed non-personalized ads, no tracking, parent notice, legal review                  |
-| Low eCPM                      | Interstitials at natural breaks; attractive rewarded unlocks behind the gate; grow daily users |
-| Competitor copies tracing     | Content depth (vowel signs, words, tribal languages) + reviews                                 |
-| Content accuracy / licensing  | Native reviewers; original content; written permissions                                        |
-| Dependency churn              | Pinned stable versions; few native libraries                                                   |
+| Risk                          | Mitigation                                                                    |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| Families/ads policy rejection | Exact config from 3.1; A6 ads audit; AdMob only; pre-launch report            |
+| DPDP (May 2027)               | Child-directed non-personalized ads, no tracking, parent notice, legal review |
+| Low eCPM                      | Interstitials at natural breaks; banners on menu screens; grow daily users    |
+| Competitor copies tracing     | Content depth (vowel signs, words, tribal languages) + reviews                |
+| Content accuracy / licensing  | Native reviewers; original content; written permissions                       |
+| Dependency churn              | Pinned stable versions; few native libraries                                  |

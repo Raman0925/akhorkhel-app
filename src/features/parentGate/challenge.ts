@@ -37,7 +37,7 @@ export function isLocked(state: GateState, now: number): boolean {
   return now < state.lockedUntil;
 }
 
-/** Whole seconds left in the cooldown (0 when unlocked). */
+/** Whole seconds left in the cooldown (0 when the gate is open again). */
 export function secondsLeft(state: GateState, now: number): number {
   return Math.max(0, Math.ceil((state.lockedUntil - now) / 1000));
 }

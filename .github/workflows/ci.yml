@@ -68,7 +68,6 @@ jobs:
         env:
           ADMOB_BANNER_ID: ${{ secrets.ADMOB_BANNER_ID }}
           ADMOB_INTERSTITIAL_ID: ${{ secrets.ADMOB_INTERSTITIAL_ID }}
-          ADMOB_REWARDED_ID: ${{ secrets.ADMOB_REWARDED_ID }}
           UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
         run: |
           npm run gen:ad-units --if-present

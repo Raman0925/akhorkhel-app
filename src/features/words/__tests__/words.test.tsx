@@ -8,21 +8,10 @@ import { WordListScreen } from '../screens/WordListScreen';
 import { WordScreen } from '../screens/WordScreen';
 
 const mockPack = fixturePack();
-let mockBonusOpen = false;
 jest.mock('@/ui/usePack', () => ({ usePack: () => mockPack }));
-jest.mock('@/monetization', () => ({
-  ...jest.requireActual('@/monetization'),
-  useUnlocks: () => ({
-    isUnlocked: (id: string) => id === 'bonusWords' && mockBonusOpen,
-    unlockedUntil: () => 0,
-    watchRewarded: async () => false,
-    rewardedReady: false,
-  }),
-}));
 
 beforeEach(() => {
   resetStores();
-  mockBonusOpen = false;
 });
 
 describe('WordList', () => {
@@ -32,22 +21,6 @@ describe('WordList', () => {
     expect(screen.getAllByText('🟢').length).toBeGreaterThan(0);
     await fireEvent.press(screen.getByTestId('word-tile-one'));
     expect(await screen.findByTestId('screen-Word')).toHaveTextContent('{"wordId":"one"}');
-  });
-
-  it('shows a lock on bonus words and does nothing when tapped', async () => {
-    await renderScreen('WordList', WordListScreen, undefined, ['Word']);
-    expect(screen.getByLabelText('extra, Locked')).toBeTruthy();
-    expect(screen.getByText('🔒')).toBeTruthy();
-    await fireEvent.press(screen.getByTestId('word-tile-extra'));
-    expect(screen.queryByTestId('screen-Word')).toBeNull();
-  });
-
-  it('opens bonus words once a grown-up unlocked them', async () => {
-    mockBonusOpen = true;
-    await renderScreen('WordList', WordListScreen, undefined, ['Word']);
-    expect(screen.queryByText('🔒')).toBeNull();
-    await fireEvent.press(screen.getByTestId('word-tile-extra'));
-    expect(await screen.findByTestId('screen-Word')).toBeTruthy();
   });
 });
 

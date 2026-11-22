@@ -1,7 +1,7 @@
 /**
  * Writes src/monetization/adUnits.generated.ts from CI secrets (ADR 0001 point 6).
  *
- *   npm run gen:ad-units            reads ADMOB_BANNER_ID, ADMOB_INTERSTITIAL_ID, ADMOB_REWARDED_ID;
+ *   npm run gen:ad-units            reads ADMOB_BANNER_ID, ADMOB_INTERSTITIAL_ID;
  *                                   fails if any is missing or malformed (CI runs this on tags only)
  *   npm run gen:ad-units -- --reset writes the committed placeholder (all null → Google test IDs)
  *
@@ -17,7 +17,6 @@ const OUT = path.join(__dirname, '..', 'src', 'monetization', 'adUnits.generated
 const ENV = {
   banner: 'ADMOB_BANNER_ID',
   interstitial: 'ADMOB_INTERSTITIAL_ID',
-  rewarded: 'ADMOB_REWARDED_ID',
 } as const;
 
 type Units = Record<keyof typeof ENV, string | null>;
@@ -31,23 +30,21 @@ function render(units: Units): string {
 export const GENERATED_AD_UNITS: {
   banner: string | null;
   interstitial: string | null;
-  rewarded: string | null;
 } = {
   banner: ${value(units.banner)},
   interstitial: ${value(units.interstitial)},
-  rewarded: ${value(units.rewarded)},
 };
 `;
 }
 
 function main(): number {
   if (process.argv.includes('--reset')) {
-    fs.writeFileSync(OUT, render({ banner: null, interstitial: null, rewarded: null }));
+    fs.writeFileSync(OUT, render({ banner: null, interstitial: null }));
     console.warn(`gen-ad-units: reset ${path.relative(process.cwd(), OUT)} to test IDs`);
     return 0;
   }
 
-  const units: Units = { banner: null, interstitial: null, rewarded: null };
+  const units: Units = { banner: null, interstitial: null };
   const errors: string[] = [];
   for (const key of Object.keys(ENV) as (keyof typeof ENV)[]) {
     const result = checkAdUnitId(ENV[key], process.env[ENV[key]]);
@@ -65,7 +62,7 @@ function main(): number {
 
   fs.writeFileSync(OUT, render(units));
   // IDs are not secret once shipped, but keep CI logs clean anyway.
-  console.warn(`gen-ad-units: wrote 3 release ad unit IDs to ${path.relative(process.cwd(), OUT)}`);
+  console.warn(`gen-ad-units: wrote 2 release ad unit IDs to ${path.relative(process.cwd(), OUT)}`);
   return 0;
 }
 

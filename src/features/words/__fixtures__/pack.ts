@@ -24,7 +24,6 @@ export function fixturePack(overrides: Partial<Pack> = {}): Pack {
     words: [
       word('one'),
       word('two', { bridge: { as: 'bridge-as', en: 'bridge-en' }, placeholderEmoji: undefined }),
-      word('extra', { bonus: true }),
     ],
     numbers: [],
     ...overrides,

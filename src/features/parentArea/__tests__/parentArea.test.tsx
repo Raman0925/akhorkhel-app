@@ -10,24 +10,14 @@ import type { RootStackParamList } from '@/navigation';
 import { useProfiles, useProgress } from '@/progress';
 import { DEFAULT_SETTINGS, mmkv, useSettings } from '@/storage';
 
-import { remaining } from '../remaining';
 import { AdsNoticeScreen } from '../screens/AdsNoticeScreen';
 import { ParentAreaScreen } from '../screens/ParentAreaScreen';
 import { PrivacyPolicyScreen } from '../screens/PrivacyPolicyScreen';
-import { RewardsScreen } from '../screens/RewardsScreen';
-
-const mockUnlocks = {
-  isUnlocked: jest.fn(() => false),
-  unlockedUntil: jest.fn((_id: string) => 0),
-  watchRewarded: jest.fn(async (_id: string) => true),
-  rewardedReady: true,
-};
 
 jest.mock('@/monetization', () => {
   const actual = jest.requireActual('@/monetization');
   return {
     ...actual,
-    useUnlocks: jest.fn((_opts?: { preloadRewarded?: boolean }) => mockUnlocks),
     resetAdsState: jest.fn(),
   };
 });
@@ -46,7 +36,6 @@ async function renderStack(initial: keyof RootStackParamList = 'ParentArea') {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initial}>
         <Stack.Screen name="ParentArea" component={ParentAreaScreen} />
-        <Stack.Screen name="Rewards" component={RewardsScreen} />
         <Stack.Screen name="AdsNotice" component={AdsNoticeScreen} />
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         <Stack.Screen name="Onboarding" component={Onboarding} />
@@ -59,8 +48,6 @@ async function renderStack(initial: keyof RootStackParamList = 'ParentArea') {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockUnlocks.rewardedReady = true;
-  mockUnlocks.unlockedUntil.mockImplementation(() => 0);
   useSettings.setState({
     ...DEFAULT_SETTINGS,
     uiLanguage: 'en',
@@ -102,6 +89,15 @@ describe('ParentArea', () => {
     await renderStack();
     await fireEvent.press(screen.getByTestId('parent-child-p1'));
     expect(await screen.findByTestId('screen-ProfileEdit')).toBeTruthy();
+  });
+
+  it('lets the parent pick any sticker theme (all free)', async () => {
+    await renderStack();
+    expect(screen.getByTestId('parent-sticker-stars')).toBeSelected();
+    await fireEvent.press(screen.getByTestId('parent-sticker-festival'));
+    expect(useSettings.getState().stickerTheme).toBe('festival');
+    expect(screen.getByTestId('parent-sticker-festival')).toBeSelected();
+    expect(screen.getByTestId('parent-sticker-stars')).not.toBeSelected();
   });
 
   it('opens teacher mode', async () => {
@@ -148,51 +144,6 @@ describe('ParentArea', () => {
   });
 });
 
-describe('Rewards', () => {
-  it('mockUnlocks a theme by watching an ad (opt-in)', async () => {
-    await renderStack('Rewards');
-    expect(screen.getByTestId('rewards-theme-stars-status')).toHaveTextContent('Free');
-    expect(screen.queryByTestId('rewards-theme-stars-watch')).toBeNull();
-    await fireEvent.press(screen.getByTestId('rewards-theme-animals-watch'));
-    expect(mockUnlocks.watchRewarded).toHaveBeenCalledWith('theme:animals');
-    expect(monetization.useUnlocks).toHaveBeenCalledWith({ preloadRewarded: true });
-    expect(screen.queryByTestId('banner-slot')).toBeNull();
-  });
-
-  it('shows remaining time and lets the parent pick an unlocked theme', async () => {
-    const now = Date.now();
-    mockUnlocks.unlockedUntil.mockImplementation(id =>
-      id === 'theme:fruits' ? now + (3 * 60 + 20) * 60000 - 1000 : 0,
-    );
-    await renderStack('Rewards');
-    expect(screen.getByTestId('rewards-theme-fruits-status')).toHaveTextContent(
-      'Unlocked: 3 h 20 min left',
-    );
-    await fireEvent.press(screen.getByTestId('rewards-theme-fruits-use'));
-    expect(useSettings.getState().stickerTheme).toBe('fruits');
-    expect(screen.getByTestId('rewards-bonusWords-watch')).toBeTruthy();
-  });
-
-  it('disables the button when no ad is ready', async () => {
-    mockUnlocks.rewardedReady = false;
-    await renderStack('Rewards');
-    await fireEvent.press(screen.getByTestId('rewards-bonusWords-watch'));
-    expect(mockUnlocks.watchRewarded).not.toHaveBeenCalled();
-    expect(
-      screen.getAllByText('No ad is available right now — try again later.').length,
-    ).toBeGreaterThan(0);
-  });
-
-  it('says so when the ad was not finished', async () => {
-    mockUnlocks.watchRewarded.mockResolvedValueOnce(false);
-    await renderStack('Rewards');
-    await fireEvent.press(screen.getByTestId('rewards-bonusWords-watch'));
-    expect(await screen.findByTestId('rewards-message')).toHaveTextContent(
-      'The ad did not finish, so nothing was unlocked.',
-    );
-  });
-});
-
 describe('static screens', () => {
   it('privacy policy matches the data-safety summary', async () => {
     await renderStack('PrivacyPolicy');
@@ -209,14 +160,5 @@ describe('static screens', () => {
     await renderStack('AdsNotice');
     await fireEvent.press(screen.getByTestId('ads-notice-accept'));
     expect(useSettings.getState().adsNoticeSeen).toBe(true);
-  });
-});
-
-describe('remaining', () => {
-  it('rounds up to the minute and splits hours', () => {
-    expect(remaining(0, 1)).toBeNull();
-    expect(remaining(61 * 60000, 0)).toEqual({ h: 1, m: 1 });
-    expect(remaining(30000, 0)).toEqual({ h: 0, m: 1 });
-    expect(remaining(24 * 3600000, 0)).toEqual({ h: 24, m: 0 });
   });
 });

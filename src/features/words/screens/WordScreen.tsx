@@ -3,7 +3,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { audio } from '@/audio';
 import { common, useStrings } from '@/i18n';
-import { useUnlocks } from '@/monetization';
 import type { ScreenProps } from '@/navigation';
 import { colors, fontForScript, fonts, fontSize, radius, spacing } from '@/theme';
 import { Header, IconButton, Screen, usePack } from '@/ui';
@@ -15,10 +14,7 @@ export function WordScreen({ navigation, route }: ScreenProps<'Word'>) {
   const pack = usePack();
   const c = useStrings(common);
   const s = useStrings(strings);
-  const bonusOpen = useUnlocks().isUnlocked('bonusWords');
-  const found = pack.words.find(w => w.id === route.params.wordId);
-  // A locked bonus word is never shown to the child.
-  const word = found && (!found.bonus || bonusOpen) ? found : undefined;
+  const word = pack.words.find(w => w.id === route.params.wordId);
 
   // The word itself is this screen's voice.
   useEffect(() => {

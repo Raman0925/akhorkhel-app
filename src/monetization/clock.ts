@@ -1,4 +1,4 @@
-/** Injectable clock so caps and unlock expiry can be tested without real time passing. */
+/** Injectable clock so ad caps can be tested without real time passing. */
 type Now = () => number;
 
 const systemNow: Now = () => Date.now();

@@ -31,11 +31,6 @@ export enum AdEventType {
   IMPRESSION = 'impression',
 }
 
-export enum RewardedAdEventType {
-  LOADED = 'rewarded_loaded',
-  EARNED_REWARD = 'rewarded_earned_reward',
-}
-
 export enum BannerAdSize {
   BANNER = 'BANNER',
   FULL_BANNER = 'FULL_BANNER',
@@ -53,8 +48,6 @@ export const TestIds = {
   ADAPTIVE_BANNER: 'ca-app-pub-3940256099942544/9214589741',
   BANNER: 'ca-app-pub-3940256099942544/6300978111',
   INTERSTITIAL: 'ca-app-pub-3940256099942544/1033173712',
-  REWARDED: 'ca-app-pub-3940256099942544/5224354917',
-  REWARDED_INTERSTITIAL: 'ca-app-pub-3940256099942544/5354046379',
   NATIVE: 'ca-app-pub-3940256099942544/2247696110',
 };
 
@@ -93,7 +86,7 @@ const mobileAds = () => mobileAdsInstance;
 export const MobileAds = mobileAds;
 export default mobileAds;
 
-type EventType = AdEventType | RewardedAdEventType;
+type EventType = AdEventType;
 type Listener = (payload?: unknown) => void;
 
 class MockFullScreenAd {
@@ -141,7 +134,7 @@ class MockFullScreenAd {
   }
 
   addAdEventsListener(listener: (e: { type: EventType; payload?: unknown }) => void): () => void {
-    const unsubs = [...Object.values(AdEventType), ...Object.values(RewardedAdEventType)].map(t =>
+    const unsubs = Object.values(AdEventType).map(t =>
       this.addAdEventListener(t, payload => listener({ type: t, payload })),
     );
     return () => unsubs.forEach(u => u());
@@ -188,20 +181,6 @@ export class InterstitialAd extends MockFullScreenAd {
   });
 }
 
-export class RewardedAd extends MockFullScreenAd {
-  static instances: RewardedAd[] = [];
-  static createForAdRequest = jest.fn((adUnitId: string, requestOptions?: RequestOptions) => {
-    const ad = new RewardedAd(adUnitId, requestOptions, RewardedAdEventType.LOADED);
-    RewardedAd.instances.push(ad);
-    return ad;
-  });
-
-  /** Test helper: the user watched to the end. */
-  simulateEarnedReward() {
-    this.emit(RewardedAdEventType.EARNED_REWARD, { type: 'reward', amount: 1 });
-  }
-}
-
 export type BannerAdProps = {
   unitId: string;
   size: BannerAdSize | string;
@@ -231,15 +210,12 @@ export const __mock = {
   bannerRenders,
   lastInterstitial: (): InterstitialAd | undefined =>
     InterstitialAd.instances[InterstitialAd.instances.length - 1],
-  lastRewarded: (): RewardedAd | undefined => RewardedAd.instances[RewardedAd.instances.length - 1],
   reset() {
     callOrder.length = 0;
     bannerRenders.length = 0;
     InterstitialAd.instances.length = 0;
-    RewardedAd.instances.length = 0;
     mobileAdsInstance.setRequestConfiguration.mockClear();
     mobileAdsInstance.initialize.mockClear();
     InterstitialAd.createForAdRequest.mockClear();
-    RewardedAd.createForAdRequest.mockClear();
   },
 };

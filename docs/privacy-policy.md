@@ -30,7 +30,8 @@ else by the app:
   personal detail is asked for);
 - learning progress: stars, attempts and completed letters;
 - settings: language, sound, left-hand mode and similar;
-- ad counters and the expiry time of any reward unlocked in the parent area.
+- ad counters (number of app launches and the time of the last full-screen ad), used only to limit
+  how often ads appear.
 
 The child's tracing is used only on the device to give stars and is never sent anywhere. The app
 does not use the camera, microphone, contacts, location or files.
@@ -63,8 +64,8 @@ What we do to protect children:
 - no full-screen ad is shown when the app opens, and no ads at all are shown before a parent has
   seen the ads notice or during the first session after install;
 - a small banner appears only on the home screen, letter grid, word list and parent area, never
-  while a child is tracing or playing a learning game; optional reward ads are offered only to
-  adults, behind the parent gate.
+  while a child is tracing or playing a learning game; there are no rewarded or "watch an ad to
+  unlock" ads.
 
 Google processes this data under its own policies. Learn more:
 
@@ -86,8 +87,7 @@ Akhor Khel is designed for children and is built to meet Google Play's Families 
 - We do not track children across apps or websites, build profiles of them, or show them
   personalised or behavioural ads. The ad data described in section 2 is processed by Google for
   child-directed, non-personalised ads only.
-- Features meant for adults (settings, teacher mode, sharing, optional reward ads and links that
-  leave the app) are behind a parent gate.
+- Features meant for adults (settings, teacher mode, sharing and links that leave the app) are behind a parent gate.
 - **United States (COPPA):** the app is intended to be handled as a child-directed service. Ad
   requests are tagged for child-directed treatment so that Google applies its COPPA-related
   restrictions. The developer does not collect personal information from children.

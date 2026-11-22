@@ -7,12 +7,11 @@ is a release blocker.
 
 ## Placements
 
-| Format                   | Where                                                                          | API                                                           | Rules                                                                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Anchored adaptive banner | **Home, LetterGrid, WordList, ParentArea only** (final list, A0 decision)      | `<BannerSlot />` (`Screen`)                                   | Never on tracing or game screens. Always reserves `BANNER_HEIGHT`; thin divider above; nothing visible on error/offline.        |
-| Interstitial             | When the child finishes a set (e.g. 5 letters) and is back on the grid         | `useAds().onSetComplete()`                                    | Caps below. Never at launch. Only if already loaded; otherwise resolves immediately. Resolves after the ad closes.              |
-| Rewarded                 | Parent area only (behind the parent gate): "watch one ad to unlock X for 24 h" | `useUnlocks({ preloadRewarded: true })` (Rewards screen only) | Always opt-in by the parent; never offered to the child. Unlocks `bonusWords` or `theme:<id>` (non-free sticker themes).        |
-| Global gate              | All formats                                                                    | —                                                             | No ad of any kind until the parent has seen the ads notice (`adsNoticeSeen`) **and** not in the first session of a new install. |
+| Format                   | Where                                                                     | API                         | Rules                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Anchored adaptive banner | **Home, LetterGrid, WordList, ParentArea only** (final list, A0 decision) | `<BannerSlot />` (`Screen`) | Never on tracing or game screens. Always reserves `BANNER_HEIGHT`; thin divider above; nothing visible on error/offline.        |
+| Interstitial             | When the child finishes a set (e.g. 5 letters) and is back on the grid    | `useAds().onSetComplete()`  | Caps below. Never at launch. Only if already loaded; otherwise resolves immediately. Resolves after the ad closes.              |
+| Global gate              | All formats                                                               | —                           | No ad of any kind until the parent has seen the ads notice (`adsNoticeSeen`) **and** not in the first session of a new install. |
 
 Banner placement rules:
 
@@ -25,17 +24,16 @@ Banner placement rules:
 - After a failed load the slot stays empty until it remounts; on Home (the stack root) that means
   until the next launch. This is deliberate: no retry loops offline.
 
-Rewarded preload (ADR 0002): child screens may call `useUnlocks()` to read unlock state, which never
-loads an ad. Only the parent-area Rewards screen passes `{ preloadRewarded: true }`; the ad is loaded
-while that screen is mounted and never reloaded after it unmounts. `rewardedReady` is always false
-without the option.
+There are **no rewarded ads** (ADR 0003). Families policy requires every ad in a child-directed app
+to be closeable after 5 seconds, "including rewarded or opt-in ads", and rewarded video usually is
+not. Nothing in the app is locked behind an ad: all sticker themes and all words are free.
 
 `resetAdsState()` (Parent area → Delete all data, ADR 0002) clears the launch counter, last
-interstitial time, session count and all unlocks. The current process then counts as a first
+interstitial time and session count. The current process then counts as a first
 session, so no ad shows until the next launch and the notice has been seen again.
 
-`useActiveStickers()` returns the selected sticker theme (`settings.stickerTheme`) if it is free or
-currently unlocked, otherwise the free `stars` theme.
+`useActiveStickers()` returns the emoji of the sticker theme the parent picked in the parent area
+(`settings.stickerTheme`); every theme is free. An unknown id falls back to `stars`.
 
 ## Caps (hard-coded in `src/monetization/logic/caps.ts`, unit-tested)
 
@@ -46,7 +44,6 @@ currently unlocked, otherwise the free `stars` theme.
 | First session of a new install        | **No ads at all**. A launch counter (`ads.v1` in MMKV) is incremented by `initAds()`; launch 1 is session 1. |
 | Before the parent has seen the notice | **No ads at all**; the SDK is not even initialised                                                           |
 | Banner after a failed load            | No new banner request for 60 s (no request loops offline)                                                    |
-| Rewarded unlock                       | 24 h from the moment the reward is earned (`unlocks.v1` in MMKV)                                             |
 
 Changing a cap is a policy change: update `caps.ts`, its tests and this file in the same PR, and get
 an A6 review.
@@ -58,7 +55,7 @@ an A6 review.
    `maxAdContentRating: MaxAdContentRating.G` and `ageRestrictedTreatment: CHILD` (SDK 17 deprecates the
    two booleans in favour of `ageRestrictedTreatment`; we set both so every code path ends at CHILD).
    If this call fails, the SDK is never initialised and no ads show (fail closed).
-2. **Every request** (banner, interstitial, rewarded) uses `requestNonPersonalizedAdsOnly: true` and
+2. **Every request** (banner and interstitial) uses `requestNonPersonalizedAdsOnly: true` and
    nothing else: no keywords, content URLs or identifiers.
 3. **Deferred initialisation.** The SDK is only initialised once ads may actually show (notice seen
    and session ≥ 2). Until then the app makes no ad network traffic at all.
@@ -95,7 +92,6 @@ If the app ever stops being child-directed, this decision must be revisited with
 | `ADMOB_APP_ID`          | Gradle manifest placeholder `admobAppId` (`android/app/build.gradle`) | `ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY` |
 | `ADMOB_BANNER_ID`       | `npm run gen:ad-units` → `src/monetization/adUnits.generated.ts`      | `ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY` |
 | `ADMOB_INTERSTITIAL_ID` | same                                                                  | same                                     |
-| `ADMOB_REWARDED_ID`     | same                                                                  | same                                     |
 
 - Add them in GitHub → repository Settings → Secrets and variables → Actions.
 - **Debug builds** always use Google's test IDs (`TestIds`) and Google's sample App ID; never tap
@@ -131,7 +127,7 @@ Ad units:
 - **Interstitial:** configure the unit as **display only (no video)** — under Ad unit → Ad type,
   untick Video. No frequency capping needed in the console (the app caps harder), but setting 1 per
   4 min there too is harmless.
-- **Rewarded:** reward amount 1, type "unlock".
+- **No rewarded or rewarded-interstitial units** (ADR 0003).
 - **No mediation** (only Google AdMob, a Families self-certified SDK).
 
 ## Before every release
@@ -142,8 +138,8 @@ Ad units:
 - [ ] No other ads/analytics SDK was added (`npm ls`, Gradle dependencies).
 - [ ] `adb logcat` shows the `[ads] AdMob configured …` line on a release build.
 - [ ] Release build is not using test IDs (no `[ads] Release build is using Google test ad unit IDs`).
-- [ ] Banner only on Home, LetterGrid, WordList, ParentArea; interstitial never at launch; rewarded
-      only on the parent Rewards screen (preloadRewarded true nowhere else).
+- [ ] Banner only on Home, LetterGrid, WordList, ParentArea; interstitial never at launch; no other
+      ad format anywhere (ADR 0003).
 - [ ] AdMob console settings above are still applied.
 - [ ] `app-ads.txt` is live (below).
 - [ ] Play Console Data safety form matches (ads, no Advertising ID, data not shared for tracking).
@@ -161,8 +157,8 @@ AdMob requires an `app-ads.txt` file on the developer website listed in the Play
 
 ## Testing
 
-- `npm test -- src/monetization` covers caps, unlock expiry, init order/config, banner layout and
+- `npm test -- src/monetization` covers caps, init order/config, banner layout and
   `onSetComplete` caps against a full SDK mock (`jest/mocks/react-native-google-mobile-ads.tsx`).
 - On a device (debug build = test ads): accept the ads notice in the parent area, relaunch the app
-  (session 2), finish a set → test interstitial; open the parent area Rewards screen → rewarded test ad unlocks a
-  sticker theme for 24 h.
+  (session 2), finish a set → test interstitial; the parent area shows a test banner and its
+  sticker-theme picker changes the celebration stickers.

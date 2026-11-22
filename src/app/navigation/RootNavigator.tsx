@@ -5,12 +5,7 @@ import { GameHearScreen, GamePictureScreen, GamesHubScreen } from '@/features/ga
 import { HomeScreen } from '@/features/home';
 import { LetterGridScreen, LetterScreen } from '@/features/letters';
 import { CountScreen, NumberListScreen, NumberScreen } from '@/features/numbers';
-import {
-  AdsNoticeScreen,
-  ParentAreaScreen,
-  PrivacyPolicyScreen,
-  RewardsScreen,
-} from '@/features/parentArea';
+import { AdsNoticeScreen, ParentAreaScreen, PrivacyPolicyScreen } from '@/features/parentArea';
 import { ParentGateScreen } from '@/features/parentGate';
 import { OnboardingScreen, ProfileEditScreen, ProfilePickerScreen } from '@/features/profiles';
 import { SignListScreen, SignScreen } from '@/features/swarachihna';
@@ -63,7 +58,6 @@ export function RootNavigator() {
       />
       <Stack.Screen name="ParentArea" component={ParentAreaScreen} />
       <Stack.Screen name="AdsNotice" component={AdsNoticeScreen} />
-      <Stack.Screen name="Rewards" component={RewardsScreen} />
       <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
       <Stack.Screen name="Teacher" component={TeacherScreen} />
       <Stack.Screen name="TeacherChild" component={TeacherChildScreen} />

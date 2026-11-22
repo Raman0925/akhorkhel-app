@@ -5,8 +5,6 @@ import { persist } from 'zustand/middleware';
 import { STORAGE_KEYS, useSettings, zustandStorage } from '@/storage';
 
 import { adBlockReason, type AdBlockReason } from './logic/caps';
-import { grantUnlock, type UnlockMap } from './logic/unlocks';
-import type { RewardId } from './types';
 
 type AdsPersisted = {
   /** App launches counted by initAds(); the first launch of a new install is 1. */
@@ -23,38 +21,16 @@ export const useAdsStore = create<AdsPersisted>()(
   }),
 );
 
-type UnlocksPersisted = {
-  unlocks: UnlockMap;
-  grant: (id: RewardId, now: number) => void;
-};
-
-export const useUnlocksStore = create<UnlocksPersisted>()(
-  persist(
-    set => ({
-      unlocks: {},
-      grant: (id, now) => set(s => ({ unlocks: grantUnlock(s.unlocks, id, now) })),
-    }),
-    {
-      name: STORAGE_KEYS.unlocks,
-      storage: zustandStorage,
-      version: 1,
-      partialize: s => ({ unlocks: s.unlocks }),
-    },
-  ),
-);
-
 /** In-memory, per-process state (an "app session" is the process lifetime). */
 type AdsRuntime = {
   sdkReady: boolean;
   interstitialReady: boolean;
-  rewardedReady: boolean;
   interstitialsThisSession: number;
 };
 
 export const INITIAL_RUNTIME: AdsRuntime = {
   sdkReady: false,
   interstitialReady: false,
-  rewardedReady: false,
   interstitialsThisSession: 0,
 };
 

@@ -10,7 +10,6 @@ import { useSettings } from '@/storage';
 import { USING_TEST_AD_UNITS } from './adUnits';
 import { CHILD_DIRECTED_REQUEST_CONFIG, CONFIG_LOG_MESSAGE } from './config';
 import { preloadInterstitial, resetInterstitial } from './interstitial';
-import { resetRewarded } from './rewarded';
 import { currentAdBlockReason, INITIAL_RUNTIME, useAdsRuntime, useAdsStore } from './stores';
 
 let started: Promise<void> | null = null;
@@ -99,6 +98,5 @@ export function resetAdsForTests(): void {
   configured = null;
   initializing = null;
   resetInterstitial();
-  resetRewarded();
   useAdsRuntime.setState({ ...INITIAL_RUNTIME });
 }

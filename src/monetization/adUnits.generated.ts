@@ -5,9 +5,7 @@
 export const GENERATED_AD_UNITS: {
   banner: string | null;
   interstitial: string | null;
-  rewarded: string | null;
 } = {
   banner: null,
   interstitial: null,
-  rewarded: null,
 };

@@ -4,6 +4,7 @@ import InAppReview from 'react-native-in-app-review';
 
 import { PACKS } from '@/content';
 import { useStrings } from '@/i18n';
+import { STICKER_THEMES } from '@/monetization';
 import type { ScreenProps } from '@/navigation';
 import { MAX_PROFILES, useProfiles } from '@/progress';
 import { useSettings, type UiLanguage } from '@/storage';
@@ -55,18 +56,13 @@ export function ParentAreaScreen({ navigation }: ScreenProps<'ParentArea'>) {
       <Header title={s.title} />
       <ScrollView contentContainerStyle={styles.content}>
         <SettingsSection />
+        <StickerSection />
         <ChildrenSection
           onEdit={id => navigation.navigate('ProfileEdit', { profileId: id })}
           onAdd={() => navigation.navigate('ProfileEdit', {})}
         />
         <RateCard />
         <Section title={s.more}>
-          <Row
-            icon="🎁"
-            label={s.rewards}
-            onPress={() => navigation.navigate('Rewards')}
-            testID="parent-rewards"
-          />
           <Row
             icon="🧑‍🏫"
             label={s.teacher}
@@ -137,6 +133,34 @@ function SettingsSection() {
       />
     </Section>
   );
+}
+
+/** Celebration sticker theme. Every theme is free; the parent simply picks one. */
+function StickerSection() {
+  const s = useStrings(strings);
+  const stickerTheme = useSettings(st => st.stickerTheme);
+  const options = STICKER_THEMES.map(t => ({
+    id: t.id,
+    label: `${t.emoji[0] ?? ''} ${themeName(s, t.id)}`,
+  }));
+  return (
+    <Section title={s.stickerThemes}>
+      <Paragraph>{s.stickerThemesHint}</Paragraph>
+      <Choice
+        options={options}
+        value={stickerTheme}
+        onChange={id => useSettings.getState().setStickerTheme(id)}
+        testIDPrefix="parent-sticker"
+      />
+    </Section>
+  );
+}
+
+type S = (typeof strings)['en'];
+
+function themeName(s: S, id: string): string {
+  const key = `theme_${id}`;
+  return key in s ? s[key as keyof S] : id;
 }
 
 function ChildrenSection({ onEdit, onAdd }: { onEdit: (id: string) => void; onAdd: () => void }) {

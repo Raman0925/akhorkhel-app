@@ -76,12 +76,11 @@ describe('picture rounds', () => {
   const four = ['a', 'b', 'c', 'd'].map(id => letter(id));
   const words = [word('a1', 'a'), word('a2', 'a'), word('b1', 'b'), word('c1', 'c')];
 
-  it('only uses non-bonus words with a picture and a known first letter', () => {
+  it('only uses words with a picture and a known first letter', () => {
     const all = [
       ...words,
       word('x1', 'x'),
       word('n1', undefined),
-      word('bonus', 'a', { bonus: true }),
       word('nopic', 'b', { placeholderEmoji: undefined }),
     ];
     const usable = pictureWords(all, four, w => w.placeholderEmoji !== undefined);

@@ -18,7 +18,6 @@ export function NoticeContent() {
       <Paragraph>👶 {s.notice2}</Paragraph>
       <Paragraph>✏️ {s.notice3}</Paragraph>
       <Paragraph>📱 {s.notice4}</Paragraph>
-      <Paragraph>🎁 {s.notice5}</Paragraph>
       <Row
         icon="📄"
         label={s.noticePolicyLink}

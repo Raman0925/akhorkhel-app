@@ -1,6 +1,6 @@
 # ADR 0002: Rewarded preload is opt-in; ads state reset
 
-Date: 2026-11-22 · Status: accepted · Amends the frozen `@/monetization` contract (ADR 0001)
+Date: 2026-11-22 · Status: accepted; point 1 superseded by [ADR 0003](0003-drop-rewarded-ads.md) · Amends the frozen `@/monetization` contract (ADR 0001)
 
 ## Context
 

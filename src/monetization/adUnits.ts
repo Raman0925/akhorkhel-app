@@ -6,13 +6,12 @@ import { TestIds } from 'react-native-google-mobile-ads';
 
 import { GENERATED_AD_UNITS } from './adUnits.generated';
 
-export type AdUnits = { banner: string; interstitial: string; rewarded: string };
+export type AdUnits = { banner: string; interstitial: string };
 export type GeneratedAdUnits = { [K in keyof AdUnits]: string | null };
 
 export const TEST_AD_UNITS: AdUnits = {
   banner: TestIds.ADAPTIVE_BANNER,
   interstitial: TestIds.INTERSTITIAL,
-  rewarded: TestIds.REWARDED,
 };
 
 export function resolveAdUnits(isDev: boolean, generated: GeneratedAdUnits): AdUnits {
@@ -22,7 +21,6 @@ export function resolveAdUnits(isDev: boolean, generated: GeneratedAdUnits): AdU
   return {
     banner: generated.banner ?? TEST_AD_UNITS.banner,
     interstitial: generated.interstitial ?? TEST_AD_UNITS.interstitial,
-    rewarded: generated.rewarded ?? TEST_AD_UNITS.rewarded,
   };
 }
 

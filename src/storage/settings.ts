@@ -22,7 +22,7 @@ export type SettingsState = {
   /** Completed learning sessions; used for the 3rd-session review prompt and first-session ad skip. */
   completedSessions: number;
   reviewRequested: boolean;
-  /** Sticker theme currently selected (see monetization unlocks). */
+  /** Sticker theme the parent picked in the parent area (see monetization STICKER_THEMES). */
   stickerTheme: string;
   setUiLanguage: (l: UiLanguage) => void;
   setPackId: (id: string) => void;

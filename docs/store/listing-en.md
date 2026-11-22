@@ -61,7 +61,7 @@ SAFE, CALM AND OFFLINE
 • Settings, teacher mode and anything that leaves the app are behind a parent gate.
 • Voice prompts on every screen, so pre-readers can find their way.
 
-About ads: Akhor Khel is free because it shows ads from Google AdMob. Ads are set up for a children's app: child-directed, non-personalised and limited to general-audience (G) content. A small banner appears only on the home screen, letter grid, word list and parent area, and a full-screen ad may appear at a natural break after a set of letters, never at launch and never while your child is tracing or playing a game. Parents can choose to watch an optional ad in the parent area to unlock a sticker theme or bonus words for 24 hours; this is never offered to the child. There are no in-app purchases.
+About ads: Akhor Khel is free because it shows ads from Google AdMob. Ads are set up for a children's app: child-directed, non-personalised and limited to general-audience (G) content. A small banner appears only on the home screen, letter grid, word list and parent area, and a full-screen ad may appear at a natural break after a set of letters, never at launch and never while your child is tracing or playing a game. There are no "watch an ad to unlock" ads: everything in the app is free. There are no in-app purchases.
 
 Whether you want an Assamese alphabet learning app for a preschooler, an Assamese writing app for a first-grader, or an Assamese learning app for the whole class, Akhor Khel helps children write Assamese alphabet letters with confidence. If your child enjoys this Assamese letter writing app, please leave a rating – it helps other families find it.
 

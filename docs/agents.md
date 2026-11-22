@@ -24,7 +24,7 @@
 | Progress store | `src/progress/progress.ts`   | `useProgress().record(profileId, packId, itemKey, level, stars)`                                 |
 | Profiles       | `src/progress/profiles.ts`   | `useProfiles`, `useCurrentProfile`, 40 max                                                       |
 | Settings       | `src/storage/settings.ts`    | `useSettings` (packId, uiLanguage, leftHanded, sessions…)                                        |
-| Ads            | `src/monetization/index.tsx` | `initAds`, `BannerSlot`, `useAds().onSetComplete`, `useUnlocks`                                  |
+| Ads            | `src/monetization/index.tsx` | `initAds`, `BannerSlot`, `useAds().onSetComplete`, `resetAdsState`, `useActiveStickers`          |
 | i18n           | `src/i18n`                   | `defineStrings` + `useStrings` per feature (`features/<x>/strings.ts`)                           |
 | UI kit         | `src/ui`                     | `Screen` (voice prompt + banner slot), `Header`, `BigButton`, `IconButton`, `StarRow`, `usePack` |
 

@@ -5,7 +5,7 @@ import { resetAdsState } from '@/monetization';
 
 /**
  * Parent area → delete all data. Wipes the device store, then resets the in-memory stores
- * (settings, profiles, progress, ad counters and unlocks) so the app behaves like a fresh install
+ * (settings, profiles, progress and ad counters) so the app behaves like a fresh install
  * without a restart.
  */
 export function resetAllData(): void {

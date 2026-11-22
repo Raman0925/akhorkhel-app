@@ -6,7 +6,7 @@ import { __mock, AdEventType } from '../../jest/mocks/react-native-google-mobile
 import { resetBannerForTests } from './BannerSlot';
 import { setClock } from './clock';
 import { resetAdsForTests } from './sdk';
-import { useAdsStore, useUnlocksStore } from './stores';
+import { useAdsStore } from './stores';
 
 export { __mock, AdEventType };
 
@@ -40,5 +40,4 @@ export function resetMonetization({ adsNoticeSeen = true, launchCount = 1 }: Set
   setClock();
   useSettings.setState({ adsNoticeSeen, stickerTheme: 'stars' });
   useAdsStore.setState({ launchCount, lastInterstitialAt: null });
-  useUnlocksStore.setState({ unlocks: {} });
 }

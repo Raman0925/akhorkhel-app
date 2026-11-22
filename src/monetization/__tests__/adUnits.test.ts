@@ -7,12 +7,11 @@ import { GENERATED_AD_UNITS } from '../adUnits.generated';
 const REAL = {
   banner: 'ca-app-pub-1234567890123456/1111111111',
   interstitial: 'ca-app-pub-1234567890123456/2222222222',
-  rewarded: 'ca-app-pub-1234567890123456/3333333333',
 };
 
 describe('ad unit IDs', () => {
   it('the committed generated file holds no real IDs', () => {
-    expect(GENERATED_AD_UNITS).toEqual({ banner: null, interstitial: null, rewarded: null });
+    expect(GENERATED_AD_UNITS).toEqual({ banner: null, interstitial: null });
   });
 
   it('debug builds always use Google test IDs', () => {
@@ -23,9 +22,9 @@ describe('ad unit IDs', () => {
 
   it('release builds use generated IDs and fall back per placement', () => {
     expect(resolveAdUnits(false, REAL)).toEqual(REAL);
-    expect(resolveAdUnits(false, { ...REAL, rewarded: null })).toEqual({
+    expect(resolveAdUnits(false, { ...REAL, interstitial: null })).toEqual({
       ...REAL,
-      rewarded: TEST_AD_UNITS.rewarded,
+      interstitial: TEST_AD_UNITS.interstitial,
     });
   });
 

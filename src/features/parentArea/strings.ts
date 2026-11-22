@@ -16,7 +16,6 @@ export const strings = defineStrings({
     children: 'শিশুসকল',
     addChild: 'নতুন শিশু',
     more: 'অধিক',
-    rewards: 'পুৰস্কাৰ',
     teacher: 'শিক্ষকৰ অংশ',
     adsNotice: 'বিজ্ঞাপন আৰু গোপনীয়তা',
     privacyPolicy: 'গোপনীয়তা নীতি',
@@ -41,7 +40,6 @@ export const strings = defineStrings({
       'আখৰ লিখা আৰু খেলৰ স্ক্ৰীণত কোনো বিজ্ঞাপন নাথাকে। মেনুৰ তলত সৰু বেনাৰ থাকে, আৰু কেইটামান আখৰ শেষ কৰাৰ পিছত কেতিয়াবা এটা বিজ্ঞাপন আহে।',
     notice4:
       'এপটোৱে নিজে কোনো ব্যক্তিগত তথ্য সংগ্ৰহ নকৰে। শিশুৰ আদৰৰ নাম আৰু তৰাবোৰ এই ফোনতে থাকে, ক’তো পঠিওৱা নহয়। বিজ্ঞাপন দেখুৱাবলৈ Google-ৰ SDK-য়ে IP ঠিকনা আৰু app set ID-ৰ দৰে ডিভাইচ চিনাক্তকাৰী ব্যৱহাৰ কৰিব পাৰে (বিজ্ঞাপন আইডি নহয়)।',
-    notice5: 'পুৰস্কাৰৰ বিজ্ঞাপন কেৱল অভিভাৱকৰ অংশত, আপুনি নিজে বাছিলেহে চলে।',
     noticePolicyLink: 'সম্পূৰ্ণ গোপনীয়তা নীতি পঢ়ক',
 
     policyTitle: 'গোপনীয়তা নীতি',
@@ -58,21 +56,8 @@ export const strings = defineStrings({
     policyDelete:
       'অভিভাৱকৰ অংশৰ “সকলো তথ্য মচি পেলাওক” বুটামে ফোনত থকা সকলো তথ্য মচি পেলায়। এপটো আনইনষ্টল কৰিলেও সকলো মচ যায়।',
 
-    rewardsTitle: 'পুৰস্কাৰ',
-    rewardsIntro:
-      'এটা বিজ্ঞাপন চাই ২৪ ঘণ্টাৰ বাবে নতুন ষ্টিকাৰ বা অতিৰিক্ত শব্দ খুলিব পাৰে। এইটো সম্পূৰ্ণ আপোনাৰ ইচ্ছা; শিশুক কেতিয়াও বিজ্ঞাপন চাবলৈ কোৱা নহয়।',
     stickerThemes: 'ষ্টিকাৰ',
-    bonusWords: 'অতিৰিক্ত শব্দ',
-    bonusWordsBody: 'শব্দ অংশত আৰু কিছু নতুন ছবি-শব্দ।',
-    watchAd: 'এটা বিজ্ঞাপন চাই ২৪ ঘণ্টাৰ বাবে খোলক',
-    adNotReady: 'এতিয়া কোনো বিজ্ঞাপন উপলব্ধ নাই। পিছত আকৌ চেষ্টা কৰক।',
-    adNoReward: 'বিজ্ঞাপনটো শেষ নহ’ল, সেয়ে একো খোলা নহ’ল।',
-    free: 'বিনামূলীয়া',
-    unlockedFor: 'খোলা আছে: আৰু {time}',
-    hoursMinutes: '{h} ঘণ্টা {m} মিনিট',
-    minutes: '{m} মিনিট',
-    use: 'এইটো ব্যৱহাৰ কৰক',
-    inUse: 'ব্যৱহাৰ হৈ আছে',
+    stickerThemesHint: 'তৰা পোৱাৰ সময়ত শিশুৱে এই ষ্টিকাৰবোৰ দেখিব। সকলোবোৰ বিনামূলীয়া।',
     theme_stars: 'তৰা',
     theme_animals: 'জীৱ-জন্তু',
     theme_fruits: 'ফল-মূল',
@@ -91,7 +76,6 @@ export const strings = defineStrings({
     children: 'Children',
     addChild: 'New child',
     more: 'More',
-    rewards: 'Rewards',
     teacher: 'Teacher mode',
     adsNotice: 'Ads & privacy',
     privacyPolicy: 'Privacy policy',
@@ -116,7 +100,6 @@ export const strings = defineStrings({
       'There are no ads on tracing or game screens. Menus have a small banner at the bottom, and an ad may sometimes appear after the child finishes a set of letters.',
     notice4:
       'The app itself collects no personal data. Nicknames and stars stay on this phone and are never sent anywhere. To show ads, Google’s ad SDK may use the IP address and device identifiers such as the app set ID (not the advertising ID).',
-    notice5: 'Reward ads are only in the parent area and only play if you choose them.',
     noticePolicyLink: 'Read the full privacy policy',
 
     policyTitle: 'Privacy policy',
@@ -133,21 +116,8 @@ export const strings = defineStrings({
     policyDelete:
       '“Delete all data” in the parent area removes everything stored on the phone. Uninstalling the app also removes it.',
 
-    rewardsTitle: 'Rewards',
-    rewardsIntro:
-      'You can watch one ad to unlock new stickers or bonus words for 24 hours. This is entirely your choice; the child is never asked to watch ads.',
     stickerThemes: 'Sticker themes',
-    bonusWords: 'Bonus words',
-    bonusWordsBody: 'Extra picture words in the Words section.',
-    watchAd: 'Watch one ad to unlock for 24 h',
-    adNotReady: 'No ad is available right now — try again later.',
-    adNoReward: 'The ad did not finish, so nothing was unlocked.',
-    free: 'Free',
-    unlockedFor: 'Unlocked: {time} left',
-    hoursMinutes: '{h} h {m} min',
-    minutes: '{m} min',
-    use: 'Use this',
-    inUse: 'In use',
+    stickerThemesHint: 'Stickers the child sees when earning stars. All of them are free.',
     theme_stars: 'Stars',
     theme_animals: 'Animals',
     theme_fruits: 'Fruits',

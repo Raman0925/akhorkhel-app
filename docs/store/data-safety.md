@@ -20,7 +20,7 @@ changes it, and the developer is responsible for what the SDK sends.
 
 - **The app itself collects nothing.** There is no backend, no account, no analytics SDK, no crash
   reporter and no network call except those made by the Google Mobile Ads SDK. Child profiles
-  (nickname + avatar), stars, attempts, settings, ad counters and unlock timers stay in on-device
+  (nickname + avatar), stars, attempts, settings and ad counters stay in on-device
   storage (MMKV). Per Play's definition, data that never leaves the device is not "collected".
 - **Teacher export (PDF/CSV)** is created on the device and handed to the Android share sheet only
   when the adult taps Share behind the parent gate. The app does not send it anywhere; this is a
@@ -51,7 +51,7 @@ Web browsing, Precise location, and the other App activity / App info types).
 | Play category            | Data type            | Collected | Shared | Processed ephemerally? | Required or optional | Purposes (tick)                                                                 | Why                                                                                                                                                       |
 | ------------------------ | -------------------- | --------- | ------ | ---------------------- | -------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Location                 | Approximate location | Yes       | Yes    | No                     | Required             | Advertising or marketing; Analytics; Fraud prevention, security, and compliance | The SDK collects the device's IP address, "which may be used to estimate the general location of a device". The app never requests a location permission. |
-| App activity             | App interactions     | Yes       | Yes    | No                     | Required             | Advertising or marketing; Analytics; Fraud prevention, security, and compliance | The SDK collects "app launch, taps, and video views" (ad impressions, clicks, rewarded video views).                                                      |
+| App activity             | App interactions     | Yes       | Yes    | No                     | Required             | Advertising or marketing; Analytics; Fraud prevention, security, and compliance | The SDK collects "app launch, taps, and video views" (ad impressions and clicks).                                                                         |
 | App info and performance | Diagnostics          | Yes       | Yes    | No                     | Required             | Analytics; Fraud prevention, security, and compliance; Advertising or marketing | The SDK collects "app launch time, hang rate, and energy usage" about the app and the SDK.                                                                |
 | Device or other IDs      | Device or other IDs  | Yes       | Yes    | No                     | Required             | Advertising or marketing; Analytics; Fraud prevention, security, and compliance | Google lists "Android advertising (ad) ID, app set ID, and, if applicable, other identifiers". See note below.                                            |
 

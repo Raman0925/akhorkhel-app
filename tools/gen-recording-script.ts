@@ -59,7 +59,7 @@ export function packRows(pack: PackContent): { title: string; rows: Row[] }[] {
       rows: pack.words.map(w => ({
         file: w.audio,
         say: w.text,
-        note: [w.bridge?.en, w.bonus ? 'bonus' : ''].filter(Boolean).join(', '),
+        note: w.bridge?.en ?? '',
       })),
     },
   ];

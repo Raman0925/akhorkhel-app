@@ -23,14 +23,13 @@ const ALL: readonly HomeModule[] = [
 /**
  * Modules with content in this pack. Empty modules are hidden, never shown as "coming soon".
  * Games need at least two letters that look different (every sound game is built on letters).
- * Words need at least one word the child can open (bonus words only while unlocked).
  */
-export function visibleModules(pack: Pack, bonusWordsOpen: boolean): HomeModule[] {
+export function visibleModules(pack: Pack): HomeModule[] {
   const has: Record<ModuleId, boolean> = {
     letters: pack.letters.length > 0,
     signs: pack.signs.length > 0,
     games: new Set(pack.letters.map(l => l.glyph)).size >= 2,
-    words: pack.words.some(w => !w.bonus || bonusWordsOpen),
+    words: pack.words.length > 0,
     numbers: pack.numbers.length > 0,
   };
   return ALL.filter(m => has[m.id]);

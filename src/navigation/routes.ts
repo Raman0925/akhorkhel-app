@@ -38,7 +38,6 @@ export type RootStackParamList = {
   ParentGate: { next: GatedRoute };
   ParentArea: undefined;
   AdsNotice: undefined;
-  Rewards: undefined;
   PrivacyPolicy: undefined;
   Teacher: undefined;
   TeacherChild: { profileId: string };
