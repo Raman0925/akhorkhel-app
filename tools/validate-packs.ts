@@ -5,7 +5,9 @@
  *   npm run validate-packs:release    also fails on anything unfinished (tags / release builds)
  *
  * Errors (always): invalid schema, duplicate ids, non-NFC text, dangling references, an item with no
- * outline or strokes, geometry out of date, a `verified` pack without `reviewedBy`.
+ * outline or strokes, geometry out of date, a `verified` pack without `reviewedBy`, an outline that
+ * does not parse or leaves the unit box, a zero-length stroke, a vowel-sign syllable whose result
+ * is not base + sign.
  * Release errors: any pack not `verified`, any missing audio/image/prompt file, placeholder emoji,
  * strokes that were generated (`auto`) and never reviewed or recorded.
  */
@@ -20,6 +22,10 @@ import {
   type PackContent,
 } from '../src/content/schema';
 
+import { parseOutline, polylineLength, registeredPackIds } from './glyph-geometry';
+
+export { registeredPackIds };
+
 const ROOT = path.resolve(__dirname, '..');
 const PACKS_DIR = path.join(ROOT, 'src/content/packs');
 const PROMPTS_DIR = path.join(ROOT, 'src/audio/prompts');
@@ -27,17 +33,22 @@ const release = process.argv.includes('--release');
 
 type Report = { errors: string[]; warnings: string[] };
 
-/** Packs registered in src/content/packs/index.ts (the ones that ship). */
-export function registeredPackIds(indexSource: string): string[] {
-  const ids = new Set<string>();
-  for (const m of indexSource.matchAll(/from '\.\/([a-z]{3}-[a-z]{4})\/pack\.json'/g)) {
-    ids.add(m[1] as string);
-  }
-  return [...ids];
-}
-
 function isNfc(s: string): boolean {
   return s === s.normalize('NFC');
+}
+
+/** Problems with an outline path: unparsable data or points outside the unit box. */
+export function outlineProblems(outline: string): string[] {
+  try {
+    const cmds = parseOutline(outline);
+    if (!cmds.some(c => c.type !== 'Z')) {
+      return ['has no drawing commands'];
+    }
+    const outside = cmds.some(c => c.values.some(v => v < -0.001 || v > 1.001));
+    return outside ? ['leaves the unit box (0..1)'] : [];
+  } catch (e) {
+    return [`does not parse: ${(e as Error).message}`];
+  }
 }
 
 export function validatePack(
@@ -66,6 +77,12 @@ export function validatePack(
   const geometry: GeometryFile = geoParsed.data;
   const missing = (msg: string) => (opts.release ? errors : warnings).push(msg);
 
+  if (pack.letters.length === 0) {
+    warnings.push('pack has no letters yet');
+  }
+  if (!pack.sources?.length) {
+    warnings.push('pack has no sources: record where the inventory came from');
+  }
   if (pack.status === 'verified' && !pack.reviewedBy?.length) {
     errors.push('status is verified but reviewedBy is empty');
   }
@@ -129,6 +146,12 @@ export function validatePack(
     }
   }
 
+  for (const s of pack.signs ?? []) {
+    if (s.result.normalize('NFC') !== (s.base + s.sign).normalize('NFC')) {
+      errors.push(`sign ${s.id}: result "${s.result}" is not base + sign`);
+    }
+  }
+
   const wordIds = new Set(pack.words.map(w => w.id));
   const letterIds = new Set(pack.letters.map(l => l.id));
   for (const l of pack.letters) {
@@ -161,10 +184,17 @@ export function validatePack(
     }
     if (!g.outline) {
       errors.push(`${t.key}: empty outline`);
+    } else {
+      errors.push(...outlineProblems(g.outline).map(p => `${t.key}: outline ${p}`));
     }
     if (g.strokes.length === 0) {
       errors.push(`${t.key}: no strokes`);
     }
+    g.strokes.forEach((s, i) => {
+      if (polylineLength(s.points) === 0) {
+        errors.push(`${t.key}: stroke ${i + 1} has zero length`);
+      }
+    });
     if (opts.release && g.strokeSource === 'auto') {
       errors.push(
         `${t.key}: strokes are auto-generated; a native writer must review or record them`,

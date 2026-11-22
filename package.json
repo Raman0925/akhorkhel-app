@@ -13,6 +13,9 @@
     "format:check": "prettier --check .",
     "validate-packs": "tsx tools/validate-packs.ts",
     "validate-packs:release": "tsx tools/validate-packs.ts --release",
+    "gen:geometry": "tsx tools/glyph-geometry.ts",
+    "gen:assets": "tsx tools/gen-asset-manifest.ts",
+    "gen:recording-script": "tsx tools/gen-recording-script.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run validate-packs",
     "prepare": "husky"
   },
