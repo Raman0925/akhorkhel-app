@@ -1,0 +1,24 @@
+# On the Trace screen: draws strokes on the canvas until the trace is finished and the stars show.
+# A weak stroke is accepted after three tries (session.ts MAX_TRIES), so straight swipes always
+# finish the letter; stars are then 1–2, never a fail screen.
+appId: in.akhorkhel.app
+---
+- extendedWaitUntil:
+    visible:
+      id: 'trace-canvas'
+    timeout: 15000
+- repeat:
+    while:
+      notVisible:
+        id: 'trace-result'
+    times: 18
+    commands:
+      - swipe:
+          from:
+            id: 'trace-canvas'
+          direction: RIGHT
+          duration: 500
+- extendedWaitUntil:
+    visible:
+      id: 'trace-result'
+    timeout: 10000

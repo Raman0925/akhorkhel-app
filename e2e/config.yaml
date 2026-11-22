@@ -1,0 +1,4 @@
+# Maestro workspace config. Only the flows directly in e2e/ are tests (tools/ci/e2e.sh);
+# e2e/subflows/ holds shared steps and e2e/screenshots/ the Play screenshot tour.
+flows:
+  - '*'

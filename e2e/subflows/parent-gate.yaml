@@ -1,0 +1,23 @@
+# Solves the parent gate: reads "14 × 6 = ?" from parent-gate-question, computes the product and
+# taps it on the keypad. Not a test on its own (CI runs only the flows directly in e2e/).
+appId: in.akhorkhel.app
+---
+- extendedWaitUntil:
+    visible:
+      id: 'parent-gate-question'
+    timeout: 15000
+- copyTextFrom:
+    id: 'parent-gate-question'
+- evalScript: '${output.gateAnswer = String(maestro.copiedText.match(/[0-9]+/g).reduce(function (p, n) { return p * Number(n); }, 1))}'
+- tapOn:
+    id: 'parent-gate-key-${output.gateAnswer.charAt(0)}'
+- tapOn:
+    id: 'parent-gate-key-${output.gateAnswer.charAt(1)}'
+- runFlow:
+    when:
+      true: '${output.gateAnswer.length > 2}'
+    commands:
+      - tapOn:
+          id: 'parent-gate-key-${output.gateAnswer.charAt(2)}'
+- tapOn:
+    id: 'parent-gate-submit'

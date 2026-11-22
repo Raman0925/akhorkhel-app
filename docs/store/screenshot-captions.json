@@ -1,0 +1,33 @@
+{
+  "$comment": "Captions for the framed Play screenshots (tools/frame-screenshots.ts). Source: docs/store/graphics-spec.md section 3. The number is the screenshot's position on Play; raw captures are named <lang>-<NN>-<slug>.png by e2e/screenshots/store.yaml.",
+  "screens": [
+    {
+      "n": "01",
+      "slug": "trace",
+      "as": "আঁচে আঁচে ক খ লিখিবলৈ শিকক",
+      "en": "Trace each letter, stroke by stroke"
+    },
+    { "n": "02", "slug": "letter", "as": "চাওক, লিখক", "en": "See it, write it" },
+    {
+      "n": "03",
+      "slug": "levels",
+      "as": "সহায়ৰ পৰা নিজে লিখালৈ – তিনিটা স্তৰ",
+      "en": "Three levels: guided, faded, from memory"
+    },
+    {
+      "n": "04",
+      "slug": "grid",
+      "as": "সম্পূৰ্ণ অসমীয়া বৰ্ণমালা",
+      "en": "The full Assamese alphabet"
+    },
+    { "n": "05", "slug": "signs", "as": "কাৰ: ক + া = কা", "en": "Vowel signs made simple" },
+    { "n": "06", "slug": "numbers", "as": "সংখ্যা ১–২০", "en": "Numbers 1 to 20" },
+    { "n": "07", "slug": "bodo", "as": "বড়ো বৰ্ণমালাও", "en": "The Bodo alphabet too" },
+    {
+      "n": "08",
+      "slug": "teacher",
+      "as": "শ্ৰেণীৰ বাবে – ৪০টালৈকে প্ৰ'ফাইল, অফলাইন",
+      "en": "For classrooms: 40 profiles, works offline"
+    }
+  ]
+}

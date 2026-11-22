@@ -1,0 +1,141 @@
+name: Store assets
+
+# One click: builds the app, takes the Play screenshots on a phone and two tablet emulators in
+# Assamese and English, frames them with captions, renders the icon and feature graphic, and
+# uploads everything as one artifact: play-store-assets. See docs/store/graphics-spec.md.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: store-assets-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    name: Build release APK (x86_64, debug-signed)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v6
+      - run: npm ci
+      - name: Build release APK for x86_64 (debug-signed, emulator only)
+        working-directory: android
+        env:
+          AKHORKHEL_UPLOAD_STORE_FILE: ${{ github.workspace }}/android/app/debug.keystore
+          AKHORKHEL_UPLOAD_STORE_PASSWORD: android
+          AKHORKHEL_UPLOAD_KEY_ALIAS: androiddebugkey
+          AKHORKHEL_UPLOAD_KEY_PASSWORD: android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64
+      - uses: actions/upload-artifact@v7
+        with:
+          name: store-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 3
+
+  screenshots:
+    name: Screenshots (${{ matrix.device }})
+    needs: apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device: phone
+            profile: pixel_7
+            skin: ''
+          - device: tablet7
+            profile: pixel_7
+            skin: '-skin 1200x1920'
+          - device: tablet10
+            profile: pixel_7
+            skin: '-skin 1600x2560'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        with:
+          name: store-apk
+          path: apk
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Take screenshots (Android 16 emulator)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: ${{ matrix.profile }}
+          ram-size: 4096M
+          # Animations stay on so the tracing arrow is captured mid-stroke.
+          disable-animations: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none ${{ matrix.skin }}
+          script: bash tools/ci/store-screenshots.sh ${{ matrix.device }} apk/app-release.apk
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: raw-${{ matrix.device }}
+          path: |
+            store-assets/raw
+            store-assets/debug
+          if-no-files-found: warn
+          retention-days: 7
+
+  assemble:
+    name: Frame screenshots + graphics → play-store-assets
+    needs: screenshots
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: raw-*
+          path: store-assets
+          merge-multiple: true
+      - name: Frame screenshots
+        run: npm run store:frame
+      - name: Render icon, feature graphic and launcher icons
+        run: npm run store:graphics
+      - name: Collect
+        run: |
+          mkdir -p play-store-assets
+          cp docs/store/graphics/icon-512.png docs/store/graphics/feature-graphic-1024x500.png play-store-assets/
+          cp -r store-assets/screenshots play-store-assets/screenshots
+          cp -r store-assets/raw play-store-assets/raw
+          find play-store-assets -type f | sort
+      - uses: actions/upload-artifact@v7
+        with:
+          name: play-store-assets
+          path: play-store-assets
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,243 @@
+# Play Store screenshot tour (not part of the E2E suite: CI runs only the flows directly in e2e/).
+# Run: maestro test e2e/screenshots/store.yaml -e APP_LANG=as   (or APP_LANG=en)
+# Writes <APP_LANG>-<NN>-<slug>.png, NN = position on Play (docs/store/screenshot-captions.json).
+# One fresh install state per run, so this is the first app session and no ads can show.
+appId: in.akhorkhel.app
+name: store-screenshots
+# APP_LANG must come from the command line: a flow-level env block would override -e.
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../subflows/onboarding.yaml
+    env:
+      CHILD: Moina
+      AVATAR: rhino
+
+# Letters: trace অ, আ, ই once each (stars on the grid). Fewer than five, so no set celebration.
+- tapOn:
+    id: 'home-letters'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-LetterGrid'
+    timeout: 10000
+- tapOn:
+    id: 'letter-tile-a'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Letter'
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: ${APP_LANG}-02-letter
+- runFlow: ../subflows/trace-letter.yaml
+- tapOn:
+    id: 'letter-next'
+- runFlow: ../subflows/trace-letter.yaml
+- tapOn:
+    id: 'letter-next'
+- runFlow: ../subflows/trace-letter.yaml
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-LetterGrid'
+    timeout: 10000
+
+# ক: trace once, then the level picker shows its stars; then level 1 with guide, numbers, arrow.
+- scrollUntilVisible:
+    element:
+      id: 'letter-tile-ka'
+    direction: DOWN
+- tapOn:
+    id: 'letter-tile-ka'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Letter'
+    timeout: 10000
+- runFlow: ../subflows/trace-letter.yaml
+- tapOn:
+    id: 'letter-trace'
+- extendedWaitUntil:
+    visible:
+      id: 'trace-level-3'
+    timeout: 10000
+- takeScreenshot: ${APP_LANG}-03-levels
+- tapOn:
+    id: 'trace-level-1'
+- extendedWaitUntil:
+    visible:
+      id: 'trace-canvas'
+    timeout: 10000
+# The stroke demo plays first; afterwards the arrow keeps moving along stroke 1.
+- waitForAnimationToEnd:
+    timeout: 7000
+- takeScreenshot: ${APP_LANG}-01-trace
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Letter'
+    timeout: 10000
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-LetterGrid'
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      id: 'letter-tile-a'
+    direction: UP
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: ${APP_LANG}-04-grid
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Home'
+    timeout: 10000
+
+# Vowel signs: ক + া = কা
+- scrollUntilVisible:
+    element:
+      id: 'home-signs'
+    direction: DOWN
+- tapOn:
+    id: 'home-signs'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-SignList'
+    timeout: 10000
+- tapOn:
+    id: 'sign-tile-ka-aa'
+- extendedWaitUntil:
+    visible:
+      id: 'sign-sum'
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: ${APP_LANG}-05-signs
+- tapOn:
+    id: 'header-back'
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Home'
+    timeout: 10000
+
+# Numbers: count five objects, three counted.
+- scrollUntilVisible:
+    element:
+      id: 'home-numbers'
+    direction: DOWN
+- tapOn:
+    id: 'home-numbers'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-NumberList'
+    timeout: 10000
+- tapOn:
+    id: 'number-tile-5'
+- extendedWaitUntil:
+    visible:
+      id: 'number-count'
+    timeout: 10000
+- tapOn:
+    id: 'number-count'
+- extendedWaitUntil:
+    visible:
+      id: 'count-object-0'
+    timeout: 10000
+- tapOn:
+    id: 'count-object-0'
+- tapOn:
+    id: 'count-object-1'
+- tapOn:
+    id: 'count-object-2'
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: ${APP_LANG}-06-numbers
+- tapOn:
+    id: 'header-back'
+- tapOn:
+    id: 'header-back'
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Home'
+    timeout: 10000
+
+# Teacher mode: a class of fictional nicknames.
+- tapOn:
+    id: 'home-parents'
+- runFlow: ../subflows/parent-gate.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'screen-ParentArea'
+    timeout: 15000
+- runFlow:
+    file: ../subflows/add-child.yaml
+    env:
+      CHILD: Bitu
+      AVATAR: elephant
+- runFlow:
+    file: ../subflows/add-child.yaml
+    env:
+      CHILD: Jonali
+      AVATAR: butterfly
+- runFlow:
+    file: ../subflows/add-child.yaml
+    env:
+      CHILD: Rinku
+      AVATAR: tiger
+- runFlow:
+    file: ../subflows/add-child.yaml
+    env:
+      CHILD: Moni
+      AVATAR: hornbill
+- scrollUntilVisible:
+    element:
+      id: 'parent-teacher'
+    direction: DOWN
+- tapOn:
+    id: 'parent-teacher'
+- extendedWaitUntil:
+    visible:
+      id: 'teacher-grid'
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: ${APP_LANG}-08-teacher
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-ParentArea'
+    timeout: 10000
+
+# Bodo: switch the learning language, then the Bodo letter grid.
+- scrollUntilVisible:
+    element:
+      id: 'parent-pack-brx-deva'
+    direction: UP
+- tapOn:
+    id: 'parent-pack-brx-deva'
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Home'
+    timeout: 10000
+- tapOn:
+    id: 'home-letters'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-LetterGrid'
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: ${APP_LANG}-07-bodo

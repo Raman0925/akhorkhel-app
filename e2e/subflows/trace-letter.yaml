@@ -1,0 +1,22 @@
+# From a Letter screen: trace it once at level 1, then come back to the Letter screen.
+appId: in.akhorkhel.app
+---
+- extendedWaitUntil:
+    visible:
+      id: 'letter-trace'
+    timeout: 10000
+- tapOn:
+    id: 'letter-trace'
+- tapOn:
+    id: 'trace-level-1'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Trace'
+    timeout: 10000
+- runFlow: trace-once.yaml
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Letter'
+    timeout: 10000

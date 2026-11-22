@@ -4,6 +4,42 @@ Brief for the illustrator / designer. Play's asset requirements checked on 22 No
 (<https://support.google.com/googleplay/android-developer/answer/9866151>). Graphics must show the
 real app: no feature, language or screen in a screenshot that is not in the release build.
 
+## How to generate
+
+Everything below is generated from source in the repo; nothing is drawn by hand in an image editor.
+
+**One click (recommended):** GitHub → Actions → **Store assets** → _Run workflow_ (or
+`gh workflow run store-assets.yml --ref main`). It builds the release APK (x86_64, debug-signed),
+runs `e2e/screenshots/store.yaml` with Maestro on three Android 16 emulators (phone 1080 × 2400,
+7" tablet 1200 × 1920 and 10" tablet 1600 × 2560, both at 320 dpi) in Assamese and English, frames
+the captures and renders the graphics. Download the artifact **play-store-assets**:
+
+```text
+icon-512.png
+feature-graphic-1024x500.png
+screenshots/phone/screenshot-{as,en}-01..08.png      1080 × 1920
+screenshots/tablet7/screenshot-{as,en}-01..08.png    1152 × 2048
+screenshots/tablet10/screenshot-{as,en}-01..08.png   1440 × 2560
+raw/<device>/<lang>-<NN>-<slug>.png                  unframed captures
+```
+
+**Locally:**
+
+| Command                                                  | Does                                                                                                                                                                                    |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run store:graphics`                                 | Renders `docs/store/graphics/icon-512.png`, `feature-graphic-1024x500.png` and every launcher icon in `android/app/src/main/res` (legacy, round, adaptive + themed). Commit the result. |
+| `maestro test e2e/screenshots/store.yaml -e APP_LANG=as` | With an emulator running the release APK: writes `as-01-trace.png` … `as-08-teacher.png` (use `APP_LANG=en` for English). Move them to `store-assets/raw/phone/`.                       |
+| `npm run store:frame`                                    | Frames `store-assets/raw/<device>/*.png` into `store-assets/screenshots/<device>/screenshot-<lang>-<NN>.png` (`--in` / `--out` to change folders).                                      |
+
+Sources: the mascot is `assets/brand/mascot-rhino.svg` (hand-written SVG); "ক" and all text are
+shaped from the app's Noto Sans Bengali / Noto Sans with HarfBuzz and drawn as paths, so the output
+never depends on system fonts. `assets/brand/icon.svg` and `feature-graphic.svg` are the composed
+results (generated). Captions live in `docs/store/screenshot-captions.json`. Tools:
+`tools/store-graphics.ts`, `tools/frame-screenshots.ts`, `tools/ci/store-screenshots.sh`.
+
+The screenshot run is the app's first session on a fresh install, so no ad can show (ads never
+start in session 1); keep it that way when changing the flow.
+
 ## Brand basics
 
 - **Mascot:** an original baby one-horned rhino (Kaziranga) wearing a red-and-white gamosa around
@@ -26,15 +62,21 @@ real app: no feature, language or screen in a screenshot that is not in the rele
 | Background    | Solid or simple two-tone; no text other than ক.                                                                             |
 | Consistency   | The launcher icon (`android/app/src/main/res/mipmap-*`, adaptive icon foreground/background) must be the same design.       |
 
+Status: **done** (`npm run store:graphics`). The default React Native launcher icon is replaced by
+the same design: legacy `ic_launcher` / `ic_launcher_round` at mdpi–xxxhdpi, an adaptive icon
+(`mipmap-anydpi-v26`: sunny-yellow background colour, foreground PNG per density) and a monochrome
+"ক" layer for Android 13+ themed icons. The artwork keeps its important parts inside the adaptive
+icon's 66 dp safe circle.
+
 ## 2. Feature graphic — 1024 × 500
 
-| Spec          | Value                                                                                                                          |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Size / format | 1024 × 500 px, JPEG or 24-bit PNG (no alpha)                                                                                   |
-| Content       | Left: mascot tracing a big "অ" with a finger, a dotted guide and an arrow. Right: "আখৰ খেল" large, "Akhor Khel" smaller below. |
-| Safe area     | Keep text and the mascot's face inside the centre ~80%; Play may crop or overlay a play button when a video is set.            |
-| Text          | Name only. No tagline claims.                                                                                                  |
-| Variants      | One version works for both the English and Assamese listings (name is bilingual).                                              |
+| Spec          | Value                                                                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Size / format | 1024 × 500 px, JPEG or 24-bit PNG (no alpha)                                                                                                                        |
+| Content       | Left: a big "অ" on the tracing card (start dot, numbered dashed strokes, ink, arrow) with the mascot beside it. Right: "আখৰ খেল" large, "Akhor Khel" smaller below. |
+| Safe area     | Keep text and the mascot's face inside the centre ~80%; Play may crop or overlay a play button when a video is set.                                                 |
+| Text          | Name, plus the plain description line of screenshot 1 in both languages. No claims ("free", "best", …).                                                             |
+| Variants      | One version works for both the English and Assamese listings (name is bilingual).                                                                                   |
 
 ## 3. Phone screenshots — 8
 
@@ -69,8 +111,12 @@ Notes:
   caption and the listing too). If none is left, use the vowel-sign list instead.
 - Use fictional nicknames in screenshot 8 (e.g. "Moina", "Bitu"), never real children's names or
   photos.
-- Optional: 7-inch and 10-inch tablet screenshots only if the app is tested on tablets; it is
-  portrait-locked, so phone screenshots are enough.
+- 7-inch and 10-inch tablet screenshots are generated too (same flow and captions, portrait).
+  Upload them only once the app has been checked on a real tablet; phone screenshots are enough
+  otherwise.
+- Screenshot 1 is taken right after the stroke demo, so the start dot, the numbered dashed strokes
+  and the moving arrow are visible; the flow cannot draw a curved finger stroke, so there is no
+  ink in it. Star counts on the grid come from straight-swipe traces (1–2 stars).
 
 ## 4. Preview video — 30 seconds
 
@@ -101,10 +147,11 @@ Same rules as screenshots: no live ads in the video; Bodo shots only while the B
 
 ## 5. Deliverables checklist
 
-- [ ] `icon-512.png` (also exported to the launcher icon set)
-- [ ] `feature-1024x500.png`
-- [ ] `screenshot-en-01.png` … `screenshot-en-08.png`
-- [ ] `screenshot-as-01.png` … `screenshot-as-08.png`
+- [x] `icon-512.png` (also exported to the launcher icon set) — `docs/store/graphics/`
+- [x] `feature-graphic-1024x500.png` — `docs/store/graphics/`
+- [x] `screenshot-en-01.png` … `screenshot-en-08.png` — Store assets workflow
+- [x] `screenshot-as-01.png` … `screenshot-as-08.png` — Store assets workflow
+- [ ] Review of the generated art and the screenshots by the owner before upload
 - [ ] YouTube URL of the 30 s video (made for kids, monetisation off)
 - [ ] Optional: Assamese read-through of every caption, noted in `listing-as.md`
 

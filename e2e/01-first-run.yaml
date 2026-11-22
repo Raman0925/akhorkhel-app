@@ -1,0 +1,57 @@
+appId: in.akhorkhel.app
+name: First run - onboarding in Assamese, trace a letter, stars, back to the grid
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/onboarding.yaml
+    env:
+      APP_LANG: as
+      CHILD: Moina
+      AVATAR: rhino
+- tapOn:
+    id: 'home-letters'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-LetterGrid'
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      id: 'letter-tile-ka'
+    direction: DOWN
+- tapOn:
+    id: 'letter-tile-ka'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Letter'
+    timeout: 10000
+- tapOn:
+    id: 'letter-trace'
+- tapOn:
+    id: 'trace-level-1'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Trace'
+    timeout: 10000
+- assertVisible:
+    id: 'trace-level'
+- runFlow: subflows/trace-once.yaml
+# Finished trace: stars and the "trace again" button.
+- assertVisible:
+    id: 'trace-result'
+- assertVisible:
+    id: 'trace-again'
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Letter'
+    timeout: 10000
+- tapOn:
+    id: 'header-back'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-LetterGrid'
+    timeout: 10000
+- assertVisible:
+    id: 'letter-tile-ka'

@@ -1,0 +1,55 @@
+# First launch up to Home: UI language APP_LANG (as | en), Assamese pack, parent gate, ads & privacy
+# notice, first child CHILD with avatar AVATAR. Start from launchApp with clearState.
+appId: in.akhorkhel.app
+---
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Onboarding'
+    timeout: 30000
+- tapOn:
+    id: 'onboarding-ui-${APP_LANG}'
+- tapOn:
+    id: 'onboarding-pack-asm-beng'
+- tapOn:
+    id: 'onboarding-continue'
+- extendedWaitUntil:
+    visible:
+      id: 'onboarding-grownup'
+    timeout: 10000
+- tapOn:
+    id: 'onboarding-grownup'
+- runFlow: parent-gate.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'screen-ParentArea'
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: 'ads-notice-accept'
+    direction: DOWN
+- tapOn:
+    id: 'ads-notice-accept'
+- extendedWaitUntil:
+    visible:
+      id: 'profile-nickname'
+    timeout: 15000
+- tapOn:
+    id: 'profile-nickname'
+- inputText: '${CHILD}'
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: 'avatar-${AVATAR}'
+    direction: DOWN
+- tapOn:
+    id: 'avatar-${AVATAR}'
+- scrollUntilVisible:
+    element:
+      id: 'profile-save'
+    direction: DOWN
+- tapOn:
+    id: 'profile-save'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Home'
+    timeout: 15000
