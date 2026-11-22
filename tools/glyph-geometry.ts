@@ -1644,7 +1644,7 @@ const FONTS_DIR = path.join(ROOT, 'android/app/src/main/assets/fonts');
 type HB = typeof import('harfbuzzjs');
 
 /** Shapes `text` and returns its outline in font units (y up), glyphs placed along the pen. */
-function shapeOutline(
+export function shapeOutline(
   hb: HB,
   font: InstanceType<HB['Font']>,
   text: string,

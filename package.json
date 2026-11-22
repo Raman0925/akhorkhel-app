@@ -19,7 +19,9 @@
     "gen:recording-script": "tsx tools/gen-recording-script.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run validate-packs",
     "prepare": "husky",
-    "render:geometry": "tsx tools/render-geometry-sheet.ts"
+    "render:geometry": "tsx tools/render-geometry-sheet.ts",
+    "store:graphics": "tsx tools/store-graphics.ts",
+    "store:frame": "tsx tools/frame-screenshots.ts"
   },
   "dependencies": {
     "@react-navigation/native": "7.5.2",

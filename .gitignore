@@ -82,3 +82,6 @@ yarn-error.log
 
 # Dev-only geometry contact sheets (npm run render:geometry)
 .geometry-sheets/
+
+# Store assets (npm run store:frame / store-assets workflow)
+store-assets/
