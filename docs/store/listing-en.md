@@ -20,7 +20,7 @@ Akhor Khel: Assamese Alphabet
 ## Short description — 74 / 80
 
 ```text
-Learn & write Assamese ক খ, অ আ letters. Kids tracing game + Bodo & Mising
+Learn & write Assamese ক খ, অ আ letters. Kids tracing game + Bodo alphabet
 ```
 
 ## Full description — 3,266 / 4,000
@@ -43,8 +43,8 @@ Akhor Khel is an Assamese letter writing app built around real stroke order. Eve
 3. From memory – write the letter on a blank page
 Children earn up to three stars. There is no red cross and no fail screen: if a stroke goes the wrong way, the app simply shows the correct stroke again. Left-hand mode is available in the parent area. Sessions are short, about 5 to 10 minutes, which suits young learners.
 
-BODO AND MISING
-Akhor Khel is also the first kids' app for the Bodo alphabet and the Mising alphabet. The Bodo alphabet is taught in Devanagari script and the Mising alphabet in Latin script (Mising Agom Kébang spelling). All three languages are free.
+BODO
+Akhor Khel is also the first kids' app for the Bodo alphabet. Children trace the Bodo alphabet in Devanagari script, with the same three levels and stars. Both languages are free.
 
 FOR SCHOOLS AND TEACHERS
 Teachers and Anganwadi workers can use this Assamese learning app with a whole class on one phone:
@@ -83,7 +83,6 @@ metadata policy violation.
 | স্বৰবৰ্ণ                         | 2     |
 | ব্যঞ্জনবৰ্ণ                       | 2     |
 | Bodo alphabet                  | 2     |
-| Mising alphabet                | 2     |
 
 ## Other listing fields
 

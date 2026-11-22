@@ -22,7 +22,7 @@ Counts are Unicode code points (Play Console shows its own counter; trust it if 
 ## Short description — 69 / 80
 
 ```text
-ক খ, অ আ লিখিবলৈ শিকক। শিশুৰ বাবে আখৰ অনুসৰণ খেল, লগতে বড়ো আৰু মিচিং
+ক খ, অ আ লিখিবলৈ শিকক। শিশুৰ বাবে আখৰ অনুসৰণ খেল, লগতে বড়ো
 ```
 
 ## Full description — 2,901 / 4,000
@@ -45,8 +45,8 @@ Counts are Unicode code points (Play Console shows its own counter; trust it if 
 ৩. মনৰ পৰা – উকা পৃষ্ঠাত নিজে লিখে
 শিশুৱে তিনিটালৈকে তৰা পায়। ৰঙা চিন বা "ভুল" পৃষ্ঠা নাই: আঁচ ভুল দিশে গ'লে এপে শুদ্ধ আঁচটো পুনৰ দেখুৱায়। অভিভাৱকৰ অংশত বাওঁহতীয়া শিশুৰ বাবে ব্যৱস্থা আছে। প্ৰতিটো পাঠ চুটি, প্ৰায় ৫ৰ পৰা ১০ মিনিট।
 
-বড়ো আৰু মিচিং
-আখৰ খেল বড়ো বৰ্ণমালা (Bodo alphabet) আৰু মিচিং বৰ্ণমালা (Mising alphabet)ৰ বাবে শিশুৰ প্ৰথম এপ। বড়ো বৰ্ণমালা দেৱনাগৰী লিপিত আৰু মিচিং বৰ্ণমালা লেটিন লিপিত (মিচিং আগম কেবাঙৰ বানান) শিকোৱা হয়। তিনিওটা ভাষা বিনামূলীয়া।
+বড়ো
+আখৰ খেল বড়ো বৰ্ণমালা (Bodo alphabet)ৰ বাবে শিশুৰ প্ৰথম এপ। বড়ো বৰ্ণমালা দেৱনাগৰী লিপিত শিকোৱা হয়।
 
 বিদ্যালয় আৰু শিক্ষকৰ বাবে
 শিক্ষক আৰু অংগনৱাড়ী কৰ্মীসকলে এটা ফোনতে গোটেই শ্ৰেণীৰ সৈতে এই অসমীয়া শিকা এপ (Assamese learning app) ব্যৱহাৰ কৰিব পাৰে:
@@ -73,8 +73,7 @@ Counts are Unicode code points (Play Console shows its own counter; trust it if 
   everyday word (for example "আখৰ বোলোৱা"), change it everywhere, including the short description
   and `graphics-spec.md` captions.
 - "অভিভাৱকৰ দুৱাৰ" is used for _parent gate_. Use the same term the app's Assamese UI strings use.
-- Check the Mising spelling "মিচিং আগম কেবাং" and the Bodo/Mising names against how those
-  communities write them in Assamese.
+- Check the Bodo name spelling against how the Bodo community writes it in Assamese.
 - The Assamese text must keep the same facts as the English listing (ads paragraph, offline,
   no accounts). Do not add claims that are not in the English version.
 - After editing, re-count: name ≤ 30, short description ≤ 80, full description ≤ 4,000.

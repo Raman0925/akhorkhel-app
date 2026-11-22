@@ -58,7 +58,7 @@ button, a sound game or a bridge card:
 | 4   | Letter grid showing স্বৰবৰ্ণ and ব্যঞ্জনবৰ্ণ tabs with stars                                  | সম্পূৰ্ণ অসমীয়া বৰ্ণমালা                   | The full Assamese alphabet                 |
 | 5   | Vowel sign screen: ক + া = কা                                                            | কাৰ: ক + া = কা                        | Vowel signs made simple                    |
 | 6   | Numbers screen / counting objects                                                        | সংখ্যা ১–২০                             | Numbers 1 to 20                            |
-| 7   | Language picker / Bodo letter grid                                                       | বড়ো আৰু মিচিং বৰ্ণমালাও                  | Bodo and Mising alphabets too              |
+| 7   | Language picker / Bodo letter grid                                                       | বড়ো বৰ্ণমালাও                           | The Bodo alphabet too                      |
 | 8   | Teacher mode class grid (fictional nicknames)                                            | শ্ৰেণীৰ বাবে – ৪০টালৈকে প্ৰ'ফাইল, অফলাইন | For classrooms: 40 profiles, works offline |
 
 Notes:
@@ -93,11 +93,11 @@ Storyboard:
 | 14–17 s | Letter screen "অ": tap the trace button                                                  | Caption: চাওক, লিখক · See it, write it         |
 | 17–20 s | Vowel sign: ক + া slides together into কা                                                | Caption: কাৰ · Vowel signs                     |
 | 20–23 s | Counting objects; the running numeral grows; gentle celebration                          | Caption: সংখ্যা ১–২০ · Numbers 1 to 20          |
-| 23–26 s | Bodo letter grid                                                                         | Caption: বড়ো আৰু মিচিং · Bodo & Mising          |
+| 23–26 s | Bodo letter grid                                                                         | Caption: বড়ো · Bodo                            |
 | 26–28 s | Teacher class grid; airplane-mode icon                                                   | Caption: অফলাইনত চলে · Works offline           |
 | 28–30 s | Mascot + icon + name                                                                     | Caption: আখৰ খেল · Akhor Khel                  |
 
-Same rules as screenshots: no live ads in the video; Bodo/Mising shots only if those packs ship.
+Same rules as screenshots: no live ads in the video; Bodo shots only while the Bodo pack ships.
 
 ## 5. Deliverables checklist
 
