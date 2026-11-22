@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { audio } from '@/audio';
 import { format, useStrings } from '@/i18n';
@@ -31,6 +31,8 @@ export function GateChallenge({ onPass }: Props) {
   const [wrong, setWrong] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const locked = isLocked(getGateState(), now);
+  // Short phones (e.g. 640 dp tall) get 64 dp keys so the whole keypad and ✓ fit without scrolling.
+  const compact = useWindowDimensions().height < 720;
 
   // Tick once a second while the cooldown runs.
   useEffect(() => {
@@ -61,7 +63,7 @@ export function GateChallenge({ onPass }: Props) {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, compact && styles.rootCompact]}>
       <Text style={styles.instruction}>{s.instruction}</Text>
       <Text style={styles.question} testID="parent-gate-question">
         {format(s.question, { a: challenge.a, b: challenge.b })}
@@ -73,15 +75,20 @@ export function GateChallenge({ onPass }: Props) {
       >
         {input || ' '}
       </Text>
-      <Text style={styles.feedback} testID="parent-gate-feedback" accessibilityLiveRegion="polite">
+      <Text
+        style={[styles.feedback, compact && styles.feedbackCompact]}
+        testID="parent-gate-feedback"
+        accessibilityLiveRegion="polite"
+      >
         {locked ? format(s.locked, { s: secondsLeft(getGateState(), now) }) : wrong ? s.wrong : ' '}
       </Text>
-      <View style={styles.keypad}>
+      <View style={[styles.keypad, compact && styles.keypadCompact]}>
         {KEYS.map(d => (
           <Key
             key={d}
             label={String(d)}
             testID={`parent-gate-key-${d}`}
+            compact={compact}
             disabled={locked}
             onPress={press(() => setInput(v => appendDigit(v, d)))}
           />
@@ -90,12 +97,14 @@ export function GateChallenge({ onPass }: Props) {
           label="⌫"
           a11yLabel={s.erase}
           testID="parent-gate-erase"
+          compact={compact}
           disabled={locked}
           onPress={press(() => setInput(v => v.slice(0, -1)))}
         />
         <Key
           label="0"
           testID="parent-gate-key-0"
+          compact={compact}
           disabled={locked}
           onPress={press(() => setInput(v => appendDigit(v, 0)))}
         />
@@ -103,6 +112,7 @@ export function GateChallenge({ onPass }: Props) {
           label="✓"
           a11yLabel={s.submit}
           testID="parent-gate-submit"
+          compact={compact}
           disabled={locked || input === ''}
           onPress={press(onSubmit)}
           primary
@@ -119,6 +129,7 @@ function Key({
   disabled,
   onPress,
   primary,
+  compact,
 }: {
   label: string;
   a11yLabel?: string;
@@ -126,6 +137,7 @@ function Key({
   disabled: boolean;
   onPress: () => void;
   primary?: boolean;
+  compact?: boolean;
 }) {
   return (
     <Pressable
@@ -137,6 +149,7 @@ function Key({
       onPress={onPress}
       style={({ pressed }) => [
         styles.key,
+        compact && styles.keyCompact,
         primary && styles.keyPrimary,
         pressed && styles.keyPressed,
         disabled && styles.keyDisabled,
@@ -148,9 +161,11 @@ function Key({
 }
 
 const KEY = MIN_TOUCH + 8;
+const KEY_COMPACT = MIN_TOUCH;
 
 const styles = StyleSheet.create({
   root: { alignItems: 'center', gap: spacing.sm },
+  rootCompact: { gap: spacing.xs },
   instruction: {
     fontFamily: fonts.bengali,
     fontSize: fontSize.md,
@@ -193,6 +208,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  keyCompact: { width: KEY_COMPACT, height: KEY_COMPACT },
+  keypadCompact: { gap: spacing.xs, width: KEY_COMPACT * 3 + spacing.xs * 2 },
+  feedbackCompact: { minHeight: 24 },
   keyPrimary: { backgroundColor: colors.secondary, borderColor: colors.secondary },
   keyPressed: { opacity: 0.8 },
   keyDisabled: { opacity: 0.4 },
