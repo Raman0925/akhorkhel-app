@@ -30,8 +30,9 @@ STATUS=0
 for LANG_CODE in as en; do
   maestro test e2e/screenshots/store.yaml -e APP_LANG="$LANG_CODE" \
     --test-output-dir "store-assets/debug/$DEVICE-$LANG_CODE" || STATUS=1
-  # takeScreenshot writes <name>.png relative to the working directory (or the flow folder on
-  # some Maestro versions): collect from both.
+  # Maestro writes takeScreenshot files under the test output dir
+  # (<dir>/<timestamp>/<flow>/takeScreenshot/); older versions use the working directory.
+  find "store-assets/debug/$DEVICE-$LANG_CODE" -name "$LANG_CODE-0*.png" -exec cp {} "$OUT/" \;
   find . e2e/screenshots -maxdepth 1 -name "$LANG_CODE-0*.png" -exec mv {} "$OUT/" \;
 done
 ls -l "$OUT"
