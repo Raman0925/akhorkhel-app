@@ -7,6 +7,7 @@ module.exports = {
   testTimeout: 30000,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^react-native-google-mobile-ads$': '<rootDir>/jest/mocks/react-native-google-mobile-ads.tsx',
     '\\.(m4a|aac|mp3|wav|png|webp|jpg|ttf)$': '<rootDir>/jest/mocks/fileMock.js',
   },
   transformIgnorePatterns: [
@@ -21,4 +22,7 @@ module.exports = {
     '<rootDir>/e2e/',
   ],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/**/*.generated.ts'],
+  coverageThreshold: {
+    './src/features/tracing/scorer/': { lines: 90, branches: 85, functions: 90, statements: 90 },
+  },
 };

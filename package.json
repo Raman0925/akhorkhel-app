@@ -13,6 +13,7 @@
     "format:check": "prettier --check .",
     "validate-packs": "tsx tools/validate-packs.ts",
     "validate-packs:release": "tsx tools/validate-packs.ts --release",
+    "gen:ad-units": "tsx tools/gen-ad-units.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run validate-packs",
     "prepare": "husky"
   },
