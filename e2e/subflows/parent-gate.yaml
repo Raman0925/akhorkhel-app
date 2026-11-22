@@ -8,6 +8,11 @@ appId: in.akhorkhel.app
     timeout: 15000
 - copyTextFrom:
     id: 'parent-gate-question'
+# On small screens the keypad's last row sits below the fold.
+- scrollUntilVisible:
+    element:
+      id: 'parent-gate-submit'
+    direction: DOWN
 - evalScript: '${output.gateAnswer = String(maestro.copiedText.match(/[0-9]+/g).reduce(function (p, n) { return p * Number(n); }, 1))}'
 - tapOn:
     id: 'parent-gate-key-${output.gateAnswer.charAt(0)}'
