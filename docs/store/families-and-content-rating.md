@@ -58,7 +58,7 @@ mixed-audience app.
 ## 4. IARC content rating questionnaire
 
 Play Console → App content → Content rating → Start questionnaire. Use the contact email
-`akhorkhel.app@gmail.com` (placeholder). The questionnaire wording changes from time to time;
+`ramankumarkannaujiya@gmail.com` (placeholder). The questionnaire wording changes from time to time;
 answer the meaning below, not the exact sentence.
 
 **Category:** _Reference, News, or Educational_ (the app is educational; its games are short

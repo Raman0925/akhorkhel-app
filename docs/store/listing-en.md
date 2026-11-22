@@ -93,7 +93,7 @@ metadata policy violation.
 | App or game        | App                                                                                                                     |
 | Category           | Education                                                                                                               |
 | Tags               | Pick up to 5 from Play's list, e.g. Alphabet, Language learning, Kids, Writing, Education. Choose only tags that match. |
-| Contact email      | `akhorkhel.app@gmail.com` (placeholder — see `docs/RELEASE.md`)                                                         |
+| Contact email      | `ramankumarkannaujiya@gmail.com` (placeholder — see `docs/RELEASE.md`)                                                  |
 | Website            | The developer website that hosts `app-ads.txt` (see `docs/RELEASE.md`)                                                  |
 | Privacy policy URL | `https://raman0925.github.io/akhorkhel/privacy.html`                                                                    |
 | Graphics           | See `graphics-spec.md`                                                                                                  |

@@ -9,7 +9,7 @@
 **Effective date:** 22 November 2026
 **App:** Akhor Khel (আখৰ খেল), Android, package `in.akhorkhel.app`
 **Published by:** Akhor Khel, an individual developer ("the developer", "we")
-**Contact:** akhorkhel.app@gmail.com
+**Contact:** ramankumarkannaujiya@gmail.com
 
 ## Summary
 
@@ -133,4 +133,4 @@ effective date. Material changes will also be noted in the app's update notes.
 ## 8. Contact
 
 Akhor Khel (individual developer)
-Email: akhorkhel.app@gmail.com
+Email: ramankumarkannaujiya@gmail.com

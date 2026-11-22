@@ -101,7 +101,7 @@ analytics, no crash reporting, no remote config, no other SDK that sends data.
   Akhor Khel → Storage → Clear storage, or uninstall. The privacy policy explains this.
 
 **Owner decision:** answering "Yes" is allowed only if a real mechanism exists. If the owner wants
-"Yes", the honest mechanism is: email `akhorkhel.app@gmail.com` (placeholder) → the developer
+"Yes", the honest mechanism is: email `ramankumarkannaujiya@gmail.com` (placeholder) → the developer
 replies with the on-device deletion steps and the link to Google's privacy controls
 (<https://policies.google.com/privacy>). That does not delete anything Google holds, so "No" is the
 more accurate answer.
