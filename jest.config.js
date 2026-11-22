@@ -10,7 +10,14 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-navigation|react-native-.*|@shopify/react-native-skia|nitro-core)/)',
   ],
-  testPathIgnorePatterns: ['/node_modules/', '/.claude/', '/android/', '/e2e/'],
+  // Agent worktrees live in .claude/worktrees; keep their copies out of this checkout's module map.
+  modulePathIgnorePatterns: ['<rootDir>/.claude/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '<rootDir>/.claude/',
+    '<rootDir>/android/',
+    '<rootDir>/e2e/',
+  ],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/**/*.generated.ts'],
   coverageThreshold: {
     './src/features/tracing/scorer/': { lines: 90, branches: 85, functions: 90, statements: 90 },
