@@ -8,7 +8,7 @@ import { useCurrentProfile, useItemProgress } from '@/progress';
 import { colors, fontForScript, fonts, fontSize, MIN_TOUCH, radius, spacing } from '@/theme';
 import { BigButton, Header, IconButton, Screen, StarRow, usePack } from '@/ui';
 
-import { WordPicture } from '../components/WordPicture';
+import { WordPicture } from '@/ui';
 import { strings } from '../strings';
 
 const LEVELS: TraceLevelParam[] = [1, 2, 3];

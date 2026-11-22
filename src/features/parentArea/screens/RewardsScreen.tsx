@@ -8,7 +8,7 @@ import { useSettings } from '@/storage';
 import { colors, fonts, fontSize, radius, spacing } from '@/theme';
 import { BigButton, Header, Screen } from '@/ui';
 
-import { useUnlocksWithOptions } from '../ads';
+import { useUnlocks } from '@/monetization';
 import { Paragraph } from '../components/parts';
 import { remaining } from '../remaining';
 import { strings } from '../strings';
@@ -104,7 +104,7 @@ function RewardCard({
   testID?: string;
 }) {
   const s = useStrings(strings);
-  const { unlockedUntil, watchRewarded, rewardedReady } = useUnlocksWithOptions({
+  const { unlockedUntil, watchRewarded, rewardedReady } = useUnlocks({
     preloadRewarded: true,
   });
   const [busy, setBusy] = useState(false);

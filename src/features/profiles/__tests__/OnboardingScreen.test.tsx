@@ -56,7 +56,7 @@ it('runs the whole first launch: language → gate → notice → first child �
   expect(screen.getByText('কোনটো ভাষা শিকিব?')).toBeTruthy();
   expect(screen.getByTestId('onboarding-pack-asm-beng')).toBeTruthy();
   expect(screen.getByTestId('onboarding-pack-brx-deva')).toBeTruthy();
-  expect(screen.getByTestId('onboarding-pack-mrg-latn')).toBeTruthy();
+  expect(screen.getByTestId('onboarding-pack-brx-deva')).toBeTruthy();
   await fireEvent.press(screen.getByTestId('onboarding-ui-en'));
   expect(screen.getByText('Which language will your child learn?')).toBeTruthy();
   await fireEvent.press(screen.getByTestId('onboarding-pack-brx-deva'));

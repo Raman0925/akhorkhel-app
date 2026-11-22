@@ -67,7 +67,7 @@ describe('HomeScreen', () => {
       profiles: s.profiles.map(p => ({ ...p, avatar: 'tiger' as const })),
     }));
     await renderScreen('Home', HomeScreen, undefined, ['ProfilePicker']);
-    expect(screen.getByText('🐯')).toBeTruthy();
+    expect(screen.getByText('🐅')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('home-avatar'));
     expect(await screen.findByTestId('screen-ProfilePicker')).toBeTruthy();
   });

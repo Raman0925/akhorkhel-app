@@ -1,7 +1,7 @@
 import { useProfiles, useProgress } from '@/progress';
 import { clearAllData, DEFAULT_SETTINGS, useSettings } from '@/storage';
 
-import { resetAdsState } from './ads';
+import { resetAdsState } from '@/monetization';
 
 /**
  * Parent area → delete all data. Wipes the device store, then resets the in-memory stores

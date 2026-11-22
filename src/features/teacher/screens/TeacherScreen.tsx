@@ -15,7 +15,7 @@ import { useSettings } from '@/storage';
 import { colors, fonts, fontForScript, fontSize, MIN_TOUCH, spacing } from '@/theme';
 import { BigButton, Header, Screen, usePack } from '@/ui';
 
-import { avatarEmoji } from '../avatars';
+import { avatarEmoji } from '@/ui';
 import { Tabs } from '../components/Tabs';
 import { buildCsv, buildHtml, buildReport, sumStars, type Column } from '../report';
 import { shareCsv, sharePdf } from '../share';

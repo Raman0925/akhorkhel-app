@@ -8,7 +8,7 @@ import type { ScreenProps } from '@/navigation';
 import { colors, fontForScript, MIN_TOUCH, radius, spacing } from '@/theme';
 import { BigButton, Header, Screen, usePack } from '@/ui';
 
-import { Celebration } from '../components/Celebration';
+import { Celebration } from '@/ui';
 import { countObjects } from '../logic/count';
 import { strings } from '../strings';
 

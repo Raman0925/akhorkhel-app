@@ -12,7 +12,7 @@ import { useSettings } from '@/storage/settings';
 import { colors, fontForScript, fonts, MIN_TOUCH, radius, spacing } from '@/theme';
 import { Header, Screen, StarRow, usePack } from '@/ui';
 
-import { Celebration } from '../components/Celebration';
+import { Celebration } from '@/ui';
 import { setsDone, takeBaseline, tracedSince, type Baseline } from '../logic/sets';
 import { strings } from '../strings';
 

@@ -15,18 +15,6 @@ import { TraceScreen } from '../screens/TraceScreen';
 import { startLevel } from '../traceables';
 import { FIXTURE_PACK, PLUS_STROKES } from '../testing/fixturePack';
 
-// Reanimated 4.8's JS module throws in setCSSEventHandler under the native Jest preset, which
-// breaks `react-native-reanimated/mock` (see PR notes; belongs in jest.setup.ts).
-jest.mock('react-native-reanimated/src/ReanimatedModule/js-reanimated/JSReanimated', () => {
-  const actual = jest.requireActual<{ createJSReanimatedModule: () => object }>(
-    'react-native-reanimated/src/ReanimatedModule/js-reanimated/JSReanimated',
-  );
-  return {
-    ...actual,
-    createJSReanimatedModule: () =>
-      Object.assign(actual.createJSReanimatedModule(), { setCSSEventHandler: () => undefined }),
-  };
-});
 jest.mock('@/ui/usePack', () => ({
   usePack: () => require('../testing/fixturePack').FIXTURE_PACK,
 }));

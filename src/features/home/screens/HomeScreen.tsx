@@ -5,29 +5,13 @@ import { audio } from '@/audio';
 import { common, format, useStrings } from '@/i18n';
 import { useUnlocks } from '@/monetization';
 import type { ScreenProps } from '@/navigation';
-import { useCurrentProfile, type AvatarId } from '@/progress';
+import { useCurrentProfile } from '@/progress';
 import { useSettings } from '@/storage/settings';
 import { colors, fonts, fontSize, MIN_TOUCH, radius, spacing } from '@/theme';
-import { IconButton, Screen, usePack } from '@/ui';
+import { avatarEmoji, IconButton, Screen, usePack } from '@/ui';
 
 import { visibleModules, type HomeModule, type ModuleId } from '../logic/modules';
 import { strings } from '../strings';
-
-/** Small stand-ins for the avatar artwork (the artwork itself lives with profiles). */
-const AVATAR_EMOJI: Record<AvatarId, string> = {
-  rhino: '🦏',
-  elephant: '🐘',
-  deer: '🦌',
-  dolphin: '🐬',
-  hornbill: '🐦',
-  tiger: '🐯',
-  monkey: '🐒',
-  fish: '🐟',
-  butterfly: '🦋',
-  tea: '🍵',
-  dhol: '🥁',
-  japi: '👒',
-};
 
 const TILE_COLORS: Record<ModuleId, string> = {
   letters: colors.primary,
@@ -89,7 +73,7 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
           }}
           style={({ pressed }) => [styles.avatar, pressed && styles.pressed]}
         >
-          <Text style={styles.avatarEmoji}>{profile ? AVATAR_EMOJI[profile.avatar] : '🙂'}</Text>
+          <Text style={styles.avatarEmoji}>{profile ? avatarEmoji(profile.avatar) : '🙂'}</Text>
         </Pressable>
         <View style={styles.titleBox}>
           <Text style={styles.title} numberOfLines={1} accessibilityRole="header">

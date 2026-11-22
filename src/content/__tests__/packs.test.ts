@@ -16,7 +16,7 @@ const read = (id: string, file: string) =>
 
 describe('registered packs', () => {
   it('ships Assamese first, then Bodo and Mising', () => {
-    expect(PACKS.map(p => p.id)).toEqual(['asm-beng', 'brx-deva', 'mrg-latn']);
+    expect(PACKS.map(p => p.id)).toEqual(['asm-beng', 'brx-deva']);
     expect(getPack(DEFAULT_PACK_ID).id).toBe('asm-beng');
     expect(getPack('unknown').id).toBe('asm-beng');
   });

@@ -10,7 +10,7 @@ import { BigButton, Header, Screen, StarRow } from '@/ui';
 
 import { strings } from '../strings';
 
-import { Celebration } from './Celebration';
+import { Celebration } from '@/ui';
 
 type Props = {
   title: string;

@@ -90,8 +90,8 @@ describe('ParentArea', () => {
     await fireEvent.press(screen.getByTestId('parent-ui-as'));
     expect(useSettings.getState().uiLanguage).toBe('as');
     expect(screen.getByText('অভিভাৱকৰ অংশ')).toBeTruthy();
-    await fireEvent.press(screen.getByTestId('parent-pack-mrg-latn'));
-    expect(useSettings.getState().packId).toBe('mrg-latn');
+    await fireEvent.press(screen.getByTestId('parent-pack-brx-deva'));
+    expect(useSettings.getState().packId).toBe('brx-deva');
     await fireEvent.press(screen.getByTestId('parent-left-handed'));
     expect(useSettings.getState().leftHanded).toBe(true);
     await fireEvent.press(screen.getByTestId('parent-sound'));

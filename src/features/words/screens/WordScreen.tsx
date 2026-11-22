@@ -8,7 +8,7 @@ import type { ScreenProps } from '@/navigation';
 import { colors, fontForScript, fonts, fontSize, radius, spacing } from '@/theme';
 import { Header, IconButton, Screen, usePack } from '@/ui';
 
-import { WordPicture } from '../components/WordPicture';
+import { WordPicture } from '@/ui';
 import { strings } from '../strings';
 
 export function WordScreen({ navigation, route }: ScreenProps<'Word'>) {

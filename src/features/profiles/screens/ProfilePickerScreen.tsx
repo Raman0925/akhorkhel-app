@@ -8,7 +8,7 @@ import { useProfiles, type Profile } from '@/progress';
 import { colors, fonts, fontSize, MIN_TOUCH, radius, spacing } from '@/theme';
 import { Header, Screen } from '@/ui';
 
-import { avatarEmoji } from '../avatars';
+import { avatarEmoji } from '@/ui';
 import { strings } from '../strings';
 
 const ADD = '__add__';

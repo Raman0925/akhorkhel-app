@@ -10,7 +10,7 @@ import { usePack } from '@/ui';
 import { ChoiceTile } from '../components/ChoiceTile';
 import { GameFrame } from '../components/GameFrame';
 import { useGame } from '../components/useGame';
-import { WordPicture } from '../components/WordPicture';
+import { WordPicture } from '@/ui';
 import { picturePool } from '../logic/availability';
 import { makePictureRounds, type PictureRound } from '../logic/rounds';
 import { strings } from '../strings';

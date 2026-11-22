@@ -7,7 +7,7 @@ import { AVATARS, cleanNickname, MAX_NICKNAME_LENGTH, type AvatarId } from '@/pr
 import { colors, fonts, fontSize, MIN_TOUCH, radius, spacing } from '@/theme';
 import { BigButton } from '@/ui';
 
-import { AVATAR_EMOJI } from '../avatars';
+import { AVATAR_EMOJI } from '@/ui';
 import { strings } from '../strings';
 
 type Props = {

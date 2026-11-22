@@ -7,7 +7,7 @@ import { bestStars, useProfiles, usePackProgress } from '@/progress';
 import { colors, fontForScript, fonts, fontSize, radius, spacing } from '@/theme';
 import { BigButton, Header, Screen, StarRow, usePack } from '@/ui';
 
-import { avatarEmoji } from '../avatars';
+import { avatarEmoji } from '@/ui';
 import { Tabs } from '../components/Tabs';
 import { sumStars } from '../report';
 import { strings } from '../strings';

@@ -8,27 +8,12 @@ import type { ScreenProps } from '@/navigation';
 import { MAX_PROFILES, useProfiles } from '@/progress';
 import { useSettings, type UiLanguage } from '@/storage';
 import { colors, fonts, fontSize, radius, spacing } from '@/theme';
-import { BigButton, Header, Screen } from '@/ui';
+import { avatarEmoji, BigButton, Header, Screen } from '@/ui';
 
 import { NoticeContent } from '../components/NoticeContent';
 import { Choice, Paragraph, Row, Section, ToggleRow } from '../components/parts';
 import { resetAllData } from '../resetAllData';
 import { strings } from '../strings';
-
-const AVATAR_ICON: Record<string, string> = {
-  rhino: '🦏',
-  elephant: '🐘',
-  deer: '🦌',
-  dolphin: '🐬',
-  hornbill: '🐦',
-  tiger: '🐅',
-  monkey: '🐒',
-  fish: '🐟',
-  butterfly: '🦋',
-  tea: '🍵',
-  dhol: '🥁',
-  japi: '👒',
-};
 
 const UI_LANGUAGES: readonly { id: UiLanguage; label: string }[] = [
   { id: 'as', label: 'অসমীয়া' },
@@ -162,7 +147,7 @@ function ChildrenSection({ onEdit, onAdd }: { onEdit: (id: string) => void; onAd
       {profiles.map(p => (
         <Row
           key={p.id}
-          icon={AVATAR_ICON[p.avatar] ?? '🙂'}
+          icon={avatarEmoji(p.avatar)}
           label={p.nickname}
           detail="✏️"
           onPress={() => onEdit(p.id)}

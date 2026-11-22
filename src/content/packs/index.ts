@@ -11,14 +11,15 @@ import asmBeng from './asm-beng/pack.json';
 import asmBengGeometry from './asm-beng/geometry.json';
 import brxDeva from './brx-deva/pack.json';
 import brxDevaGeometry from './brx-deva/geometry.json';
-import mrgLatn from './mrg-latn/pack.json';
-import mrgLatnGeometry from './mrg-latn/geometry.json';
 
-/** Assamese first: it is the main audience (handover 1.1). */
+/**
+ * Assamese first: it is the main audience (handover 1.1).
+ * Mising (mrg-latn) is not registered: its folder is kept, but it ships only once Mising Agom Kébang
+ * supplies the alphabet (no invented content; see docs/CONTENT_GUIDE.md).
+ */
 export const PACKS: readonly Pack[] = [
   buildPack(asmBeng as PackContent, asmBengGeometry as unknown as GeometryFile),
   buildPack(brxDeva as PackContent, brxDevaGeometry as unknown as GeometryFile),
-  buildPack(mrgLatn as PackContent, mrgLatnGeometry as unknown as GeometryFile),
 ];
 
 export const DEFAULT_PACK_ID = 'asm-beng';
