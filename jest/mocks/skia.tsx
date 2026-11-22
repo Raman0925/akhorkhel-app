@@ -36,8 +36,26 @@ const makePath = () => {
   return path;
 };
 
+const makePathBuilder = () => {
+  const builder = {
+    moveTo: () => builder,
+    lineTo: () => builder,
+    quadTo: () => builder,
+    cubicTo: () => builder,
+    close: () => builder,
+    reset: () => builder,
+    addPath: () => builder,
+    addCircle: () => builder,
+    transform: () => builder,
+    build: () => makePath(),
+    detach: () => makePath(),
+  };
+  return builder;
+};
+
 export const Skia = {
-  Path: { Make: makePath, MakeFromSVGString: () => makePath() },
+  Path: { Make: makePath, MakeFromSVGString: (svg: string) => (svg ? makePath() : null) },
+  PathBuilder: { Make: makePathBuilder, MakeFromPath: () => makePathBuilder() },
   Matrix: () => ({ translate: () => undefined, scale: () => undefined }),
   Color: (c: string) => c,
 };
