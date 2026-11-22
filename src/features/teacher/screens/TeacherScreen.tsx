@@ -97,7 +97,7 @@ export function TeacherScreen({ navigation }: ScreenProps<'Teacher'>) {
   );
 
   return (
-    <Screen testID="screen-Teacher" banner>
+    <Screen testID="screen-Teacher">
       <Header title={s.title} />
       <Tabs tabs={tabs} value={tab} onChange={setTab} />
       {profiles.length === 0 ? (

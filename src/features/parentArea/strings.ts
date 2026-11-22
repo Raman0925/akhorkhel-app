@@ -40,7 +40,7 @@ export const strings = defineStrings({
     notice3:
       'আখৰ লিখা আৰু খেলৰ স্ক্ৰীণত কোনো বিজ্ঞাপন নাথাকে। মেনুৰ তলত সৰু বেনাৰ থাকে, আৰু কেইটামান আখৰ শেষ কৰাৰ পিছত কেতিয়াবা এটা বিজ্ঞাপন আহে।',
     notice4:
-      'এপটোৱে কোনো ব্যক্তিগত তথ্য সংগ্ৰহ নকৰে। শিশুৰ আদৰৰ নাম আৰু তৰাবোৰ এই ফোনতে থাকে, ক’তো পঠিওৱা নহয়।',
+      'এপটোৱে নিজে কোনো ব্যক্তিগত তথ্য সংগ্ৰহ নকৰে। শিশুৰ আদৰৰ নাম আৰু তৰাবোৰ এই ফোনতে থাকে, ক’তো পঠিওৱা নহয়। বিজ্ঞাপন দেখুৱাবলৈ Google-ৰ SDK-য়ে IP ঠিকনা আৰু app set ID-ৰ দৰে ডিভাইচ চিনাক্তকাৰী ব্যৱহাৰ কৰিব পাৰে (বিজ্ঞাপন আইডি নহয়)।',
     notice5: 'পুৰস্কাৰৰ বিজ্ঞাপন কেৱল অভিভাৱকৰ অংশত, আপুনি নিজে বাছিলেহে চলে।',
     noticePolicyLink: 'সম্পূৰ্ণ গোপনীয়তা নীতি পঢ়ক',
 
@@ -51,7 +51,7 @@ export const strings = defineStrings({
       'একো নাই। এপটোৰ কোনো ছাৰ্ভাৰ, লগইন বা এনালিটিক্স নাই। শিশুৰ আদৰৰ নাম, ছবি বাছনি, তৰা আৰু ছেটিংছ কেৱল এই ফোনতে থাকে।',
     policyAdsHeading: 'বিজ্ঞাপন (Google AdMob)',
     policyAds:
-      'বিজ্ঞাপন দেখুৱাবলৈ Google AdMob SDK-য়ে IP ঠিকনা, এপৰ ভিতৰৰ কাম-কাজ (যেনে বিজ্ঞাপন দেখা বা টিপা) আৰু ক্ৰেচ/ডায়েগনষ্টিক তথ্য সংগ্ৰহ কৰিব পাৰে। বিজ্ঞাপন শিশুৰ বাবে নিৰ্দেশিত আৰু ব্যক্তিগত নহয়।',
+      'বিজ্ঞাপন দেখুৱাবলৈ Google AdMob SDK-য়ে IP ঠিকনা, এপৰ ভিতৰৰ কাম-কাজ (যেনে বিজ্ঞাপন দেখা বা টিপা) ক্ৰেচ/ডায়েগনষ্টিক তথ্য, আৰু app set ID-ৰ দৰে ডিভাইচ চিনাক্তকাৰী সংগ্ৰহ কৰিব পাৰে (Android বিজ্ঞাপন আইডি পঠিওৱা নহয়)। বিজ্ঞাপন শিশুৰ বাবে নিৰ্দেশিত আৰু ব্যক্তিগত নহয়।',
     policyAdIdHeading: 'বিজ্ঞাপন আইডি',
     policyAdId: 'এপটোৱে Android বিজ্ঞাপন আইডি (AD_ID) ব্যৱহাৰ নকৰে আৰু নপঠিয়ায়।',
     policyDeleteHeading: 'তথ্য মচা',
@@ -65,7 +65,7 @@ export const strings = defineStrings({
     bonusWords: 'অতিৰিক্ত শব্দ',
     bonusWordsBody: 'শব্দ অংশত আৰু কিছু নতুন ছবি-শব্দ।',
     watchAd: 'এটা বিজ্ঞাপন চাই ২৪ ঘণ্টাৰ বাবে খোলক',
-    adNotReady: 'এতিয়া কোনো বিজ্ঞাপন নাই। ইণ্টাৰনেট লাগে; পিছত চেষ্টা কৰক।',
+    adNotReady: 'এতিয়া কোনো বিজ্ঞাপন উপলব্ধ নাই। পিছত আকৌ চেষ্টা কৰক।',
     adNoReward: 'বিজ্ঞাপনটো শেষ নহ’ল, সেয়ে একো খোলা নহ’ল।',
     free: 'বিনামূলীয়া',
     unlockedFor: 'খোলা আছে: আৰু {time}',
@@ -115,7 +115,7 @@ export const strings = defineStrings({
     notice3:
       'There are no ads on tracing or game screens. Menus have a small banner at the bottom, and an ad may sometimes appear after the child finishes a set of letters.',
     notice4:
-      'The app collects no personal data. Nicknames and stars stay on this phone and are never sent anywhere.',
+      'The app itself collects no personal data. Nicknames and stars stay on this phone and are never sent anywhere. To show ads, Google’s ad SDK may use the IP address and device identifiers such as the app set ID (not the advertising ID).',
     notice5: 'Reward ads are only in the parent area and only play if you choose them.',
     noticePolicyLink: 'Read the full privacy policy',
 
@@ -126,7 +126,7 @@ export const strings = defineStrings({
       'Nothing. The app has no server, no login and no analytics. Nicknames, avatar choices, stars and settings are stored only on this phone.',
     policyAdsHeading: 'Ads (Google AdMob)',
     policyAds:
-      'To show ads, the Google AdMob SDK may collect the IP address, app interactions (such as ad views and taps) and crash/diagnostic data. Ads are child-directed and non-personalised.',
+      'To show ads, the Google AdMob SDK may collect the IP address, app interactions (such as ad views and taps), crash/diagnostic data, and device identifiers such as the app set ID (the Android advertising ID is not sent). Ads are child-directed and non-personalised.',
     policyAdIdHeading: 'Advertising ID',
     policyAdId: 'The app does not use or send the Android Advertising ID (AD_ID).',
     policyDeleteHeading: 'Deleting data',
@@ -140,7 +140,7 @@ export const strings = defineStrings({
     bonusWords: 'Bonus words',
     bonusWordsBody: 'Extra picture words in the Words section.',
     watchAd: 'Watch one ad to unlock for 24 h',
-    adNotReady: 'No ad is available right now. It needs internet; please try again later.',
+    adNotReady: 'No ad is available right now — try again later.',
     adNoReward: 'The ad did not finish, so nothing was unlocked.',
     free: 'Free',
     unlockedFor: 'Unlocked: {time} left',

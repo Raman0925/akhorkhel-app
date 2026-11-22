@@ -36,7 +36,7 @@ export function TeacherChildScreen({ navigation, route }: ScreenProps<'TeacherCh
   const tried = columns.filter(c => (items[c.key]?.attempts ?? 0) > 0).length;
 
   return (
-    <Screen testID="screen-TeacherChild" banner>
+    <Screen testID="screen-TeacherChild">
       <Header title={format(s.childTitle, { name: profile.nickname })} />
       <View style={styles.summary}>
         <Text style={styles.avatar}>{avatarEmoji(profile.avatar)}</Text>

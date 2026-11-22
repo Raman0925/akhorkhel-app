@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { format, useStrings } from '@/i18n';
-import { STICKER_THEMES, useUnlocks, type RewardId, type StickerTheme } from '@/monetization';
+import { STICKER_THEMES, type RewardId, type StickerTheme } from '@/monetization';
 import type { ScreenProps } from '@/navigation';
 import { useSettings } from '@/storage';
 import { colors, fonts, fontSize, radius, spacing } from '@/theme';
 import { BigButton, Header, Screen } from '@/ui';
 
+import { useUnlocksWithOptions } from '../ads';
 import { Paragraph } from '../components/parts';
 import { remaining } from '../remaining';
 import { strings } from '../strings';
@@ -21,7 +22,7 @@ export function RewardsScreen(_props: ScreenProps<'Rewards'>) {
   const [message, setMessage] = useState<string | null>(null);
 
   return (
-    <Screen testID="screen-Rewards" banner>
+    <Screen testID="screen-Rewards">
       <Header title={s.rewardsTitle} />
       <ScrollView contentContainerStyle={styles.content}>
         <Paragraph>{s.rewardsIntro}</Paragraph>
@@ -103,7 +104,9 @@ function RewardCard({
   testID?: string;
 }) {
   const s = useStrings(strings);
-  const { unlockedUntil, watchRewarded, rewardedReady } = useUnlocks();
+  const { unlockedUntil, watchRewarded, rewardedReady } = useUnlocksWithOptions({
+    preloadRewarded: true,
+  });
   const [busy, setBusy] = useState(false);
   const left = free ? null : remaining(unlockedUntil(id), now);
   const available = free || left !== null;

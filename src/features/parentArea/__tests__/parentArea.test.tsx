@@ -5,6 +5,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import InAppReview from 'react-native-in-app-review';
 
+import * as monetization from '@/monetization';
 import type { RootStackParamList } from '@/navigation';
 import { useProfiles, useProgress } from '@/progress';
 import { DEFAULT_SETTINGS, mmkv, useSettings } from '@/storage';
@@ -24,7 +25,11 @@ const mockUnlocks = {
 
 jest.mock('@/monetization', () => {
   const actual = jest.requireActual('@/monetization');
-  return { ...actual, useUnlocks: () => mockUnlocks };
+  return {
+    ...actual,
+    useUnlocks: jest.fn((_opts?: { preloadRewarded?: boolean }) => mockUnlocks),
+    resetAdsState: jest.fn(),
+  };
 });
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -137,6 +142,9 @@ describe('ParentArea', () => {
     expect(useProgress.getState().progress).toEqual({});
     expect(useSettings.getState()).toMatchObject({ onboarded: false, adsNoticeSeen: false });
     expect(mmkv.getString('other')).toBeUndefined();
+    expect(
+      (monetization as unknown as { resetAdsState: jest.Mock }).resetAdsState,
+    ).toHaveBeenCalled();
   });
 });
 
@@ -147,6 +155,8 @@ describe('Rewards', () => {
     expect(screen.queryByTestId('rewards-theme-stars-watch')).toBeNull();
     await fireEvent.press(screen.getByTestId('rewards-theme-animals-watch'));
     expect(mockUnlocks.watchRewarded).toHaveBeenCalledWith('theme:animals');
+    expect(monetization.useUnlocks).toHaveBeenCalledWith({ preloadRewarded: true });
+    expect(screen.queryByTestId('banner-slot')).toBeNull();
   });
 
   it('shows remaining time and lets the parent pick an unlocked theme', async () => {
@@ -168,7 +178,9 @@ describe('Rewards', () => {
     await renderStack('Rewards');
     await fireEvent.press(screen.getByTestId('rewards-bonusWords-watch'));
     expect(mockUnlocks.watchRewarded).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/No ad is available right now/).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText('No ad is available right now — try again later.').length,
+    ).toBeGreaterThan(0);
   });
 
   it('says so when the ad was not finished', async () => {
@@ -185,6 +197,7 @@ describe('static screens', () => {
   it('privacy policy matches the data-safety summary', async () => {
     await renderStack('PrivacyPolicy');
     expect(screen.getByText(/IP address, app interactions/)).toBeTruthy();
+    expect(screen.getByText(/device identifiers such as the app set ID/)).toBeTruthy();
     expect(screen.getByText(/does not use or send the Android Advertising ID/)).toBeTruthy();
     expect(screen.getByTestId('privacy-url')).toHaveTextContent(
       'https://raman0925.github.io/akhorkhel-privacy/',
