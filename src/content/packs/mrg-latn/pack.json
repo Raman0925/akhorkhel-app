@@ -1,10 +1,20 @@
 {
   "id": "mrg-latn",
-  "language": { "iso639_3": "mrg", "nameNative": "Mising", "nameEn": "Mising", "nameAs": "মিচিং" },
+  "language": {
+    "iso639_3": "mrg",
+    "nameNative": "Mising",
+    "nameEn": "Mising",
+    "nameAs": "মিচিং"
+  },
   "script": "Latn",
   "fontFamily": "NotoSans-Regular",
   "status": "draft-needs-native-review",
   "letters": [],
   "words": [],
-  "numbers": []
+  "numbers": [],
+  "sources": [
+    "Wikipedia, \"Mising language\", read 2026-11-22: Mising Agom Kébang is the primary literary body; Mising has adapted the Roman script. The article has no alphabet table. https://en.wikipedia.org/wiki/Mising_language",
+    "Partial evidence only (not an inventory): Keyman \"Mising\" keyboard help (SIL), read 2026-11-22, describes the \"standard modified Roman script\" with é (mid central vowel), í (close central unrounded vowel), ng, ny, long vowels and ’ (U+2019) as a glottal marker. https://help.keyman.com/keyboard/mising",
+    "No letters or numbers are included yet: no source we could read lists the full Mising Agom Kébang alphabet in order (Omniglot and the CIIL Mising Primer could not be read by the tooling). A Mising Agom Kébang reviewer must supply the alphabet, its order and the numerals."
+  ]
 }

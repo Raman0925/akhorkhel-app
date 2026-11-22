@@ -16,9 +16,9 @@ import mrgLatnGeometry from './mrg-latn/geometry.json';
 
 /** Assamese first: it is the main audience (handover 1.1). */
 export const PACKS: readonly Pack[] = [
-  buildPack(asmBeng as PackContent, asmBengGeometry as GeometryFile),
-  buildPack(brxDeva as PackContent, brxDevaGeometry as GeometryFile),
-  buildPack(mrgLatn as PackContent, mrgLatnGeometry as GeometryFile),
+  buildPack(asmBeng as PackContent, asmBengGeometry as unknown as GeometryFile),
+  buildPack(brxDeva as PackContent, brxDevaGeometry as unknown as GeometryFile),
+  buildPack(mrgLatn as PackContent, mrgLatnGeometry as unknown as GeometryFile),
 ];
 
 export const DEFAULT_PACK_ID = 'asm-beng';
