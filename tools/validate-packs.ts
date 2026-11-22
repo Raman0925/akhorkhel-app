@@ -1,15 +1,16 @@
 /**
  * Validates every language pack (handover 5.1). Run by CI on every push.
  *
- *   npm run validate-packs            schema + integrity; missing recordings are warnings
- *   npm run validate-packs:release    also fails on anything unfinished (tags / release builds)
+ *   npm run validate-packs            schema + integrity
+ *   npm run validate-packs:release    the same, plus release-only rules (tags / release builds)
  *
  * Errors (always): invalid schema, duplicate ids, non-NFC text, dangling references, an item with no
- * outline or strokes, geometry out of date, a `verified` pack without `reviewedBy`, an outline that
- * does not parse or leaves the unit box, a zero-length stroke, a vowel-sign syllable whose result
- * is not base + sign.
- * Release errors: any pack not `verified`, any missing audio/image/prompt file, placeholder emoji,
- * strokes that were generated (`auto`) and never reviewed or recorded.
+ * outline or strokes, geometry out of date, an outline that does not parse or leaves the unit box, a
+ * zero-length stroke, a vowel-sign syllable whose result is not base + sign.
+ * Release errors: a word that still uses a placeholder emoji instead of a real picture.
+ * Warnings only (both modes, ADR 0004): missing audio/image files and voice prompts (the app hides
+ * speaker buttons and audio games until recordings exist), missing number words, no sources.
+ * Native review and `auto` strokes are recommended, not enforced (ADR 0004).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -75,19 +76,12 @@ export function validatePack(
     };
   }
   const geometry: GeometryFile = geoParsed.data;
-  const missing = (msg: string) => (opts.release ? errors : warnings).push(msg);
 
   if (pack.letters.length === 0) {
     warnings.push('pack has no letters yet');
   }
   if (!pack.sources?.length) {
     warnings.push('pack has no sources: record where the inventory came from');
-  }
-  if (pack.status === 'verified' && !pack.reviewedBy?.length) {
-    errors.push('status is verified but reviewedBy is empty');
-  }
-  if (opts.release && pack.status !== 'verified') {
-    errors.push(`status is ${pack.status}: unverified packs cannot ship`);
   }
 
   const dup = (label: string, ids: (string | number)[]) => {
@@ -133,12 +127,11 @@ export function validatePack(
       n.word ? [[`number ${n.value} word`, n.word] as [string, string]] : [],
     ),
   ];
-  if (opts.release) {
-    for (const n of pack.numbers) {
-      if (!n.word) {
-        errors.push(`number ${n.value}: number word is missing`);
-      }
-    }
+  const noWord = pack.numbers.filter(n => !n.word).map(n => n.value);
+  if (noWord.length) {
+    warnings.push(
+      `${noWord.length} numbers have no number word (e.g. ${noWord.slice(0, 3).join(', ')})`,
+    );
   }
   for (const [label, text] of texts) {
     if (!isNfc(text)) {
@@ -195,11 +188,12 @@ export function validatePack(
         errors.push(`${t.key}: stroke ${i + 1} has zero length`);
       }
     });
-    if (opts.release && g.strokeSource === 'auto') {
-      errors.push(
-        `${t.key}: strokes are auto-generated; a native writer must review or record them`,
-      );
-    }
+  }
+  const autoStrokes = traceables.filter(t => geometry[t.key]?.strokeSource === 'auto').length;
+  if (autoStrokes) {
+    warnings.push(
+      `${autoStrokes} items use auto-generated strokes (review by a native writer recommended)`,
+    );
   }
   const known = new Set(traceables.map(t => t.key));
   for (const key of Object.keys(geometry)) {
@@ -216,8 +210,9 @@ export function validatePack(
   ];
   const missingFiles = files.filter(f => !fileExists(f));
   if (missingFiles.length) {
-    missing(
-      `${missingFiles.length} missing audio/image files (e.g. ${missingFiles.slice(0, 3).join(', ')})`,
+    // Optional (ADR 0004): the app hides speaker buttons and audio games while files are missing.
+    warnings.push(
+      `${missingFiles.length} audio/image files not added yet (e.g. ${missingFiles.slice(0, 3).join(', ')})`,
     );
   }
   return { errors, warnings };
@@ -267,13 +262,10 @@ function main() {
     }
   }
   if (missingPrompts.length) {
-    const msg = `${missingPrompts.length} voice prompts not recorded yet (e.g. ${missingPrompts.slice(0, 3).join(', ')})`;
-    if (release) {
-      console.error(`✗ prompts: ${msg}`);
-      failed = true;
-    } else {
-      console.warn(`⚠ prompts: ${msg}`);
-    }
+    // Optional (ADR 0004): prompts without a recording are silent and have no speaker button.
+    console.warn(
+      `⚠ prompts: ${missingPrompts.length} voice prompts not recorded yet (e.g. ${missingPrompts.slice(0, 3).join(', ')})`,
+    );
   }
 
   if (failed) {

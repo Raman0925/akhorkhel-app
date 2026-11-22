@@ -47,7 +47,6 @@ export function fixturePack(overrides: Partial<Pack> = {}): Pack {
     language: { iso639_3: 'tst', nameNative: 'Native', nameEn: 'Testish', nameAs: 'Test-as' },
     script: 'Latn',
     fontFamily: 'NotoSans-Regular',
-    status: 'draft-needs-native-review',
     letters: [letter('a'), letter('b')],
     signs: [sign],
     words: [word('w1')],

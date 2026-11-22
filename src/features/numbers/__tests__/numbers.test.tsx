@@ -1,6 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
 import { audio } from '@/audio';
+import { mockAudio } from '@/audio/testing';
 import { useProgress } from '@/progress';
 
 import { fixturePack } from '../__fixtures__/pack';
@@ -44,6 +45,29 @@ it('Number plays its audio, shows the word and opens Trace', async () => {
   expect(screen.queryByTestId('banner-slot')).toBeNull();
   await fireEvent.press(screen.getByTestId('number-trace'));
   expect(await screen.findByTestId('screen-Trace')).toHaveTextContent('{"itemKey":"number:3"}');
+});
+
+it('Number shows the listen button when the number is recorded', async () => {
+  await renderScreen('Number', NumberScreen, { value: 3 });
+  expect(screen.getByTestId('number-listen')).toBeTruthy();
+});
+
+it('Number hides the listen button when the number is not recorded', async () => {
+  mockAudio('none');
+  await renderScreen('Number', NumberScreen, { value: 3 });
+  expect(screen.queryByTestId('number-listen')).toBeNull();
+  expect(screen.getByTestId('number-trace')).toBeTruthy();
+});
+
+it('Count shows the header speaker when its prompt is recorded', async () => {
+  await renderScreen('Count', CountScreen, { value: 1 });
+  expect(screen.getByTestId('header-speaker')).toBeTruthy();
+});
+
+it('Count hides the header speaker without a recorded prompt', async () => {
+  mockAudio('none');
+  await renderScreen('Count', CountScreen, { value: 1 });
+  expect(screen.queryByTestId('header-speaker')).toBeNull();
 });
 
 it('Number opens Count', async () => {

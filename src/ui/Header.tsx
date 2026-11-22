@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { audio, type PromptId } from '@/audio';
+import { audio, usePromptAvailable, type PromptId } from '@/audio';
 import { common, useStrings } from '@/i18n';
 import { colors, fonts, fontSize, spacing } from '@/theme';
 
@@ -10,7 +10,7 @@ import { IconButton } from './IconButton';
 
 type Props = {
   title: string;
-  /** Replays this voice prompt when the speaker is tapped. */
+  /** Replays this voice prompt when the speaker is tapped (no speaker until it is recorded). */
   prompt?: PromptId;
   showBack?: boolean;
   right?: ReactNode;
@@ -20,6 +20,8 @@ type Props = {
 export function Header({ title, prompt, showBack = true, right }: Props) {
   const navigation = useNavigation();
   const s = useStrings(common);
+  // No recording for this prompt yet (ADR 0004): no speaker, rather than a silent button.
+  const canReplay = usePromptAvailable(prompt);
   return (
     <View style={styles.row}>
       {showBack && navigation.canGoBack() ? (
@@ -36,7 +38,7 @@ export function Header({ title, prompt, showBack = true, right }: Props) {
         {title}
       </Text>
       {right ??
-        (prompt ? (
+        (prompt && canReplay ? (
           <IconButton
             icon="🔊"
             label={s.play}

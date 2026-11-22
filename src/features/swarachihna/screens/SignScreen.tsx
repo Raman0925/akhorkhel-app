@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 
-import { audio } from '@/audio';
+import { audio, hasPackAudio } from '@/audio';
 import { common, format, useStrings } from '@/i18n';
 import type { ScreenProps } from '@/navigation';
 import { colors, fontForScript, fonts, MIN_TOUCH, radius, spacing } from '@/theme';
@@ -78,7 +78,12 @@ export function SignScreen({ navigation, route }: ScreenProps<'Sign'>) {
     <Screen testID="screen-Sign">
       <Header
         title={c.signs}
-        right={<IconButton icon="🔊" label={s.listen} onPress={play} testID="sign-listen" />}
+        right={
+          // No recording yet (ADR 0004): no speaker button.
+          hasPackAudio(pack.id, sign.audio) ? (
+            <IconButton icon="🔊" label={s.listen} onPress={play} testID="sign-listen" />
+          ) : undefined
+        }
       />
       <View style={styles.body}>
         <Pressable

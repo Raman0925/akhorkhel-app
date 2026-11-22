@@ -81,12 +81,12 @@ export function recordingScript(
     'at the listed path inside `src/content/packs/<packId>/` (pack audio) or `src/audio/prompts/`',
     '(voice prompts). Then run `npm run gen:assets`.',
     '',
-    'All text below comes from draft packs (`draft-needs-native-review`): the reviewer confirms each',
-    'item before it is recorded.',
+    'Recordings are optional (ADR 0004): the app hides the speaker button for any file that is',
+    'missing. Have the voice artist (or a native speaker) confirm each item before it is recorded.',
     '',
   ];
   for (const pack of packs) {
-    out.push(`## ${pack.language.nameEn} (\`${pack.id}\`): ${pack.status}`, '');
+    out.push(`## ${pack.language.nameEn} (\`${pack.id}\`)`, '');
     const groups = packRows(pack);
     if (groups.length === 0) {
       out.push('Nothing to record yet: the pack has no content.', '');

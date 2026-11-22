@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { audio } from '@/audio';
+import { audio, hasPackAudio } from '@/audio';
 import { common, format, useStrings } from '@/i18n';
 import type { ScreenProps, TraceLevelParam } from '@/navigation';
 import { useCurrentProfile, useItemProgress } from '@/progress';
@@ -44,6 +44,8 @@ export function LetterScreen({ navigation, route }: ScreenProps<'Letter'>) {
   const prev = pack.letters[index - 1];
   const next = pack.letters[index + 1];
   const playLetter = () => audio.playPack(pack.id, letter.audio);
+  // No recording yet (ADR 0004): no speaker button and no "listen" in the label.
+  const audible = hasPackAudio(pack.id, letter.audio);
   const goTo = (letterId: string) => {
     setPicking(false);
     navigation.setParams({ letterId });
@@ -54,7 +56,9 @@ export function LetterScreen({ navigation, route }: ScreenProps<'Letter'>) {
       <Header
         title={c.letters}
         right={
-          <IconButton icon="🔊" label={s.listen} onPress={playLetter} testID="letter-listen" />
+          audible ? (
+            <IconButton icon="🔊" label={s.listen} onPress={playLetter} testID="letter-listen" />
+          ) : undefined
         }
       />
       <View style={styles.body}>
@@ -71,7 +75,7 @@ export function LetterScreen({ navigation, route }: ScreenProps<'Letter'>) {
           )}
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`${s.listen} ${letter.glyph}`}
+            accessibilityLabel={audible ? `${s.listen} ${letter.glyph}` : letter.glyph}
             onPress={playLetter}
             style={styles.glyphBox}
             testID="letter-glyph"

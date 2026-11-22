@@ -22,6 +22,14 @@ jest.mock('@shopify/react-native-skia', () => require('./jest/mocks/skia'));
 
 jest.mock('react-native-audio-api', () => require('./jest/mocks/audio-api'));
 
+// Recorded audio is optional (ADR 0004); tests pick what exists with mockAudio (jest/mocks/assets).
+jest.mock('./src/content/packs/assets.generated', () => ({
+  PACK_ASSETS: require('./jest/mocks/assets').PACK_ASSETS,
+}));
+jest.mock('./src/audio/prompts.generated', () => ({
+  PROMPT_ASSETS: require('./jest/mocks/assets').PROMPT_ASSETS,
+}));
+
 jest.mock('react-native-share', () => ({
   __esModule: true,
   default: { open: jest.fn(() => Promise.resolve({ success: true, message: '' })) },

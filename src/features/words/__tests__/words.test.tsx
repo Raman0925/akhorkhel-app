@@ -1,6 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
 import { audio } from '@/audio';
+import { mockAudio } from '@/audio/testing';
 
 import { fixturePack } from '../__fixtures__/pack';
 import { renderScreen, resetStores } from '../__fixtures__/render';
@@ -33,6 +34,25 @@ describe('Word', () => {
     expect(screen.queryByTestId('word-bridge')).toBeNull();
     await fireEvent.press(screen.getByTestId('word-picture'));
     expect(playPack).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows the listen button when the word is recorded', async () => {
+    await renderScreen('Word', WordScreen, { wordId: 'one' });
+    expect(screen.getByTestId('word-listen')).toBeTruthy();
+  });
+
+  it('hides the listen button when the word is not recorded', async () => {
+    mockAudio('none');
+    await renderScreen('Word', WordScreen, { wordId: 'one' });
+    expect(screen.queryByTestId('word-listen')).toBeNull();
+    expect(screen.getByLabelText('one')).toBeTruthy();
+  });
+
+  it('WordList has no speaker without a recorded prompt', async () => {
+    mockAudio('none');
+    await renderScreen('WordList', WordListScreen);
+    expect(screen.queryByTestId('header-speaker')).toBeNull();
+    expect(screen.getByTestId('word-tile-one')).toBeTruthy();
   });
 
   it('shows the bridge card with Assamese and English', async () => {

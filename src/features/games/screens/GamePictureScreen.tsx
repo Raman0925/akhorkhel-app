@@ -11,7 +11,7 @@ import { ChoiceTile } from '../components/ChoiceTile';
 import { GameFrame } from '../components/GameFrame';
 import { useGame } from '../components/useGame';
 import { WordPicture } from '@/ui';
-import { picturePool } from '../logic/availability';
+import { audibleLetters, picturePool } from '../logic/availability';
 import { makePictureRounds, type PictureRound } from '../logic/rounds';
 import { strings } from '../strings';
 
@@ -21,7 +21,8 @@ export function GamePictureScreen(_props: ScreenProps<'GamePicture'>) {
   const s = useStrings(strings);
   const { width } = useWindowDimensions();
   const makeRounds = useCallback(
-    () => makePictureRounds(picturePool(pack), pack.letters, Math.random),
+    // Target letters must have a recorded sound; any pictured word can be a distractor.
+    () => makePictureRounds(picturePool(pack), audibleLetters(pack), Math.random),
     [pack],
   );
   const playSound = useCallback(

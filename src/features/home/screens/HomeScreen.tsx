@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { audio } from '@/audio';
+import { audio, usePromptAvailable } from '@/audio';
 import { common, format, useStrings } from '@/i18n';
 import type { ScreenProps } from '@/navigation';
 import { useCurrentProfile } from '@/progress';
@@ -27,6 +27,7 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const uiLanguage = useSettings(st => st.uiLanguage);
   const profile = useCurrentProfile();
   const modules = useMemo(() => visibleModules(pack), [pack]);
+  const canReplay = usePromptAvailable('home');
   const languageName = uiLanguage === 'en' ? pack.language.nameEn : pack.language.nameAs;
   const label: Record<ModuleId, string> = {
     letters: c.letters,
@@ -81,12 +82,16 @@ export function HomeScreen({ navigation }: ScreenProps<'Home'>) {
             {format(s.learning, { language: languageName })}
           </Text>
         </View>
-        <IconButton
-          icon="🔊"
-          label={c.play}
-          onPress={() => audio.playPrompt('home')}
-          testID="home-speaker"
-        />
+        {canReplay ? (
+          <IconButton
+            icon="🔊"
+            label={c.play}
+            onPress={() => audio.playPrompt('home')}
+            testID="home-speaker"
+          />
+        ) : (
+          <View style={styles.speakerSpace} />
+        )}
       </View>
 
       <FlatList
@@ -128,6 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarEmoji: { fontSize: 40 },
+  speakerSpace: { width: MIN_TOUCH, height: MIN_TOUCH },
   titleBox: { flex: 1, alignItems: 'center' },
   title: { fontFamily: fonts.bengaliBold, fontSize: fontSize.xl, color: colors.text },
   subtitle: { fontFamily: fonts.bengali, fontSize: fontSize.sm, color: colors.textMuted },

@@ -1,6 +1,7 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 
 import { audio } from '@/audio';
+import { mockAudio } from '@/audio/testing';
 import { useProgress } from '@/progress';
 
 import { fixturePack } from '../__fixtures__/pack';
@@ -54,4 +55,16 @@ it('Sign shows base + sign = result, speaks it after the animation and opens Tra
   } finally {
     jest.useRealTimers();
   }
+});
+
+it('Sign shows the listen button when the syllable is recorded', async () => {
+  await renderScreen('Sign', SignScreen, { signId: 'ka' });
+  expect(screen.getByTestId('sign-listen')).toBeTruthy();
+});
+
+it('Sign hides the listen button when the syllable is not recorded', async () => {
+  mockAudio('none');
+  await renderScreen('Sign', SignScreen, { signId: 'ka' });
+  expect(screen.queryByTestId('sign-listen')).toBeNull();
+  expect(screen.getByTestId('sign-result')).toHaveTextContent('Ka');
 });

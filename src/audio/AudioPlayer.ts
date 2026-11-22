@@ -1,7 +1,8 @@
 /**
  * AudioPlayer (frozen contract, owner A3). Plays pre-recorded, bundled audio only; sound effects are
  * synthesised (no extra asset files, no licensing). Never throws: a missing or broken file is silent,
- * so lessons never break or wait on audio.
+ * so lessons never break or wait on audio. Recordings are optional (ADR 0004): screens use
+ * `hasPackAudio` / `hasPrompt` (./assets) to hide speaker buttons whose file is not bundled.
  *
  *   audio.playPack(pack.id, letter.audio)  // letter / word / number audio
  *   audio.playPrompt('traceStart')         // voice prompt in the UI language
@@ -12,7 +13,7 @@ import { AudioContext } from 'react-native-audio-api';
 import { packAsset } from '@/content/packs';
 import { useSettings } from '@/storage/settings';
 
-import { PROMPT_ASSETS } from './prompts.generated';
+import { promptAsset } from './assets';
 import type { PromptId } from './prompts';
 
 export type Sfx = 'tap' | 'success' | 'star' | 'pop';
@@ -83,8 +84,7 @@ class Player {
   }
 
   playPrompt(id: PromptId): Promise<void> {
-    const lang = useSettings.getState().uiLanguage;
-    return this.playAsset(PROMPT_ASSETS[`${lang}/${id}`] ?? PROMPT_ASSETS[`as/${id}`]);
+    return this.playAsset(promptAsset(id));
   }
 
   /** Warm the decode cache (e.g. a letter grid's audio) so the first tap is instant. */

@@ -1,6 +1,6 @@
 /**
  * Pack registry (frozen contract). Every pack shipped in the app is listed here; the release
- * validator fails the build if any listed pack is not `verified` (handover 5.1).
+ * validator (`npm run validate-packs:release`) checks every listed pack (handover 5.1).
  * To add a language: add its folder, import it below, and run `npm run validate-packs`.
  */
 import { buildPack } from '../loader';

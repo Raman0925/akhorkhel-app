@@ -37,7 +37,6 @@ export function fixturePack(overrides: Partial<Pack> = {}): Pack {
     language: { iso639_3: 'tst', nameNative: 'Test', nameEn: 'Test', nameAs: 'Test' },
     script: 'Latn',
     fontFamily: 'NotoSans-Regular',
-    status: 'draft-needs-native-review',
     letters: ['a', 'b', 'c', 'd'].map(id => letter(id)),
     signs: [],
     words: [word('a1', 'a'), word('b1', 'b'), word('c1', 'c'), word('d1', 'd')],

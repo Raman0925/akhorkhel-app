@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { audio } from '@/audio';
+import { audio, hasPackAudio } from '@/audio';
 import { common, useStrings } from '@/i18n';
 import type { ScreenProps } from '@/navigation';
 import { colors, fontForScript, fontSize, spacing } from '@/theme';
@@ -31,18 +31,24 @@ export function NumberScreen({ navigation, route }: ScreenProps<'Number'>) {
   }
 
   const play = () => audio.playPack(pack.id, item.audio);
+  // No recording yet (ADR 0004): no speaker button and no "listen" in the label.
+  const audible = hasPackAudio(pack.id, item.audio);
   const canCount = item.value >= 1 && item.value <= MAX_COUNT;
 
   return (
     <Screen testID="screen-Number">
       <Header
         title={c.numbers}
-        right={<IconButton icon="🔊" label={s.listen} onPress={play} testID="number-listen" />}
+        right={
+          audible ? (
+            <IconButton icon="🔊" label={s.listen} onPress={play} testID="number-listen" />
+          ) : undefined
+        }
       />
       <View style={styles.body}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`${s.listen} ${item.numeral}`}
+          accessibilityLabel={audible ? `${s.listen} ${item.numeral}` : item.numeral}
           onPress={play}
           style={styles.center}
           testID="number-numeral"

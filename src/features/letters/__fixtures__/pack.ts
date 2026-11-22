@@ -33,7 +33,6 @@ export function fixturePack(overrides: Partial<Pack> = {}): Pack {
     language: { iso639_3: 'tst', nameNative: 'Test', nameEn: 'Test', nameAs: 'Test' },
     script: 'Latn',
     fontFamily: 'NotoSans-Regular',
-    status: 'draft-needs-native-review',
     letters: [
       letter('a', 'vowel', { exampleWordId: 'apple' }),
       letter('e', 'vowel'),

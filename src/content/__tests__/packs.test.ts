@@ -1,6 +1,6 @@
 /**
  * The real, registered packs: they load, every traceable item has geometry, and every pack passes
- * the validator in non-release mode (drafts are allowed; the release gate is a separate check).
+ * the validator in both normal and release mode.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -31,10 +31,19 @@ describe('registered packs', () => {
     expect(report.errors).toEqual([]);
   });
 
-  it.each(PACKS.map(p => p.id))('%s stays a cited draft until native review', id => {
+  it.each(PACKS.map(p => p.id))('%s passes the release gate and cites its sources', id => {
+    const report = validatePack(
+      read(id, 'pack.json'),
+      read(id, 'geometry.json'),
+      rel => fs.existsSync(path.join(PACKS_DIR, id, rel)),
+      { release: true },
+    );
+    expect(report.errors).toEqual([]);
     const content = PackContentSchema.parse(read(id, 'pack.json'));
-    expect(content.status).toBe('draft-needs-native-review');
     expect(content.sources?.length).toBeGreaterThan(0);
+    // ADR 0004: the review fields are gone from the schema and the files.
+    expect(read(id, 'pack.json')).not.toHaveProperty('status');
+    expect(read(id, 'pack.json')).not.toHaveProperty('reviewedBy');
   });
 
   it('every traceable item has an outline and placeholder or human strokes', () => {

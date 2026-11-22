@@ -15,7 +15,6 @@ function fixture(): { pack: PackContent; geometry: GeometryFile } {
       language: { iso639_3: 'tst', nameNative: 'টেষ্ট', nameEn: 'Test', nameAs: 'টেষ্ট' },
       script: 'Beng',
       fontFamily: 'NotoSansBengali-Regular',
-      status: 'draft-needs-native-review',
       sources: ['test fixture'],
       letters: [
         { id: 'ka', glyph: 'ক', group: 'consonant', order: 1, audio: 'audio/letters/ka.m4a' },
@@ -51,11 +50,11 @@ const none = () => false;
 const all = () => true;
 
 describe('validatePack', () => {
-  it('accepts a complete draft pack; missing files are only warnings', () => {
+  it('accepts a complete pack; missing files are only warnings', () => {
     const { pack, geometry } = fixture();
     const r = validatePack(pack, geometry, none, { release: false });
     expect(r.errors).toEqual([]);
-    expect(r.warnings.join('\n')).toMatch(/3 missing audio\/image files/);
+    expect(r.warnings.join('\n')).toMatch(/3 audio\/image files not added yet/);
   });
 
   it('reports schema errors', () => {
@@ -127,13 +126,7 @@ describe('validatePack', () => {
     expect(errors).toMatch(/startsWith zz does not exist/);
   });
 
-  it('requires reviewers for a verified pack', () => {
-    const { pack, geometry } = fixture();
-    const r = validatePack({ ...pack, status: 'verified' }, geometry, all, { release: false });
-    expect(r.errors).toContain('status is verified but reviewedBy is empty');
-  });
-
-  it('release mode rejects drafts, auto strokes, missing files, words and placeholders', () => {
+  it('release mode rejects placeholder emoji (allowed outside release)', () => {
     const { pack, geometry } = fixture();
     pack.words.push({
       id: 'w',
@@ -142,23 +135,34 @@ describe('validatePack', () => {
       image: 'images/words/w.webp',
       placeholderEmoji: '🍌',
     });
-    const errors = validatePack(pack, geometry, none, { release: true }).errors.join('\n');
-    expect(errors).toMatch(/unverified packs cannot ship/);
-    expect(errors).toMatch(/letter:ka: strokes are auto-generated/);
-    expect(errors).toMatch(/missing audio\/image files/);
-    expect(errors).toMatch(/number 1: number word is missing/);
-    expect(errors).toMatch(/placeholderEmoji is not allowed/);
+    expect(validatePack(pack, geometry, all, { release: false }).errors).toEqual([]);
+    expect(validatePack(pack, geometry, all, { release: true }).errors).toEqual([
+      'word w: placeholderEmoji is not allowed in a release',
+    ]);
   });
 
-  it('passes the release gate for a finished pack', () => {
+  it('release mode still runs the integrity checks', () => {
     const { pack, geometry } = fixture();
-    pack.status = 'verified';
-    pack.reviewedBy = [{ name: 'A Reviewer', org: 'Test Sabha', date: '2026-11-22' }];
-    pack.numbers[0]!.word = 'এক';
-    for (const g of Object.values(geometry)) {
-      g.strokeSource = 'reviewed';
-    }
-    expect(validatePack(pack, geometry, all, { release: true }).errors).toEqual([]);
+    delete geometry['number:1'];
+    const errors = validatePack(pack, geometry, all, { release: true }).errors.join('\n');
+    expect(errors).toMatch(/number:1: no geometry/);
+  });
+
+  it('passes the release gate without audio, images, number words, review or recorded strokes', () => {
+    // ADR 0004: these are optional at launch and only produce warnings.
+    const { pack, geometry } = fixture();
+    const r = validatePack(pack, geometry, none, { release: true });
+    expect(r.errors).toEqual([]);
+    const warnings = r.warnings.join('\n');
+    expect(warnings).toMatch(/3 audio\/image files not added yet/);
+    expect(warnings).toMatch(/1 numbers have no number word/);
+    expect(warnings).toMatch(/3 items use auto-generated strokes/);
+  });
+
+  it('ignores the removed review fields in old pack files', () => {
+    const { pack, geometry } = fixture();
+    const old = { ...pack, status: 'draft-needs-native-review', reviewedBy: [] };
+    expect(validatePack(old, geometry, all, { release: true }).errors).toEqual([]);
   });
 
   it('warns about an empty pack without sources', () => {

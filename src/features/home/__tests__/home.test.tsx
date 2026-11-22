@@ -1,10 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
+import { mockAudio } from '@/audio/testing';
 import { useProfiles } from '@/progress';
 
-import { fixturePack, letter } from '../__fixtures__/pack';
+import { fixturePack, letter, word } from '../__fixtures__/pack';
 import { renderScreen, resetStores } from '../__fixtures__/render';
-import { visibleModules } from '../logic/modules';
+import { gamesPlayable, visibleModules } from '../logic/modules';
 import { HomeScreen } from '../screens/HomeScreen';
 
 let mockPack = fixturePack();
@@ -31,6 +32,32 @@ describe('visibleModules', () => {
     expect(visibleModules(pack).map(m => m.id)).toEqual(['letters']);
     expect(visibleModules(fixturePack({ letters: [] })).map(m => m.id)).not.toContain('games');
   });
+
+  it('hides Games when no game is playable for lack of letter audio', () => {
+    mockAudio('none');
+    expect(visibleModules(fixturePack()).map(m => m.id)).toEqual([
+      'letters',
+      'signs',
+      'words',
+      'numbers',
+    ]);
+    mockAudio(['tst-latn/audio/a.m4a']);
+    expect(gamesPlayable(fixturePack())).toBe(false);
+    mockAudio(['tst-latn/audio/a.m4a', 'tst-latn/audio/b.m4a']);
+    expect(gamesPlayable(fixturePack())).toBe(true);
+  });
+
+  it('shows Games for the picture game alone (one audible letter, enough pictures)', () => {
+    mockAudio(['tst-latn/audio/a.m4a']);
+    const pic = (id: string, startsWith: string) => ({
+      ...word(id),
+      startsWith,
+      placeholderEmoji: '🟢',
+    });
+    const pack = fixturePack({ words: [pic('w1', 'a'), pic('w2', 'b'), pic('w3', 'b')] });
+    expect(gamesPlayable(pack)).toBe(true);
+    expect(gamesPlayable(fixturePack({ words: [pic('w1', 'a'), pic('w2', 'b')] }))).toBe(false);
+  });
 });
 
 describe('HomeScreen', () => {
@@ -44,6 +71,20 @@ describe('HomeScreen', () => {
 
     await fireEvent.press(screen.getByTestId('home-letters'));
     expect(await screen.findByTestId('screen-LetterGrid')).toBeTruthy();
+  });
+
+  it('shows the speaker and Games when audio is recorded', async () => {
+    await renderScreen('Home', HomeScreen);
+    expect(screen.getByTestId('home-speaker')).toBeTruthy();
+    expect(screen.getByTestId('home-games')).toBeTruthy();
+  });
+
+  it('hides the speaker and Games without recordings', async () => {
+    mockAudio('none');
+    await renderScreen('Home', HomeScreen);
+    expect(screen.queryByTestId('home-speaker')).toBeNull();
+    expect(screen.queryByTestId('home-games')).toBeNull();
+    expect(screen.getByTestId('home-letters')).toBeTruthy();
   });
 
   it('hides empty modules', async () => {

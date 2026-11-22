@@ -8,7 +8,6 @@
   },
   "script": "Deva",
   "fontFamily": "NotoSansDevanagari-Regular",
-  "status": "draft-needs-native-review",
   "letters": [
     {
       "id": "a",

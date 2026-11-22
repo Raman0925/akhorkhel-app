@@ -1,6 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
 import { audio } from '@/audio';
+import { mockAudio } from '@/audio/testing';
 import { useProgress } from '@/progress';
 
 import { fixturePack } from '../__fixtures__/pack';
@@ -22,6 +23,20 @@ it('plays the letter, shows the example word and has no banner', async () => {
   await fireEvent.press(screen.getByTestId('letter-example'));
   expect(playPack).toHaveBeenLastCalledWith('tst-latn', 'audio/words/apple.m4a');
   expect(screen.getByText('🍎')).toBeTruthy();
+});
+
+it('shows the listen button when the letter is recorded', async () => {
+  await renderScreen('Letter', LetterScreen, { letterId: 'a' });
+  expect(screen.getByTestId('letter-listen')).toBeTruthy();
+  expect(screen.getByLabelText('Listen A')).toBeTruthy();
+});
+
+it('hides the listen button when the letter is not recorded', async () => {
+  mockAudio('none');
+  await renderScreen('Letter', LetterScreen, { letterId: 'a' });
+  expect(screen.queryByTestId('letter-listen')).toBeNull();
+  expect(screen.getByLabelText('A')).toBeTruthy();
+  expect(screen.getByTestId('letter-trace')).toBeTruthy();
 });
 
 it('moves to the next and previous letters', async () => {

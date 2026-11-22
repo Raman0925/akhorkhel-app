@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { audio } from '@/audio';
+import { audio, hasPackAudio } from '@/audio';
 import { common, useStrings } from '@/i18n';
 import type { ScreenProps } from '@/navigation';
 import { colors, fontForScript, fonts, fontSize, radius, spacing } from '@/theme';
@@ -31,18 +31,24 @@ export function WordScreen({ navigation, route }: ScreenProps<'Word'>) {
   }
 
   const play = () => audio.playPack(pack.id, word.audio);
+  // No recording yet (ADR 0004): no speaker button and no "listen" in the label.
+  const audible = hasPackAudio(pack.id, word.audio);
   const bridge = word.bridge && (word.bridge.as || word.bridge.en) ? word.bridge : undefined;
 
   return (
     <Screen testID="screen-Word">
       <Header
         title={c.words}
-        right={<IconButton icon="🔊" label={s.listen} onPress={play} testID="word-listen" />}
+        right={
+          audible ? (
+            <IconButton icon="🔊" label={s.listen} onPress={play} testID="word-listen" />
+          ) : undefined
+        }
       />
       <View style={styles.body}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`${s.listen} ${word.text}`}
+          accessibilityLabel={audible ? `${s.listen} ${word.text}` : word.text}
           onPress={play}
           style={styles.picture}
           testID="word-picture"

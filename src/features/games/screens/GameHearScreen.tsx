@@ -10,6 +10,7 @@ import { BigButton, usePack } from '@/ui';
 import { ChoiceTile } from '../components/ChoiceTile';
 import { GameFrame } from '../components/GameFrame';
 import { useGame } from '../components/useGame';
+import { audibleLetters } from '../logic/availability';
 import { makeHearRounds, type HearRound } from '../logic/rounds';
 import { strings } from '../strings';
 
@@ -18,7 +19,8 @@ export function GameHearScreen(_props: ScreenProps<'GameHear'>) {
   const pack = usePack();
   const s = useStrings(strings);
   const { width } = useWindowDimensions();
-  const makeRounds = useCallback(() => makeHearRounds(pack.letters, Math.random), [pack.letters]);
+  // Only letters whose sound is recorded can be asked about.
+  const makeRounds = useCallback(() => makeHearRounds(audibleLetters(pack), Math.random), [pack]);
   const playSound = useCallback(
     (r: HearRound) => audio.playPack(pack.id, r.target.audio),
     [pack.id],

@@ -1,10 +1,12 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 
 import { audio } from '@/audio';
+import { mockAudio } from '@/audio/testing';
 import { useProgress } from '@/progress';
 
 import { fixturePack, letter, word } from '../__fixtures__/pack';
 import { PROFILE_ID, renderScreen, resetStores } from '../__fixtures__/render';
+import { gameAvailability } from '../logic/availability';
 import { GameHearScreen } from '../screens/GameHearScreen';
 import { GamePictureScreen } from '../screens/GamePictureScreen';
 import { GamesHubScreen } from '../screens/GamesHubScreen';
@@ -42,6 +44,31 @@ describe('GamesHub', () => {
     expect(screen.queryByTestId('banner-slot')).toBeNull();
     await fireEvent.press(screen.getByTestId('games-picture'));
     expect(await screen.findByTestId('screen-GamePicture')).toBeTruthy();
+  });
+
+  it('hides both games and the speaker when no letter audio or prompt is recorded', async () => {
+    mockAudio('none');
+    await renderScreen('GamesHub', GamesHubScreen);
+    expect(screen.queryByTestId('games-hear')).toBeNull();
+    expect(screen.queryByTestId('games-picture')).toBeNull();
+    expect(screen.queryByTestId('header-speaker')).toBeNull();
+    expect(gameAvailability(mockPack)).toEqual({ hear: false, picture: false });
+  });
+
+  it('shows the speaker when the prompt is recorded', async () => {
+    await renderScreen('GamesHub', GamesHubScreen);
+    expect(screen.getByTestId('header-speaker')).toBeTruthy();
+  });
+
+  it('needs two audible letters for the hear game; one is enough for the picture game', async () => {
+    mockAudio(['tst-latn/audio/letters/a.m4a']);
+    expect(gameAvailability(mockPack)).toEqual({ hear: false, picture: true });
+    await renderScreen('GamesHub', GamesHubScreen);
+    expect(screen.queryByTestId('games-hear')).toBeNull();
+    expect(screen.getByTestId('games-picture')).toBeTruthy();
+
+    mockAudio(['tst-latn/audio/letters/a.m4a', 'tst-latn/audio/letters/b.m4a']);
+    expect(gameAvailability(mockPack)).toEqual({ hear: true, picture: true });
   });
 
   it('hides the picture game without enough pictured words', async () => {
@@ -85,6 +112,15 @@ describe('GameHear', () => {
     expect(screen.getAllByTestId(/^choice-/)).toHaveLength(3);
   });
 
+  it('only asks about letters whose sound is recorded', async () => {
+    mockAudio(['tst-latn/audio/letters/a.m4a', 'tst-latn/audio/letters/c.m4a']);
+    await renderScreen('GameHear', GameHearScreen);
+    const ids = screen.getAllByTestId(/^choice-/).map(el => el.props.testID);
+    expect(ids.sort()).toEqual(['choice-a', 'choice-c']);
+    await advance(2000);
+    expect(['a', 'c']).toContain(lastPlayedId());
+  });
+
   it('uses 2 choices for a 2-letter pack', async () => {
     mockPack = fixturePack({ letters: [letter('a'), letter('b')] });
     await renderScreen('GameHear', GameHearScreen);
@@ -104,5 +140,13 @@ describe('GamePicture', () => {
     expect(playPack).toHaveBeenLastCalledWith(mockPack.id, `audio/words/${target}1.m4a`);
     await advance(1500);
     expect(lastPlayedId()).not.toBe(target);
+  });
+
+  it('only uses letters with a recorded sound as targets', async () => {
+    mockAudio(['tst-latn/audio/letters/b.m4a']);
+    await renderScreen('GamePicture', GamePictureScreen);
+    await advance(2000);
+    expect(lastPlayedId()).toBe('b');
+    expect(screen.getByTestId('choice-b1')).toBeTruthy();
   });
 });

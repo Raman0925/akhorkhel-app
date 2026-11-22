@@ -7,7 +7,6 @@ const content: PackContent = {
   language: { iso639_3: 'tst', nameNative: 'Test', nameEn: 'Test', nameAs: 'টেষ্ট' },
   script: 'Latn',
   fontFamily: 'NotoSans-Regular',
-  status: 'draft-needs-native-review',
   letters: [
     { id: 'b', glyph: 'b', group: 'consonant', order: 2, audio: 'audio/letters/b.m4a' },
     { id: 'a', glyph: 'a', group: 'vowel', order: 1, audio: 'audio/letters/a.m4a' },
