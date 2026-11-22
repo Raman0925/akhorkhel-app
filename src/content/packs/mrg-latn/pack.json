@@ -1,0 +1,10 @@
+{
+  "id": "mrg-latn",
+  "language": { "iso639_3": "mrg", "nameNative": "Mising", "nameEn": "Mising", "nameAs": "মিচিং" },
+  "script": "Latn",
+  "fontFamily": "NotoSans-Regular",
+  "status": "draft-needs-native-review",
+  "letters": [],
+  "words": [],
+  "numbers": []
+}

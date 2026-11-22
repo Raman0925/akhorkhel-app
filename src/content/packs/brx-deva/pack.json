@@ -1,0 +1,10 @@
+{
+  "id": "brx-deva",
+  "language": { "iso639_3": "brx", "nameNative": "बर'", "nameEn": "Bodo", "nameAs": "বড়ো" },
+  "script": "Deva",
+  "fontFamily": "NotoSansDevanagari-Regular",
+  "status": "draft-needs-native-review",
+  "letters": [],
+  "words": [],
+  "numbers": []
+}

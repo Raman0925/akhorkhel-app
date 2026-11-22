@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, typecheck, test, packs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm test -- --ci --coverage
+      - run: npm run validate-packs
+      - name: Generated files are up to date
+        run: |
+          npm run gen:assets --if-present
+          git diff --exit-code -- src || { echo "::error::Generated files are stale. Run npm run gen:assets and commit."; exit 1; }
+      - name: Release gate (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: npm run validate-packs:release
+      - name: No placeholders or TODOs in shipped code (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          if grep -rnE "TODO|FIXME|Scaffold placeholder|coming soon" src --include=*.ts --include=*.tsx; then
+            echo "::error::Release builds must not contain TODOs or placeholder screens"; exit 1
+          fi
+
+  android:
+    name: Android release build + policy checks
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v6
+      - run: npm ci
+
+      - name: Write release ad units and upload key (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          ADMOB_BANNER_ID: ${{ secrets.ADMOB_BANNER_ID }}
+          ADMOB_INTERSTITIAL_ID: ${{ secrets.ADMOB_INTERSTITIAL_ID }}
+          ADMOB_REWARDED_ID: ${{ secrets.ADMOB_REWARDED_ID }}
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          npm run gen:ad-units --if-present
+          echo "$UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/upload.keystore"
+          echo "AKHORKHEL_UPLOAD_STORE_FILE=$RUNNER_TEMP/upload.keystore" >> "$GITHUB_ENV"
+
+      - name: Build AAB and APK (AAB signed only on tags)
+        working-directory: android
+        env:
+          ADMOB_APP_ID: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.ADMOB_APP_ID || '' }}
+          AKHORKHEL_UPLOAD_STORE_PASSWORD: ${{ secrets.AKHORKHEL_UPLOAD_STORE_PASSWORD }}
+          AKHORKHEL_UPLOAD_KEY_ALIAS: ${{ secrets.AKHORKHEL_UPLOAD_KEY_ALIAS }}
+          AKHORKHEL_UPLOAD_KEY_PASSWORD: ${{ secrets.AKHORKHEL_UPLOAD_KEY_PASSWORD }}
+        run: ./gradlew bundleRelease assembleRelease --no-daemon -PreactNativeArchitectures=armeabi-v7a,arm64-v8a,x86_64
+
+      - name: Policy checks (permissions, AD_ID, 16 KB alignment, size)
+        run: bash tools/ci/check-release.sh
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: app-release-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/') && 90 || 7 }}
+
+  e2e:
+    name: Maestro E2E (emulator)
+    needs: checks
+    # Emulator runs are slow: run on main, tags and on demand, not on every PR push.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v6
+      - run: npm ci
+      - name: Build release APK for x86_64 (debug-signed, emulator only)
+        working-directory: android
+        env:
+          AKHORKHEL_UPLOAD_STORE_FILE: ${{ github.workspace }}/android/app/debug.keystore
+          AKHORKHEL_UPLOAD_STORE_PASSWORD: android
+          AKHORKHEL_UPLOAD_KEY_ALIAS: androiddebugkey
+          AKHORKHEL_UPLOAD_KEY_PASSWORD: android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Run flows on Android 16 emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          disable-animations: true
+          script: bash tools/ci/e2e.sh
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: maestro-results
+          path: e2e/results
+          if-no-files-found: ignore
+          retention-days: 7

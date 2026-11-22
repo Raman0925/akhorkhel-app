@@ -1,0 +1,9 @@
+appId: in.akhorkhel.app
+name: Smoke - app launches to first-launch screen
+---
+- clearState
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: 'screen-Onboarding'
+    timeout: 20000

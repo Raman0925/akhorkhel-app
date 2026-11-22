@@ -1,0 +1,9 @@
+<resources>
+
+    <!-- Light only: bright, calm colours for children. The window background doubles as the splash. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <item name="android:windowBackground">@color/app_background</item>
+    </style>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":pinAllExceptPeerDependencies"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Asia/Kolkata",
+  "ignoreUnstable": true,
+  "respectLatest": true,
+  "prConcurrentLimit": 5,
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "React Native core moves together and needs a manual upgrade (rn-diff-purge).",
+      "groupName": "react-native core",
+      "matchPackageNames": [
+        "react-native",
+        "react",
+        "@react-native/**",
+        "@react-native-community/cli**"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Ads SDK: check Play's Families self-certified list before merging.",
+      "matchPackageNames": ["react-native-google-mobile-ads"],
+      "labels": ["dependencies", "ads-policy"],
+      "automerge": false
+    }
+  ]
+}

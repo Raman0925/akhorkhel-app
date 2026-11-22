@@ -1,0 +1,15 @@
+import React from 'react';
+import { Text } from 'react-native';
+
+import type { ScreenProps } from '@/navigation';
+import { Header, Screen } from '@/ui';
+
+/** Scaffold placeholder: replaced by the owning agent. Must not ship. */
+export function SignListScreen(_props: ScreenProps<'SignList'>) {
+  return (
+    <Screen testID="screen-SignList">
+      <Header title="SignList" />
+      <Text>SignList</Text>
+    </Screen>
+  );
+}

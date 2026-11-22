@@ -1,0 +1,16 @@
+{
+  "id": "asm-beng",
+  "language": {
+    "iso639_3": "asm",
+    "nameNative": "অসমীয়া",
+    "nameEn": "Assamese",
+    "nameAs": "অসমীয়া"
+  },
+  "script": "Beng",
+  "fontFamily": "NotoSansBengali-Regular",
+  "status": "draft-needs-native-review",
+  "letters": [],
+  "signs": [],
+  "words": [],
+  "numbers": []
+}
